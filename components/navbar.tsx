@@ -37,20 +37,20 @@ export function Navbar() {
 
   return (
     <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 nav-dark ${
-        isScrolled ? "py-5" : "py-8"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "py-4 bg-[#0a0a14]/95 backdrop-blur-sm" : "py-6"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
         <Link 
           href="/" 
-          className="font-serif text-xl tracking-[0.1em] text-white font-medium"
+          className="font-serif text-2xl font-bold italic text-white"
         >
-          FILOGRAFIE
+          Filografie
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-12">
+        <div className="hidden lg:flex items-center gap-10">
           {navItems.map((item) => (
             <div 
               key={item.label}
@@ -60,19 +60,19 @@ export function Navbar() {
             >
               <Link
                 href={item.href}
-                className="flex items-center gap-1 text-[11px] tracking-[0.15em] uppercase font-light text-white/60 hover:text-white transition-colors duration-300"
+                className="flex items-center gap-1 text-sm text-white/70 hover:text-white transition-colors duration-200"
               >
                 {item.label}
-                {item.dropdown && <ChevronDown className="w-3 h-3 opacity-40" />}
+                {item.dropdown && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
               </Link>
               
               {item.dropdown && openDropdown === item.label && (
-                <div className="absolute top-full left-0 mt-6 py-4 min-w-[180px] bg-[#0c0c10] border border-white/5">
+                <div className="absolute top-full left-0 mt-4 py-3 min-w-[180px] bg-white rounded-xl shadow-xl">
                   {item.dropdown.map((subItem) => (
                     <Link
                       key={subItem.label}
                       href={subItem.href}
-                      className="block px-6 py-3 text-[11px] tracking-[0.1em] uppercase font-light text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300"
+                      className="block px-5 py-2.5 text-sm text-gray-700 hover:text-[#5046e5] hover:bg-gray-50 transition-all duration-200"
                     >
                       {subItem.label}
                     </Link>
@@ -83,37 +83,45 @@ export function Navbar() {
           ))}
         </div>
 
+        {/* CTA Button */}
+        <a 
+          href="#contact"
+          className="hidden lg:block btn-blue text-sm"
+        >
+          Get in touch
+        </a>
+
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden p-2 text-white/60 hover:text-white transition-colors"
+          className="lg:hidden p-2 text-white/70 hover:text-white transition-colors"
           aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
         >
-          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-[#050507] border-t border-white/5 py-8">
-          <div className="max-w-7xl mx-auto px-8 flex flex-col gap-6">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-[#0a0a14] border-t border-white/10 py-6">
+          <div className="max-w-7xl mx-auto px-6 flex flex-col gap-4">
             {navItems.map((item) => (
               <div key={item.label}>
                 <Link
                   href={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-[11px] tracking-[0.15em] uppercase font-light text-white/60 hover:text-white transition-colors"
+                  className="text-base text-white/70 hover:text-white transition-colors py-2 block"
                 >
                   {item.label}
                 </Link>
                 {item.dropdown && (
-                  <div className="ml-4 mt-4 flex flex-col gap-3">
+                  <div className="ml-4 mt-2 flex flex-col gap-2">
                     {item.dropdown.map((subItem) => (
                       <Link
                         key={subItem.label}
                         href={subItem.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-[10px] tracking-[0.1em] uppercase font-light text-white/40 hover:text-white transition-colors"
+                        className="text-sm text-white/50 hover:text-white transition-colors py-1"
                       >
                         {subItem.label}
                       </Link>
@@ -122,6 +130,13 @@ export function Navbar() {
                 )}
               </div>
             ))}
+            <a 
+              href="#contact"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="btn-blue text-sm text-center mt-4"
+            >
+              Get in touch
+            </a>
           </div>
         </div>
       )}

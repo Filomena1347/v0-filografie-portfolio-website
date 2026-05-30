@@ -2,42 +2,42 @@ import { Camera, Film, Palette } from "lucide-react"
 
 export function About() {
   return (
-    <section id="about" className="relative py-40 overflow-hidden">
-      {/* Subtle aurora glow */}
-      <div 
-        className="aurora-drift absolute -right-[30%] top-0 w-[60%] h-[100%]"
-        style={{
-          background: "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.15) 0%, transparent 60%)",
-          filter: "blur(100px)",
-        }}
-      />
-
-      <div className="max-w-7xl mx-auto px-8">
-        <div className="grid lg:grid-cols-2 gap-24 items-center">
-          {/* Image placeholder */}
+    <section id="about" className="relative py-32 lg:py-40 overflow-hidden bg-[#0a0a14]">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          {/* Image area with floating elements */}
           <div className="relative">
-            <div className="aspect-[3/4] bg-[#0c0c10] border border-white/5 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-fuchsia-500/5" />
+            {/* Main portrait card */}
+            <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-gradient-to-br from-[#12121c] to-[#1a1a2e] relative">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <Camera className="w-10 h-10 text-white/10 mx-auto mb-4" />
-                  <p className="text-white/20 text-[10px] tracking-[0.2em] uppercase">Portrait</p>
-                </div>
+                <Camera className="w-16 h-16 text-white/10" />
               </div>
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14]/50 to-transparent" />
+            </div>
+            
+            {/* Floating accent card */}
+            <div className="absolute -bottom-6 -right-6 lg:-right-12 w-32 h-32 rounded-2xl bg-[#5046e5] animate-float flex items-center justify-center shadow-2xl">
+              <span className="text-white/90 text-sm font-medium">10+ years</span>
+            </div>
+            
+            {/* File badge */}
+            <div className="absolute top-6 left-6">
+              <span className="file-badge bg-white/90 text-[#0a0a14]">portrait.raw</span>
             </div>
           </div>
 
           {/* Text content */}
-          <div className="lg:pl-12">
-            <p className="label-sm text-violet-400/80 mb-8">About</p>
+          <div className="lg:pl-8">
+            <p className="label-text text-[#5046e5] mb-4 uppercase tracking-wider">About</p>
             
-            <h2 className="heading-display text-4xl md:text-5xl lg:text-6xl mb-12 text-white">
-              HELLO, I&apos;M{" "}
-              <span className="text-gradient">FILOMÉNA</span>
+            <h2 className="heading-editorial text-4xl md:text-5xl lg:text-6xl mb-8 text-white">
+              Hello, I&apos;m<br />
+              <span className="text-[#5046e5]">Filomena.</span>
             </h2>
             
-            <div className="space-y-6 body-light text-white/50">
-              <p>
+            <div className="space-y-6 body-text text-white/60">
+              <p className="text-lg">
                 A visual storyteller based in the heart of creativity. With over a decade of experience, 
                 I transform ordinary moments into extraordinary memories through the art of light and composition.
               </p>
@@ -47,16 +47,18 @@ export function About() {
               </p>
             </div>
 
-            {/* Services */}
-            <div className="mt-20 flex gap-16">
+            {/* Services icons */}
+            <div className="mt-12 flex gap-8 lg:gap-12">
               {[
                 { icon: Camera, label: "Photography" },
                 { icon: Film, label: "Videography" },
                 { icon: Palette, label: "Digital Art" },
               ].map((service) => (
-                <div key={service.label} className="group">
-                  <service.icon className="w-5 h-5 text-white/20 mb-4 group-hover:text-violet-400/60 transition-colors duration-500" />
-                  <p className="text-[10px] tracking-[0.15em] uppercase text-white/30 group-hover:text-white/50 transition-colors duration-500">
+                <div key={service.label} className="group text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover:bg-[#5046e5]/20 transition-colors duration-300">
+                    <service.icon className="w-6 h-6 text-white/40 group-hover:text-[#5046e5] transition-colors duration-300" />
+                  </div>
+                  <p className="text-xs text-white/40 group-hover:text-white/60 transition-colors">
                     {service.label}
                   </p>
                 </div>

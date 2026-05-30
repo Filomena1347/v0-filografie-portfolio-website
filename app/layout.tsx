@@ -1,25 +1,26 @@
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { Playfair_Display, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const cormorant = Cormorant_Garamond({ 
+const playfair = Playfair_Display({ 
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: '--font-cormorant',
+  style: ["normal", "italic"],
+  variable: '--font-playfair',
   display: 'swap',
 })
 
 const inter = Inter({ 
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["300", "400", "500", "600"],
   variable: '--font-inter',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
   title: 'Filografie | Creative Portfolio',
-  description: 'Premium creative services - Photography, Videography, and Digital Creative by Filoména',
+  description: 'Premium creative services - Photography, Videography, and Digital Creative by Filomena',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -46,9 +47,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable} bg-[#050507]`}>
-      <body className="font-sans antialiased bg-[#050507] text-[#f5f5f7]">
-        <div className="grain-overlay" aria-hidden="true" />
+    <html lang="en" className={`${playfair.variable} ${inter.variable} bg-[#0a0a14]`}>
+      <body className="font-sans antialiased bg-[#0a0a14] text-white">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
