@@ -58,17 +58,6 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#0a0a14]">
-      {/* Floating decorative elements */}
-      <div className="hidden lg:block absolute top-32 right-[15%] animate-float">
-        <div className="file-badge accent-pink text-base px-4 py-2 rounded-lg shadow-lg">.psd</div>
-      </div>
-      <div className="hidden lg:block absolute top-48 left-[5%] animate-float-reverse">
-        <div className="file-badge accent-blue text-base px-4 py-2 rounded-lg shadow-lg">.raw</div>
-      </div>
-      <div className="hidden lg:block absolute bottom-32 left-[3%] animate-float">
-        <div className="file-badge accent-orange text-base px-4 py-2 rounded-lg shadow-lg">.mov</div>
-      </div>
-
       {/* Main content */}
       <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-28 pb-16">
         {/* Header text */}
