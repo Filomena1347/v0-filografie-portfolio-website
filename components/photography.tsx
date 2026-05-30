@@ -188,9 +188,9 @@ export function Photography() {
                   <div className={`absolute inset-0 bg-gradient-to-t ${mainCategories[0].color} opacity-70 mix-blend-multiply`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   
-                  {/* Centered icon */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <CalendarDays className="w-10 h-10 text-white stroke-[1.5]" />
+                  {/* Top right icon */}
+                  <div className="absolute top-6 right-6">
+                    <CalendarDays className="w-6 h-6 text-white/60 stroke-[1]" />
                   </div>
                   
                   {/* Content */}
@@ -227,10 +227,10 @@ export function Photography() {
                       <div className={`absolute inset-0 bg-gradient-to-t ${category.color} opacity-70 mix-blend-multiply`} />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       
-                      {/* Centered icon */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        {category.id === "food" && <UtensilsCrossed className="w-10 h-10 text-white stroke-[1.5]" />}
-                        {category.id === "portraits" && <User className="w-10 h-10 text-white stroke-[1.5]" />}
+                      {/* Top right icon */}
+                      <div className="absolute top-5 right-5">
+                        {category.id === "food" && <UtensilsCrossed className="w-6 h-6 text-white/60 stroke-[1]" />}
+                        {category.id === "portraits" && <User className="w-6 h-6 text-white/60 stroke-[1]" />}
                       </div>
                       
                       {/* Content */}
@@ -271,11 +271,11 @@ export function Photography() {
                     <div className={`absolute inset-0 bg-gradient-to-t ${subcategory.color} opacity-70 mix-blend-multiply`} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     
-                    {/* Centered icon */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {subcategory.id === "concerts" && <Music className="w-10 h-10 text-white stroke-[1.5]" />}
-                      {subcategory.id === "weddings" && <Heart className="w-10 h-10 text-white stroke-[1.5]" />}
-                      {subcategory.id === "corporate" && <Briefcase className="w-10 h-10 text-white stroke-[1.5]" />}
+                    {/* Top right icon */}
+                    <div className="absolute top-5 right-5">
+                      {subcategory.id === "concerts" && <Music className="w-6 h-6 text-white/60 stroke-[1]" />}
+                      {subcategory.id === "weddings" && <Heart className="w-6 h-6 text-white/60 stroke-[1]" />}
+                      {subcategory.id === "corporate" && <Briefcase className="w-6 h-6 text-white/60 stroke-[1]" />}
                     </div>
                     
                     {/* Content */}
