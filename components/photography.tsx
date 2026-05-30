@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft, CalendarDays, Music, Heart, Briefcase, UtensilsCrossed, User } from "lucide-react";
 
 // Main categories with their colors and gradient overlays
 const mainCategories = [
@@ -10,21 +10,24 @@ const mainCategories = [
     name: "Events", 
     color: "from-violet-600 to-indigo-700",
     hasSubcategories: true,
-    description: "Concerts, Weddings, Corporate Events"
+    description: "Concerts, Weddings, Corporate Events",
+    icon: CalendarDays
   },
   { 
     id: "food", 
     name: "Food", 
     color: "from-[#FF6B5B] to-orange-600",
     hasSubcategories: false,
-    description: "Food photography"
+    description: "Food photography",
+    icon: UtensilsCrossed
   },
   { 
     id: "portraits", 
     name: "Portraits", 
     color: "from-pink-500 to-rose-600",
     hasSubcategories: false,
-    description: "Portrait sessions"
+    description: "Portrait sessions",
+    icon: User
   },
 ];
 
@@ -34,19 +37,22 @@ const eventsSubcategories = [
     id: "concerts", 
     name: "Concerts", 
     color: "from-violet-500 to-purple-700",
-    description: "Live music & performances"
+    description: "Live music & performances",
+    icon: Music
   },
   { 
     id: "weddings", 
     name: "Weddings", 
     color: "from-pink-400 to-rose-500",
-    description: "Wedding photography"
+    description: "Wedding photography",
+    icon: Heart
   },
   { 
     id: "corporate", 
     name: "Corporate Events", 
     color: "from-indigo-500 to-blue-600",
-    description: "Corporate events"
+    description: "Corporate events",
+    icon: Briefcase
   },
 ];
 
@@ -184,6 +190,7 @@ export function Photography() {
                   
                   {/* Content */}
                   <div className="absolute inset-0 flex flex-col justify-end p-8">
+                    <mainCategories[0].icon className="w-6 h-6 text-white/80 stroke-[1.5] mb-3" />
                     <p className="text-white/60 text-sm font-sans mb-2">{mainCategories[0].description}</p>
                     <h3 className="font-serif text-4xl md:text-5xl text-white">{mainCategories[0].name}</h3>
                     {/* Hover arrow */}
@@ -218,6 +225,7 @@ export function Photography() {
                       
                       {/* Content */}
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
+                        <category.icon className="w-5 h-5 text-white/80 stroke-[1.5] mb-2" />
                         <h3 className="font-serif text-3xl md:text-4xl text-white">{category.name}</h3>
                         {/* Hover arrow */}
                         <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -256,6 +264,7 @@ export function Photography() {
                     
                     {/* Content */}
                     <div className="absolute inset-0 flex flex-col justify-end p-6">
+                      <subcategory.icon className="w-5 h-5 text-white/80 stroke-[1.5] mb-2" />
                       <p className="text-white/60 text-sm font-sans mb-1">{subcategory.description}</p>
                       <h3 className="font-serif text-3xl text-white">{subcategory.name}</h3>
                       {/* Hover arrow */}
