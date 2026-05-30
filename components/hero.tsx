@@ -7,10 +7,10 @@ const galleryImages = [
   // Row 1
   { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
   { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", category: "Lifestyle" },
-  { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780150406/Snímek_obrazovky_2026-05-30_v_16.13.01_ril9vz.png", alt: "Event photography", category: "Events" },
-  { id: 4, src: "/placeholder.svg?height=700&width=500", alt: "Food photography", category: "Food" },
+  { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography", category: "Events" },
+  { id: 4, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154159/Sni%CC%81mek_obrazovky_2026-05-30_v_17.15.41_wfowzq.png", alt: "Food photography", category: "Food" },
   // Row 2
-  { id: 5, src: "/placeholder.svg?height=700&width=500", alt: "Wedding photography", category: "Wedding" },
+  { id: 5, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147813/Sni%CC%81mek_obrazovky_2026-05-29_v_12.33.50_d3lite.png", alt: "Wedding photography", category: "Wedding" },
   { id: 6, src: "/placeholder.svg?height=700&width=500", alt: "Product photography", category: "Product" },
   { id: 7, src: "/placeholder.svg?height=700&width=500", alt: "Fashion photography", category: "Fashion" },
   { id: 8, src: "/placeholder.svg?height=700&width=500", alt: "Commercial photography", category: "Commercial" },
