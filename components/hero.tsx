@@ -11,9 +11,11 @@ const galleryImages = [
   { id: 4, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154159/Sni%CC%81mek_obrazovky_2026-05-30_v_17.15.41_wfowzq.png", alt: "Food photography", category: "Food" },
   // Row 2
   { id: 5, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147813/Sni%CC%81mek_obrazovky_2026-05-29_v_12.33.50_d3lite.png", alt: "Wedding photography", category: "Wedding" },
-  { id: 6, src: "/placeholder.svg?height=700&width=500", alt: "Product photography", category: "Product" },
+  { id: 6, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154527/Sni%CC%81mek_obrazovky_2026-05-30_v_17.21.54_uhziv7.png", alt: "Product photography", category: "Product" },
   { id: 7, src: "/placeholder.svg?height=700&width=500", alt: "Fashion photography", category: "Fashion" },
   { id: 8, src: "/placeholder.svg?height=700&width=500", alt: "Commercial photography", category: "Commercial" },
+  // Row 3
+  { id: 9, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780155172/Sni%CC%81mek_obrazovky_2026-05-30_v_17.32.30_igqvb5.png", alt: "Portrait photography", category: "Portrait" },
 ]
 
 const videoReels = [
