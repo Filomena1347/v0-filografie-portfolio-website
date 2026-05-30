@@ -7,15 +7,15 @@ const galleryImages = [
   // Row 1 - 5 columns
   { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
   { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", category: "Lifestyle" },
-  { id: 3, src: "/placeholder.svg?height=500&width=300", alt: "Event photography", category: "Events" },
-  { id: 4, src: "/placeholder.svg?height=400&width=300", alt: "Food photography", category: "Food" },
-  { id: 5, src: "/placeholder.svg?height=450&width=300", alt: "Product photography", category: "Product" },
+  { id: 3, src: "/placeholder.svg?height=700&width=500", alt: "Event photography", category: "Events" },
+  { id: 4, src: "/placeholder.svg?height=700&width=500", alt: "Food photography", category: "Food" },
+  { id: 5, src: "/placeholder.svg?height=700&width=500", alt: "Product photography", category: "Product" },
   // Row 2 - 5 columns
-  { id: 6, src: "/placeholder.svg?height=350&width=300", alt: "Food photography", category: "Food" },
-  { id: 7, src: "/placeholder.svg?height=400&width=300", alt: "Behind the scenes", category: "BTS" },
-  { id: 8, src: "/placeholder.svg?height=450&width=300", alt: "Portrait photography", category: "Portrait" },
-  { id: 9, src: "/placeholder.svg?height=380&width=300", alt: "Makeup artistry", category: "Beauty" },
-  { id: 10, src: "/placeholder.svg?height=420&width=300", alt: "Fashion photography", category: "Fashion" },
+  { id: 6, src: "/placeholder.svg?height=700&width=500", alt: "Food photography", category: "Food" },
+  { id: 7, src: "/placeholder.svg?height=700&width=500", alt: "Behind the scenes", category: "BTS" },
+  { id: 8, src: "/placeholder.svg?height=700&width=500", alt: "Portrait photography", category: "Portrait" },
+  { id: 9, src: "/placeholder.svg?height=700&width=500", alt: "Makeup artistry", category: "Beauty" },
+  { id: 10, src: "/placeholder.svg?height=700&width=500", alt: "Fashion photography", category: "Fashion" },
 ]
 
 const videoReels = [
@@ -93,92 +93,23 @@ export function Hero() {
 
         {/* Two-part layout */}
         <div className="flex flex-col lg:flex-row gap-0 lg:gap-8">
-          {/* Left side - Tight Mosaic Photo Gallery */}
+          {/* Left side - Tight Mosaic Photo Gallery with 5:7 aspect ratio */}
           <div className="flex-1 lg:flex-[1.5]">
-            {/* Dense editorial mosaic grid - zero gaps, no rounded corners */}
-            <div className="grid grid-cols-5 h-[500px] md:h-[600px]">
-              {/* Column 1 */}
-              <div className="flex flex-col">
-                <div className="relative h-[65%] overflow-hidden group cursor-pointer">
+            {/* Dense editorial mosaic grid - zero gaps, no rounded corners, 5:7 aspect ratio */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-0">
+              {galleryImages.map((image) => (
+                <div 
+                  key={image.id} 
+                  className="relative overflow-hidden group cursor-pointer"
+                  style={{ aspectRatio: '5/7' }}
+                >
                   <img
-                    src={galleryImages[0].src}
-                    alt={galleryImages[0].alt}
+                    src={image.src}
+                    alt={image.alt}
                     className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
                   />
                 </div>
-                <div className="relative h-[35%] overflow-hidden group cursor-pointer">
-                  <img
-                    src={galleryImages[5].src}
-                    alt={galleryImages[5].alt}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-                  />
-                </div>
-              </div>
-              
-              {/* Column 2 */}
-              <div className="flex flex-col">
-                <div className="relative h-[40%] overflow-hidden group cursor-pointer">
-                  <img
-                    src={galleryImages[1].src}
-                    alt={galleryImages[1].alt}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-                  />
-                </div>
-                <div className="relative h-[60%] overflow-hidden group cursor-pointer">
-                  <img
-                    src={galleryImages[6].src}
-                    alt={galleryImages[6].alt}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-                  />
-                </div>
-              </div>
-              
-              {/* Column 3 - Full height center piece */}
-              <div className="flex flex-col">
-                <div className="relative h-full overflow-hidden group cursor-pointer">
-                  <img
-                    src={galleryImages[2].src}
-                    alt={galleryImages[2].alt}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-                  />
-                </div>
-              </div>
-              
-              {/* Column 4 */}
-              <div className="flex flex-col">
-                <div className="relative h-[45%] overflow-hidden group cursor-pointer">
-                  <img
-                    src={galleryImages[3].src}
-                    alt={galleryImages[3].alt}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-                  />
-                </div>
-                <div className="relative h-[55%] overflow-hidden group cursor-pointer">
-                  <img
-                    src={galleryImages[8].src}
-                    alt={galleryImages[8].alt}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-                  />
-                </div>
-              </div>
-              
-              {/* Column 5 */}
-              <div className="flex flex-col">
-                <div className="relative h-[55%] overflow-hidden group cursor-pointer">
-                  <img
-                    src={galleryImages[4].src}
-                    alt={galleryImages[4].alt}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-                  />
-                </div>
-                <div className="relative h-[45%] overflow-hidden group cursor-pointer">
-                  <img
-                    src={galleryImages[9].src}
-                    alt={galleryImages[9].alt}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-                  />
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
