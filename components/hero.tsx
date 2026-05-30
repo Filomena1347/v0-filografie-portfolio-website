@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
 
 const galleryImages = [
-  { id: 1, src: "/placeholder.svg?height=400&width=300", alt: "Portrait photography", category: "Portrait" },
+  { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
   { id: 2, src: "/placeholder.svg?height=300&width=400", alt: "Event photography", category: "Events" },
   { id: 3, src: "/placeholder.svg?height=350&width=300", alt: "Fashion photography", category: "Fashion" },
   { id: 4, src: "/placeholder.svg?height=280&width=400", alt: "Product photography", category: "Product" },
