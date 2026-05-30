@@ -14,29 +14,29 @@ const portfolioItems = [
 export function Portfolio() {
   return (
     <section id="work" className="relative py-40 overflow-hidden">
-      {/* Light leak */}
+      {/* Aurora glow */}
       <div 
-        className="aurora-light-leak absolute -left-64 top-1/4 w-[400px] h-[400px] rounded-full"
+        className="aurora-pulse absolute -left-[20%] top-1/3 w-[50%] h-[50%]"
         style={{
-          background: "radial-gradient(circle, rgba(46, 196, 182, 0.12) 0%, transparent 60%)",
+          background: "radial-gradient(ellipse at center, rgba(192, 38, 211, 0.12) 0%, transparent 60%)",
           filter: "blur(100px)",
         }}
       />
 
-      <div className="max-w-6xl mx-auto px-8">
-        <div className="text-center mb-20">
-          <p className="label-text text-[#9D4EDD] mb-6">Portfolio</p>
-          <h2 className="heading-editorial text-4xl md:text-5xl lg:text-6xl">
-            Selected <span className="gradient-text">Works</span>
+      <div className="max-w-7xl mx-auto px-8">
+        <div className="text-center mb-24">
+          <p className="label-sm text-violet-400/80 mb-8">Portfolio</p>
+          <h2 className="heading-display text-4xl md:text-5xl lg:text-7xl text-white">
+            SELECTED <span className="text-gradient">WORKS</span>
           </h2>
         </div>
 
-        {/* Grid - asymmetric masonry */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {portfolioItems.map((item, index) => (
             <div
               key={item.title}
-              className={`group relative bg-[#111118] border border-[#9D4EDD]/8 overflow-hidden cursor-pointer hover:border-[#9D4EDD]/20 transition-all duration-500 ${
+              className={`group relative card-dark overflow-hidden cursor-pointer ${
                 item.size === "large" ? "md:row-span-2" : ""
               }`}
             >
@@ -50,17 +50,18 @@ export function Portfolio() {
                   className="absolute inset-0"
                   style={{
                     background: `linear-gradient(${135 + index * 30}deg, 
-                      rgba(123, 47, 190, ${0.08 + index * 0.02}) 0%, 
-                      rgba(46, 196, 182, ${0.04 + index * 0.01}) 100%)`
+                      rgba(124, 58, 237, ${0.06 + index * 0.01}) 0%, 
+                      rgba(192, 38, 211, ${0.03 + index * 0.01}) 50%,
+                      rgba(5, 5, 7, 0.95) 100%)`
                   }}
                 />
                 
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-[#0a0a0f]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-[#050507]/90 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
                   <div className="text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <p className="label-text text-[#2EC4B6] mb-3">{item.category}</p>
-                    <h3 className="font-serif text-2xl font-light">{item.title}</h3>
-                    <ArrowUpRight className="w-5 h-5 mx-auto mt-5 text-[#9D4EDD]" />
+                    <p className="label-sm text-violet-400/80 mb-4">{item.category}</p>
+                    <h3 className="heading-light text-2xl text-white">{item.title}</h3>
+                    <ArrowUpRight className="w-5 h-5 mx-auto mt-6 text-white/40" />
                   </div>
                 </div>
               </div>
@@ -68,13 +69,13 @@ export function Portfolio() {
           ))}
         </div>
 
-        <div className="text-center mt-16">
+        <div className="text-center mt-20">
           <a 
             href="#"
-            className="inline-flex items-center gap-3 px-8 py-4 border border-[#9D4EDD]/15 rounded-sm text-[13px] tracking-widest uppercase font-light hover:border-[#9D4EDD]/40 transition-all duration-300 group"
+            className="btn-pill inline-flex items-center gap-4 text-[11px] tracking-[0.2em] uppercase font-light text-white/60 hover:text-white"
           >
             View All Projects
-            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            <ArrowUpRight className="w-4 h-4" />
           </a>
         </div>
       </div>

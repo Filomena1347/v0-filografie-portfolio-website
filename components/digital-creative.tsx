@@ -11,7 +11,6 @@ const services = [
       "Print Design",
       "Packaging Design",
     ],
-    accent: "violet",
   },
   {
     category: "Social Media Management",
@@ -23,56 +22,46 @@ const services = [
       "Community Management",
       "Analytics & Reporting",
     ],
-    accent: "teal",
   },
 ]
 
 export function DigitalCreative() {
   return (
     <section id="digital" className="relative py-40 overflow-hidden">
-      {/* Light leak */}
+      {/* Aurora glow */}
       <div 
-        className="aurora-light-leak absolute left-1/4 top-0 w-[600px] h-[600px] rounded-full"
+        className="aurora-glow absolute left-1/4 -top-[20%] w-[60%] h-[60%]"
         style={{
-          background: "radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 60%)",
+          background: "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.12) 0%, transparent 60%)",
           filter: "blur(120px)",
         }}
       />
 
-      <div className="max-w-6xl mx-auto px-8">
-        <div className="text-center mb-20">
-          <p className="label-text text-[#9D4EDD] mb-6">Digital Creative</p>
-          <h2 className="heading-editorial text-4xl md:text-5xl lg:text-6xl">
-            Beyond the <span className="gradient-text">Lens</span>
+      <div className="max-w-7xl mx-auto px-8">
+        <div className="text-center mb-24">
+          <p className="label-sm text-violet-400/80 mb-8">Digital Creative</p>
+          <h2 className="heading-display text-4xl md:text-5xl lg:text-7xl text-white">
+            BEYOND THE <span className="text-gradient">LENS</span>
           </h2>
-          <p className="mt-8 body-text text-[#a1a1aa] max-w-2xl mx-auto">
+          <p className="mt-10 body-light text-white/40 max-w-2xl mx-auto">
             Comprehensive digital services to elevate your brand presence across all platforms.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {services.map((service) => (
+        <div className="grid md:grid-cols-2 gap-4">
+          {services.map((service, idx) => (
             <div 
               key={service.category}
-              className={`bg-[#111118] border ${
-                service.accent === "violet" 
-                  ? "border-[#9D4EDD]/10 hover:border-[#9D4EDD]/25" 
-                  : "border-[#2EC4B6]/10 hover:border-[#2EC4B6]/25"
-              } p-10 transition-all duration-500`}
+              className="card-dark p-12"
             >
-              {/* Icon */}
-              <service.icon className={`w-6 h-6 mb-8 ${
-                service.accent === "violet" ? "text-[#9D4EDD]/60" : "text-[#2EC4B6]/60"
-              }`} />
+              <service.icon className="w-6 h-6 mb-10 text-violet-400/40" />
 
-              <h3 className="font-serif text-2xl font-light mb-8">{service.category}</h3>
+              <h3 className="heading-light text-2xl text-white mb-10">{service.category}</h3>
               
-              <ul className="space-y-4">
+              <ul className="space-y-5">
                 {service.items.map((item) => (
-                  <li key={item} className="flex items-center gap-4 body-text text-[#a1a1aa]">
-                    <span className={`w-1 h-1 rounded-full ${
-                      service.accent === "violet" ? "bg-[#9D4EDD]/50" : "bg-[#2EC4B6]/50"
-                    }`} />
+                  <li key={item} className="flex items-center gap-4 body-light text-white/40">
+                    <span className="w-1 h-1 rounded-full bg-violet-500/30" />
                     {item}
                   </li>
                 ))}
@@ -81,8 +70,8 @@ export function DigitalCreative() {
           ))}
         </div>
 
-        {/* Additional feature cards - minimal */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        {/* Feature cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           {[
             { icon: Layers, label: "Web Design" },
             { icon: Sparkles, label: "Motion Graphics" },
@@ -91,10 +80,10 @@ export function DigitalCreative() {
           ].map((feature) => (
             <div 
               key={feature.label}
-              className="bg-[#111118] border border-[#9D4EDD]/8 p-6 text-center group hover:border-[#9D4EDD]/20 transition-all duration-500"
+              className="card-dark p-8 text-center group"
             >
-              <feature.icon className="w-5 h-5 text-[#9D4EDD]/40 mx-auto mb-4 group-hover:text-[#9D4EDD]/70 transition-colors" />
-              <p className="text-[13px] text-[#71717a] font-light tracking-wide">{feature.label}</p>
+              <feature.icon className="w-5 h-5 text-white/15 mx-auto mb-5 group-hover:text-violet-400/50 transition-colors duration-500" />
+              <p className="text-[11px] text-white/30 font-light tracking-[0.1em] uppercase">{feature.label}</p>
             </div>
           ))}
         </div>

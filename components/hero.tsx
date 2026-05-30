@@ -1,70 +1,71 @@
+import { ArrowRight } from "lucide-react"
+
 export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Atmospheric Aurora Light Leaks */}
-      <div className="absolute inset-0 bg-[#0a0a0f]">
-        {/* Violet light leak - top left */}
-        <div 
-          className="aurora-light-leak absolute -top-32 -left-32 w-[700px] h-[700px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(123, 47, 190, 0.25) 0%, transparent 60%)",
-            filter: "blur(100px)",
-          }}
-        />
-        {/* Teal light leak - bottom right */}
-        <div 
-          className="aurora-breathe absolute -bottom-48 -right-48 w-[600px] h-[600px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(46, 196, 182, 0.2) 0%, transparent 60%)",
-            filter: "blur(120px)",
-            animationDelay: "-8s",
-          }}
-        />
-        {/* Subtle pink accent - center */}
-        <div 
-          className="aurora-light-leak absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(210, 100, 182, 0.08) 0%, transparent 50%)",
-            filter: "blur(80px)",
-            animationDelay: "-12s",
-          }}
-        />
-      </div>
+      {/* Deep black background */}
+      <div className="absolute inset-0 bg-[#050507]" />
+      
+      {/* Aurora gradient blob - top right like reference */}
+      <div 
+        className="aurora-glow absolute -top-[20%] -right-[10%] w-[70%] h-[80%]"
+        style={{
+          background: "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.5) 0%, rgba(192, 38, 211, 0.3) 30%, rgba(219, 39, 119, 0.15) 50%, transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
+      
+      {/* Secondary glow - subtle bottom accent */}
+      <div 
+        className="aurora-pulse absolute -bottom-[30%] -left-[20%] w-[60%] h-[60%]"
+        style={{
+          background: "radial-gradient(ellipse at center, rgba(76, 29, 149, 0.25) 0%, transparent 60%)",
+          filter: "blur(100px)",
+          animationDelay: "-7s",
+        }}
+      />
 
       {/* Content */}
-      <div className="relative z-10 text-center px-8 max-w-5xl mx-auto">
-        <p className="label-text text-[#9D4EDD] mb-8 tracking-[0.3em]">
+      <div className="relative z-10 text-center px-8 max-w-6xl mx-auto">
+        {/* Small label */}
+        <p className="label-sm text-white/40 mb-12 tracking-[0.25em]">
           Visual Storytelling
         </p>
         
-        <h1 className="heading-editorial text-6xl md:text-8xl lg:text-9xl mb-10 float-gentle">
-          <span className="gradient-text">Filografie</span>
+        {/* Main heading - bold, editorial, uppercase like reference */}
+        <h1 className="heading-display text-[clamp(3rem,12vw,10rem)] mb-12 text-white">
+          FILOGRAFIE
         </h1>
         
-        <p className="body-text text-lg md:text-xl text-[#a1a1aa] max-w-2xl mx-auto mb-16">
+        {/* Tagline */}
+        <p className="body-light text-white/50 text-lg md:text-xl max-w-xl mx-auto mb-16">
           Where light meets story. Capturing moments that transcend time through 
           photography, motion, and digital artistry.
         </p>
         
-        <div className="flex flex-col sm:flex-row gap-5 justify-center">
-          <a 
-            href="#work"
-            className="px-10 py-4 bg-[#111118] border border-[#9D4EDD]/20 rounded-sm text-[13px] tracking-widest uppercase font-light hover:border-[#9D4EDD]/50 transition-all duration-300"
-          >
-            View Work
-          </a>
-          <a 
-            href="#contact"
-            className="px-10 py-4 bg-[#9D4EDD] text-white rounded-sm text-[13px] tracking-widest uppercase font-light hover:bg-[#8B3FCB] transition-all duration-300"
-          >
-            Get in Touch
-          </a>
-        </div>
+        {/* CTA Button - pill style like reference */}
+        <a 
+          href="#work"
+          className="btn-pill inline-flex items-center gap-4 text-[11px] tracking-[0.2em] uppercase font-light text-white/80 hover:text-white"
+        >
+          View the Work
+          <ArrowRight className="w-4 h-4" />
+        </a>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Bottom label - rotated like reference */}
+      <div className="absolute bottom-12 right-12 hidden lg:block">
+        <p 
+          className="label-sm text-white/30 tracking-[0.2em]"
+          style={{ writingMode: "vertical-rl" }}
+        >
+          Creative by Filoména
+        </p>
+      </div>
+
+      {/* Scroll line */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2">
-        <div className="w-px h-16 bg-gradient-to-b from-transparent via-[#9D4EDD]/50 to-transparent" />
+        <div className="w-px h-20 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
       </div>
     </section>
   )
