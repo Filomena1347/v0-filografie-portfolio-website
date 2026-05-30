@@ -188,9 +188,13 @@ export function Photography() {
                   <div className={`absolute inset-0 bg-gradient-to-t ${mainCategories[0].color} opacity-70 mix-blend-multiply`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   
+                  {/* Centered icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <CalendarDays className="w-10 h-10 text-white stroke-[1.5]" />
+                  </div>
+                  
                   {/* Content */}
                   <div className="absolute inset-0 flex flex-col justify-end p-8">
-                    <mainCategories[0].icon className="w-6 h-6 text-white/80 stroke-[1.5] mb-3" />
                     <p className="text-white/60 text-sm font-sans mb-2">{mainCategories[0].description}</p>
                     <h3 className="font-serif text-4xl md:text-5xl text-white">{mainCategories[0].name}</h3>
                     {/* Hover arrow */}
@@ -223,9 +227,14 @@ export function Photography() {
                       <div className={`absolute inset-0 bg-gradient-to-t ${category.color} opacity-70 mix-blend-multiply`} />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       
+                      {/* Centered icon */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        {category.id === "food" && <UtensilsCrossed className="w-10 h-10 text-white stroke-[1.5]" />}
+                        {category.id === "portraits" && <User className="w-10 h-10 text-white stroke-[1.5]" />}
+                      </div>
+                      
                       {/* Content */}
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
-                        <category.icon className="w-5 h-5 text-white/80 stroke-[1.5] mb-2" />
                         <h3 className="font-serif text-3xl md:text-4xl text-white">{category.name}</h3>
                         {/* Hover arrow */}
                         <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -262,9 +271,15 @@ export function Photography() {
                     <div className={`absolute inset-0 bg-gradient-to-t ${subcategory.color} opacity-70 mix-blend-multiply`} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     
+                    {/* Centered icon */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {subcategory.id === "concerts" && <Music className="w-10 h-10 text-white stroke-[1.5]" />}
+                      {subcategory.id === "weddings" && <Heart className="w-10 h-10 text-white stroke-[1.5]" />}
+                      {subcategory.id === "corporate" && <Briefcase className="w-10 h-10 text-white stroke-[1.5]" />}
+                    </div>
+                    
                     {/* Content */}
                     <div className="absolute inset-0 flex flex-col justify-end p-6">
-                      <subcategory.icon className="w-5 h-5 text-white/80 stroke-[1.5] mb-2" />
                       <p className="text-white/60 text-sm font-sans mb-1">{subcategory.description}</p>
                       <h3 className="font-serif text-3xl text-white">{subcategory.name}</h3>
                       {/* Hover arrow */}
