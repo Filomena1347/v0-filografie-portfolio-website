@@ -79,7 +79,7 @@ export function Hero() {
       </div>
 
       {/* Main content */}
-      <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-28 pb-16">
+      <div className="relative z-20 max-w-[2000px] mx-auto px-6 lg:px-12 pt-28 pb-16">
         {/* Header text */}
         <div className="mb-12 lg:mb-16">
           <p className="label-text text-white/50 mb-4">Creative by Filomena</p>
@@ -93,15 +93,15 @@ export function Hero() {
 
         {/* Two-part layout */}
         <div className="flex flex-col lg:flex-row gap-0 lg:gap-8">
-          {/* Left side - Tight Mosaic Photo Gallery with 5:7 aspect ratio */}
-          <div className="flex-1 lg:flex-[1.5]">
+          {/* Left side - Tight Mosaic Photo Gallery with 5:7 aspect ratio - DOUBLED SIZE */}
+          <div className="flex-1 lg:flex-[2]">
             {/* Dense editorial mosaic grid - zero gaps, no rounded corners, 5:7 aspect ratio */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-0">
               {galleryImages.map((image) => (
                 <div 
                   key={image.id} 
                   className="relative overflow-hidden group cursor-pointer"
-                  style={{ aspectRatio: '5/7' }}
+                  style={{ aspectRatio: '5/7', minHeight: '280px' }}
                 >
                   <img
                     src={image.src}
