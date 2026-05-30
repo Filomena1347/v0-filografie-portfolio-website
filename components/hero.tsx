@@ -72,13 +72,13 @@ export function Hero() {
       {/* Main content */}
       <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-28 pb-16">
         {/* Header text */}
-        <div className="mb-12 lg:mb-16">
-          <p className="label-text text-white/50 mb-4">Creative by Filomena</p>
-          <h1 className="heading-editorial text-[clamp(2.5rem,6vw,5rem)] text-white mb-4">
-            Capture light.<br />Tell stories.
+        <div className="mb-8 lg:mb-10">
+          <p className="label-text text-white/50 mb-3">Filography</p>
+          <h1 className="heading-editorial text-[clamp(1.75rem,4vw,3rem)] text-white mb-3">
+            Visual storytelling.
           </h1>
-          <p className="body-text text-white/50 text-base max-w-md">
-            Premium photography, videography, and digital creative services.
+          <p className="body-text text-white/50 text-sm max-w-lg">
+            Event photography · Social media management · Video · Graphic design
           </p>
         </div>
 
