@@ -5,7 +5,7 @@ import { Volume2, VolumeX, Play } from "lucide-react"
 
 const galleryImages = [
   { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
-  { id: 2, src: "/placeholder.svg?height=300&width=400", alt: "Event photography", category: "Events" },
+  { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Event photography", category: "Events" },
   { id: 3, src: "/placeholder.svg?height=350&width=300", alt: "Fashion photography", category: "Fashion" },
   { id: 4, src: "/placeholder.svg?height=280&width=400", alt: "Product photography", category: "Product" },
   { id: 5, src: "/placeholder.svg?height=320&width=300", alt: "Wedding photography", category: "Wedding" },
