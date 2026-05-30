@@ -1,4 +1,4 @@
-import { Check, Sparkles } from "lucide-react"
+import { Check } from "lucide-react"
 
 const pricingPlans = [
   {
@@ -49,80 +49,75 @@ const pricingPlans = [
 
 export function Pricing() {
   return (
-    <section id="pricing" className="relative py-32 overflow-hidden bg-[#07070a]">
-      {/* Aurora accents */}
+    <section id="pricing" className="relative py-40 overflow-hidden bg-[#07070a]">
+      {/* Light leaks */}
       <div 
-        className="absolute right-1/4 top-1/4 w-[500px] h-[500px] rounded-full opacity-15"
+        className="aurora-breathe absolute right-1/4 top-1/4 w-[500px] h-[500px] rounded-full"
         style={{
-          background: "radial-gradient(circle, #7B2FBE 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(123, 47, 190, 0.1) 0%, transparent 60%)",
           filter: "blur(100px)",
         }}
       />
       <div 
-        className="absolute left-1/4 bottom-1/4 w-[400px] h-[400px] rounded-full opacity-10"
+        className="aurora-light-leak absolute left-1/4 bottom-1/4 w-[400px] h-[400px] rounded-full"
         style={{
-          background: "radial-gradient(circle, #2EC4B6 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(46, 196, 182, 0.08) 0%, transparent 60%)",
           filter: "blur(80px)",
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <p className="text-[#9D4EDD] text-xs tracking-[0.3em] uppercase mb-4">Pricing</p>
-          <h2 className="text-4xl md:text-5xl font-extralight">
+      <div className="max-w-6xl mx-auto px-8">
+        <div className="text-center mb-20">
+          <p className="label-text text-[#9D4EDD] mb-6">Pricing</p>
+          <h2 className="heading-editorial text-4xl md:text-5xl lg:text-6xl">
             Investment in <span className="gradient-text">Art</span>
           </h2>
-          <p className="mt-6 text-[#a1a1aa] font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-8 body-text text-[#a1a1aa] max-w-2xl mx-auto">
             Transparent pricing for exceptional creative services. Custom packages available upon request.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-6">
           {pricingPlans.map((plan) => (
             <div 
               key={plan.name}
-              className={`relative glass-card rounded-2xl p-8 ${
+              className={`relative bg-[#111118] border p-10 transition-all duration-500 ${
                 plan.featured 
-                  ? "border-[#9D4EDD]/50 scale-105 md:-mt-4 md:mb-4" 
-                  : ""
+                  ? "border-[#9D4EDD]/30 md:-mt-6 md:mb-6" 
+                  : "border-[#9D4EDD]/8 hover:border-[#9D4EDD]/20"
               }`}
             >
               {plan.featured && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <div className="flex items-center gap-1 px-4 py-1.5 bg-gradient-to-r from-[#7B2FBE] to-[#9D4EDD] rounded-full text-xs tracking-wider">
-                    <Sparkles className="w-3 h-3" />
-                    MOST POPULAR
-                  </div>
-                </div>
+                <div className="absolute -top-px left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9D4EDD] to-transparent" />
               )}
 
-              <div className="text-center mb-8">
-                <h3 className="text-xl font-light mb-2">{plan.name}</h3>
-                <p className="text-[#71717a] text-sm font-light">{plan.description}</p>
+              <div className="text-center mb-10">
+                <h3 className="font-serif text-xl font-light mb-3">{plan.name}</h3>
+                <p className="text-[#71717a] text-[13px] font-light">{plan.description}</p>
               </div>
 
-              <div className="text-center mb-8">
-                <span className="text-[#71717a] text-sm">from</span>
-                <div className="flex items-baseline justify-center gap-1 mt-1">
+              <div className="text-center mb-10">
+                <span className="text-[#71717a] text-[13px]">from</span>
+                <div className="flex items-baseline justify-center gap-1 mt-2">
                   <span className="text-[#9D4EDD] text-lg">€</span>
-                  <span className="text-5xl font-extralight gradient-text">{plan.price}</span>
+                  <span className="heading-editorial text-5xl gradient-text">{plan.price}</span>
                 </div>
               </div>
 
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-4 mb-10">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3 text-[#a1a1aa] text-sm font-light">
-                    <Check className="w-4 h-4 text-[#2EC4B6] shrink-0" />
+                  <li key={feature} className="flex items-center gap-4 body-text text-[#a1a1aa] text-[14px]">
+                    <Check className="w-4 h-4 text-[#2EC4B6]/60 shrink-0" />
                     {feature}
                   </li>
                 ))}
               </ul>
 
               <button 
-                className={`w-full py-4 rounded-full text-sm tracking-[0.15em] uppercase font-light transition-all ${
+                className={`w-full py-4 text-[13px] tracking-widest uppercase font-light transition-all duration-300 ${
                   plan.featured
-                    ? "bg-gradient-to-r from-[#7B2FBE] to-[#9D4EDD] hover:opacity-90"
-                    : "glass-card hover:bg-white/10"
+                    ? "bg-[#9D4EDD] text-white hover:bg-[#8B3FCB]"
+                    : "border border-[#9D4EDD]/20 hover:border-[#9D4EDD]/50"
                 }`}
               >
                 Get Started
@@ -131,7 +126,7 @@ export function Pricing() {
           ))}
         </div>
 
-        <p className="text-center mt-12 text-[#71717a] text-sm font-light">
+        <p className="text-center mt-12 text-[#71717a] text-[13px] font-light tracking-wide">
           All packages include consultation call. Travel fees may apply for locations outside the city.
         </p>
       </div>

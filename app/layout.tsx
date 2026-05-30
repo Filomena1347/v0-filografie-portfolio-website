@@ -1,17 +1,17 @@
 import type { Metadata } from 'next'
-import { Outfit, Plus_Jakarta_Sans } from 'next/font/google'
+import { Playfair_Display, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const outfit = Outfit({ 
+const playfair = Playfair_Display({ 
   subsets: ["latin"],
-  variable: '--font-outfit',
+  variable: '--font-playfair',
   display: 'swap',
 })
 
-const plusJakarta = Plus_Jakarta_Sans({ 
+const inter = Inter({ 
   subsets: ["latin"],
-  variable: '--font-jakarta',
+  variable: '--font-inter',
   display: 'swap',
 })
 
@@ -44,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${plusJakarta.variable} bg-[#0a0a0f]`}>
+    <html lang="en" className={`${playfair.variable} ${inter.variable} bg-[#0a0a0f]`}>
       <body className="font-sans antialiased bg-[#0a0a0f] text-[#f5f5f7]">
         <div className="noise-overlay" aria-hidden="true" />
         {children}

@@ -1,67 +1,61 @@
 export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Aurora Background */}
+      {/* Atmospheric Aurora Light Leaks */}
       <div className="absolute inset-0 bg-[#0a0a0f]">
-        {/* Violet blob */}
+        {/* Violet light leak - top left */}
         <div 
-          className="aurora-blob absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full opacity-40"
+          className="aurora-light-leak absolute -top-32 -left-32 w-[700px] h-[700px] rounded-full"
           style={{
-            background: "radial-gradient(circle, #7B2FBE 0%, transparent 70%)",
-            filter: "blur(80px)",
-          }}
-        />
-        {/* Purple blob */}
-        <div 
-          className="aurora-blob-slow absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full opacity-50"
-          style={{
-            background: "radial-gradient(circle, #9D4EDD 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(123, 47, 190, 0.25) 0%, transparent 60%)",
             filter: "blur(100px)",
-            animationDelay: "-5s",
           }}
         />
-        {/* Teal blob */}
+        {/* Teal light leak - bottom right */}
         <div 
-          className="aurora-blob absolute bottom-1/4 left-1/3 w-[400px] h-[400px] rounded-full opacity-40"
+          className="aurora-breathe absolute -bottom-48 -right-48 w-[600px] h-[600px] rounded-full"
           style={{
-            background: "radial-gradient(circle, #2EC4B6 0%, transparent 70%)",
-            filter: "blur(90px)",
-            animationDelay: "-10s",
+            background: "radial-gradient(circle, rgba(46, 196, 182, 0.2) 0%, transparent 60%)",
+            filter: "blur(120px)",
+            animationDelay: "-8s",
           }}
         />
-        {/* Pink blob */}
+        {/* Subtle pink accent - center */}
         <div 
-          className="aurora-blob-slow absolute bottom-1/3 right-1/3 w-[350px] h-[350px] rounded-full opacity-30"
+          className="aurora-light-leak absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
           style={{
-            background: "radial-gradient(circle, #D264B6 0%, transparent 70%)",
-            filter: "blur(70px)",
-            animationDelay: "-7s",
+            background: "radial-gradient(circle, rgba(210, 100, 182, 0.08) 0%, transparent 50%)",
+            filter: "blur(80px)",
+            animationDelay: "-12s",
           }}
         />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-        <h1 className="text-7xl md:text-9xl font-extralight tracking-wider mb-8 float-animation">
-          <span className="gradient-text">Filografie</span>
-        </h1>
-        <p className="text-lg md:text-xl font-light text-[#a1a1aa] leading-relaxed max-w-2xl mx-auto">
-          Where light meets story. Capturing moments that transcend time through 
-          <span className="text-[#9D4EDD]"> photography</span>, 
-          <span className="text-[#2EC4B6]"> video</span>, and 
-          <span className="text-[#D264B6]"> digital artistry</span>.
+      <div className="relative z-10 text-center px-8 max-w-5xl mx-auto">
+        <p className="label-text text-[#9D4EDD] mb-8 tracking-[0.3em]">
+          Visual Storytelling
         </p>
         
-        <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+        <h1 className="heading-editorial text-6xl md:text-8xl lg:text-9xl mb-10 float-gentle">
+          <span className="gradient-text">Filografie</span>
+        </h1>
+        
+        <p className="body-text text-lg md:text-xl text-[#a1a1aa] max-w-2xl mx-auto mb-16">
+          Where light meets story. Capturing moments that transcend time through 
+          photography, motion, and digital artistry.
+        </p>
+        
+        <div className="flex flex-col sm:flex-row gap-5 justify-center">
           <a 
             href="#work"
-            className="px-8 py-4 glass-card rounded-full text-sm tracking-[0.15em] uppercase font-light glow-pulse hover:bg-white/10 transition-all"
+            className="px-10 py-4 bg-[#111118] border border-[#9D4EDD]/20 rounded-sm text-[13px] tracking-widest uppercase font-light hover:border-[#9D4EDD]/50 transition-all duration-300"
           >
             View Work
           </a>
           <a 
             href="#contact"
-            className="px-8 py-4 bg-gradient-to-r from-[#7B2FBE] to-[#9D4EDD] rounded-full text-sm tracking-[0.15em] uppercase font-light hover:opacity-90 transition-opacity"
+            className="px-10 py-4 bg-[#9D4EDD] text-white rounded-sm text-[13px] tracking-widest uppercase font-light hover:bg-[#8B3FCB] transition-all duration-300"
           >
             Get in Touch
           </a>
@@ -69,10 +63,8 @@ export function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border border-white/20 flex justify-center pt-2">
-          <div className="w-1 h-2 bg-[#9D4EDD] rounded-full" />
-        </div>
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2">
+        <div className="w-px h-16 bg-gradient-to-b from-transparent via-[#9D4EDD]/50 to-transparent" />
       </div>
     </section>
   )
