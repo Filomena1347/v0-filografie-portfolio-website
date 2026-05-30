@@ -46,7 +46,7 @@ export function Navbar() {
           href="/" 
           className="font-serif text-2xl font-bold italic text-white"
         >
-          Filografie
+          Filoména
         </Link>
 
         {/* Desktop Navigation */}
