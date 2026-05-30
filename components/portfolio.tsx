@@ -1,46 +1,66 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Camera, Video, LayoutGrid } from "lucide-react";
 
 const portfolioItems = [
   {
     id: 1,
     title: "Brand Campaign",
     category: "Photography",
-    color: "bg-indigo-500",
+    description: "Visual storytelling",
+    color: "from-indigo-500 to-indigo-700",
   },
   {
     id: 2,
     title: "Product Launch",
     category: "Video",
-    color: "bg-[#FF6B5B]",
+    description: "Motion & cinema",
+    color: "from-[#FF6B5B] to-orange-600",
   },
   {
     id: 3,
     title: "Social Series",
     category: "Digital",
-    color: "bg-sky-400",
+    description: "Social media content",
+    color: "from-sky-400 to-cyan-600",
   },
   {
     id: 4,
     title: "Editorial Shoot",
     category: "Photography",
-    color: "bg-pink-200",
+    description: "Visual storytelling",
+    color: "from-pink-400 to-rose-500",
   },
   {
     id: 5,
     title: "Event Coverage",
     category: "Video",
-    color: "bg-amber-400",
+    description: "Motion & cinema",
+    color: "from-amber-400 to-orange-500",
   },
   {
     id: 6,
     title: "Brand Identity",
     category: "Digital",
-    color: "bg-violet-400",
+    description: "Social media content",
+    color: "from-violet-500 to-purple-600",
   },
 ];
+
+// Helper function to get icon based on category
+const getCategoryIcon = (category: string) => {
+  switch (category) {
+    case "Photography":
+      return <Camera className="w-6 h-6 text-white/60 stroke-[1]" />;
+    case "Video":
+      return <Video className="w-6 h-6 text-white/60 stroke-[1]" />;
+    case "Digital":
+      return <LayoutGrid className="w-6 h-6 text-white/60 stroke-[1]" />;
+    default:
+      return null;
+  }
+};
 
 export function Portfolio() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
@@ -71,19 +91,30 @@ export function Portfolio() {
               onMouseLeave={() => setHoveredId(null)}
             >
               <div
-                className={`aspect-[4/3] ${item.color} rounded-3xl overflow-hidden transition-all duration-500 ${
+                className={`aspect-[4/3] bg-gradient-to-br ${item.color} rounded-3xl overflow-hidden relative transition-all duration-500 ${
                   hoveredId === item.id ? "scale-[1.02]" : ""
                 }`}
               >
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-white/30 text-6xl font-serif">
-                    {item.id.toString().padStart(2, "0")}
-                  </span>
+                {/* Darker overlay for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                
+                {/* Top right icon */}
+                <div className="absolute top-5 right-5">
+                  {getCategoryIcon(item.category)}
                 </div>
-              </div>
-              <div className="mt-4">
-                <p className="text-gray-400 text-sm font-sans">{item.category}</p>
-                <h3 className="text-white font-serif text-xl mt-1">{item.title}</h3>
+                
+                {/* Explore label on hover */}
+                <div className={`absolute top-5 left-6 flex items-center gap-2 text-white/80 text-sm font-sans transition-all duration-300 ${
+                  hoveredId === item.id ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+                }`}>
+                  Explore <ArrowUpRight className="w-4 h-4" />
+                </div>
+                
+                {/* Content at bottom */}
+                <div className="absolute inset-0 flex flex-col justify-end p-6">
+                  <p className="text-white/60 text-sm font-sans mb-1">{item.description}</p>
+                  <h3 className="font-serif text-3xl text-white">{item.title}</h3>
+                </div>
               </div>
             </div>
           ))}
