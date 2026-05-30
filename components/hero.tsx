@@ -4,10 +4,16 @@ import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
 
 const galleryImages = [
+  // Row 1
   { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
   { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", category: "Lifestyle" },
   { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780150406/Snímek_obrazovky_2026-05-30_v_16.13.01_ril9vz.png", alt: "Event photography", category: "Events" },
   { id: 4, src: "/placeholder.svg?height=700&width=500", alt: "Food photography", category: "Food" },
+  // Row 2
+  { id: 5, src: "/placeholder.svg?height=700&width=500", alt: "Wedding photography", category: "Wedding" },
+  { id: 6, src: "/placeholder.svg?height=700&width=500", alt: "Product photography", category: "Product" },
+  { id: 7, src: "/placeholder.svg?height=700&width=500", alt: "Fashion photography", category: "Fashion" },
+  { id: 8, src: "/placeholder.svg?height=700&width=500", alt: "Commercial photography", category: "Commercial" },
 ]
 
 const videoReels = [
@@ -74,14 +80,15 @@ export function Hero() {
 
         {/* Two-part layout */}
         <div className="flex flex-col lg:flex-row gap-0 lg:gap-8">
-          {/* Left side - Photo Gallery - Single row of 3 photos matching phone height */}
+          {/* Left side - Photo Gallery - 4x2 grid with 5:7 aspect ratio */}
           <div className="flex-1 lg:flex-[2]">
-            {/* Single row, 3 columns, zero gaps, no rounded corners */}
-            <div className="flex gap-0 h-[480px] md:h-[520px]">
+            {/* 4 columns, 2 rows, zero gaps, no rounded corners, 5:7 aspect ratio */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
               {galleryImages.map((image) => (
                 <div 
                   key={image.id} 
-                  className="relative overflow-hidden group cursor-pointer flex-1"
+                  className="relative overflow-hidden group cursor-pointer"
+                  style={{ aspectRatio: '5/7' }}
                 >
                   <img
                     src={image.src}
