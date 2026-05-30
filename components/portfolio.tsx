@@ -77,7 +77,7 @@ export function Portfolio() {
             Selected Work
           </p>
           <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-            Create visuals.<br />
+            I Create visuals.<br />
             <span className="text-indigo-400">Tell stories.</span>
           </h2>
         </div>
