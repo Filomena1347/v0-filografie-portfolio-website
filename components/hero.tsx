@@ -74,7 +74,7 @@ export function Hero() {
         {/* Header text */}
         <div className="mb-8 lg:mb-10">
           <p className="label-text text-white/50 mb-3">Filography</p>
-          <h1 className="heading-editorial text-[clamp(1.75rem,4vw,3rem)] text-white mb-3">
+          <h1 className="heading-editorial text-[clamp(2.5rem,6vw,5rem)] text-white mb-3">
             Visual storytelling.
           </h1>
           <p className="body-text text-white/50 text-sm max-w-lg">
