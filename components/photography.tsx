@@ -6,45 +6,45 @@ import { X, ArrowLeft } from "lucide-react";
 // Main categories with their colors and gradient overlays
 const mainCategories = [
   { 
-    id: "eventy", 
-    name: "Eventy", 
+    id: "events", 
+    name: "Events", 
     color: "from-violet-600 to-indigo-700",
     hasSubcategories: true,
-    description: "Koncerty, Svatby, Korporátní akce"
+    description: "Concerts, Weddings, Corporate Events"
   },
   { 
-    id: "jidlo", 
-    name: "Jídlo", 
+    id: "food", 
+    name: "Food", 
     color: "from-[#FF6B5B] to-orange-600",
     hasSubcategories: false,
     description: "Food photography"
   },
   { 
-    id: "portrety", 
-    name: "Portréty", 
+    id: "portraits", 
+    name: "Portraits", 
     color: "from-pink-500 to-rose-600",
     hasSubcategories: false,
     description: "Portrait sessions"
   },
 ];
 
-// Eventy subcategories
-const eventySubcategories = [
+// Events subcategories
+const eventsSubcategories = [
   { 
-    id: "koncerty", 
-    name: "Koncerty", 
+    id: "concerts", 
+    name: "Concerts", 
     color: "from-violet-500 to-purple-700",
     description: "Live music & performances"
   },
   { 
-    id: "svatby", 
-    name: "Svatby", 
+    id: "weddings", 
+    name: "Weddings", 
     color: "from-pink-400 to-rose-500",
     description: "Wedding photography"
   },
   { 
-    id: "korporatni", 
-    name: "Korporátní akce", 
+    id: "corporate", 
+    name: "Corporate Events", 
     color: "from-indigo-500 to-blue-600",
     description: "Corporate events"
   },
@@ -52,27 +52,27 @@ const eventySubcategories = [
 
 // Placeholder photos for each category
 const categoryPhotos: Record<string, { id: number; src: string; height: string }[]> = {
-  "koncerty": Array.from({ length: 12 }, (_, i) => ({
+  "concerts": Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
     height: ["h-56", "h-64", "h-72", "h-80", "h-60", "h-68"][i % 6],
   })),
-  "svatby": Array.from({ length: 10 }, (_, i) => ({
+  "weddings": Array.from({ length: 10 }, (_, i) => ({
     id: i + 1,
     src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
     height: ["h-80", "h-64", "h-72", "h-56", "h-68", "h-76"][i % 6],
   })),
-  "korporatni": Array.from({ length: 10 }, (_, i) => ({
+  "corporate": Array.from({ length: 10 }, (_, i) => ({
     id: i + 1,
     src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
     height: ["h-64", "h-72", "h-56", "h-80", "h-60", "h-68"][i % 6],
   })),
-  "jidlo": Array.from({ length: 12 }, (_, i) => ({
+  "food": Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
     height: ["h-72", "h-56", "h-80", "h-64", "h-68", "h-60"][i % 6],
   })),
-  "portrety": Array.from({ length: 12 }, (_, i) => ({
+  "portraits": Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
     height: ["h-80", "h-72", "h-64", "h-56", "h-76", "h-68"][i % 6],
@@ -80,20 +80,20 @@ const categoryPhotos: Record<string, { id: number; src: string; height: string }
 };
 
 export function Photography() {
-  const [view, setView] = useState<"main" | "eventy-sub">("main");
+  const [view, setView] = useState<"main" | "events-sub">("main");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
 
   const handleCategoryClick = (category: typeof mainCategories[0]) => {
     if (category.hasSubcategories) {
-      setView("eventy-sub");
+      setView("events-sub");
     } else {
       openGallery(category.id, category.name);
     }
   };
 
-  const handleSubcategoryClick = (subcategory: typeof eventySubcategories[0]) => {
+  const handleSubcategoryClick = (subcategory: typeof eventsSubcategories[0]) => {
     openGallery(subcategory.id, subcategory.name);
   };
 
@@ -151,13 +151,13 @@ export function Photography() {
           </div>
 
           {/* Back button for subcategories view */}
-          {view === "eventy-sub" && (
+          {view === "events-sub" && (
             <button
               onClick={goBack}
               className="flex items-center gap-2 text-white/70 hover:text-white mb-8 transition-colors duration-200"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="font-sans">Zpět na kategorie</span>
+              <span className="font-sans">Back to categories</span>
             </button>
           )}
 
@@ -232,10 +232,10 @@ export function Photography() {
             </div>
           )}
 
-          {/* Eventy subcategories grid */}
-          {view === "eventy-sub" && (
+          {/* Events subcategories grid */}
+          {view === "events-sub" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {eventySubcategories.map((subcategory) => (
+              {eventsSubcategories.map((subcategory) => (
                 <div
                   key={subcategory.id}
                   className="group cursor-pointer"
