@@ -4,20 +4,18 @@ import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
 
 const galleryImages = [
-  // Column 1
-  { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait", position: "col1-top" },
-  { id: 2, src: "/placeholder.svg?height=300&width=300", alt: "Food photography - Ramen", category: "Food", position: "col1-bottom" },
-  // Column 2
-  { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", category: "Lifestyle", position: "col2-top" },
-  { id: 4, src: "/placeholder.svg?height=350&width=300", alt: "Food photography - Dumplings", category: "Food", position: "col2-bottom" },
-  // Column 3 - Full height
-  { id: 5, src: "/placeholder.svg?height=600&width=350", alt: "Event photography - Performer", category: "Events", position: "col3-full" },
-  // Column 4
-  { id: 6, src: "/placeholder.svg?height=280&width=350", alt: "Food photography - Breakfast", category: "Food", position: "col4-top" },
-  { id: 7, src: "/placeholder.svg?height=320&width=350", alt: "Behind the scenes - Makeup", category: "BTS", position: "col4-bottom" },
-  // Column 5
-  { id: 8, src: "/placeholder.svg?height=300&width=280", alt: "Product photography - Cocktail", category: "Product", position: "col5-top" },
-  { id: 9, src: "/placeholder.svg?height=350&width=280", alt: "Portrait photography - Pageant", category: "Portrait", position: "col5-bottom" },
+  // Row 1 - 5 columns
+  { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
+  { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", category: "Lifestyle" },
+  { id: 3, src: "/placeholder.svg?height=500&width=300", alt: "Event photography", category: "Events" },
+  { id: 4, src: "/placeholder.svg?height=400&width=300", alt: "Food photography", category: "Food" },
+  { id: 5, src: "/placeholder.svg?height=450&width=300", alt: "Product photography", category: "Product" },
+  // Row 2 - 5 columns
+  { id: 6, src: "/placeholder.svg?height=350&width=300", alt: "Food photography", category: "Food" },
+  { id: 7, src: "/placeholder.svg?height=400&width=300", alt: "Behind the scenes", category: "BTS" },
+  { id: 8, src: "/placeholder.svg?height=450&width=300", alt: "Portrait photography", category: "Portrait" },
+  { id: 9, src: "/placeholder.svg?height=380&width=300", alt: "Makeup artistry", category: "Beauty" },
+  { id: 10, src: "/placeholder.svg?height=420&width=300", alt: "Fashion photography", category: "Fashion" },
 ]
 
 const videoReels = [
@@ -94,43 +92,98 @@ export function Hero() {
         </div>
 
         {/* Two-part layout */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-          {/* Left side - Photo Gallery (5-column masonry like reference) */}
+        <div className="flex flex-col lg:flex-row gap-0 lg:gap-8">
+          {/* Left side - Tight Mosaic Photo Gallery */}
           <div className="flex-1 lg:flex-[1.5]">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3 h-auto md:h-[520px]">
+            {/* Dense editorial mosaic grid - zero gaps, no rounded corners */}
+            <div className="grid grid-cols-5 h-[500px] md:h-[600px]">
               {/* Column 1 */}
-              <div className="flex flex-col gap-2 md:gap-3">
-                <GalleryImage image={galleryImages[0]} className="flex-[1.4]" />
-                <GalleryImage image={galleryImages[1]} className="flex-[0.6]" />
+              <div className="flex flex-col">
+                <div className="relative h-[65%] overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[0].src}
+                    alt={galleryImages[0].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
+                <div className="relative h-[35%] overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[5].src}
+                    alt={galleryImages[5].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
               </div>
               
               {/* Column 2 */}
-              <div className="flex flex-col gap-2 md:gap-3">
-                <GalleryImage image={galleryImages[2]} className="flex-[0.6]" />
-                <GalleryImage image={galleryImages[3]} className="flex-[1.4]" />
+              <div className="flex flex-col">
+                <div className="relative h-[40%] overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[1].src}
+                    alt={galleryImages[1].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
+                <div className="relative h-[60%] overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[6].src}
+                    alt={galleryImages[6].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
               </div>
               
-              {/* Column 3 - Full height */}
-              <div className="flex flex-col col-span-2 md:col-span-1">
-                <GalleryImage image={galleryImages[4]} className="flex-1" />
+              {/* Column 3 - Full height center piece */}
+              <div className="flex flex-col">
+                <div className="relative h-full overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[2].src}
+                    alt={galleryImages[2].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
               </div>
               
               {/* Column 4 */}
-              <div className="hidden md:flex flex-col gap-2 md:gap-3">
-                <GalleryImage image={galleryImages[5]} className="flex-[0.55]" />
-                <GalleryImage image={galleryImages[6]} className="flex-[1.45]" />
+              <div className="flex flex-col">
+                <div className="relative h-[45%] overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[3].src}
+                    alt={galleryImages[3].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
+                <div className="relative h-[55%] overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[8].src}
+                    alt={galleryImages[8].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
               </div>
               
               {/* Column 5 */}
-              <div className="hidden md:flex flex-col gap-2 md:gap-3">
-                <GalleryImage image={galleryImages[7]} className="flex-[1.2]" />
-                <GalleryImage image={galleryImages[8]} className="flex-[0.8]" />
+              <div className="flex flex-col">
+                <div className="relative h-[55%] overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[4].src}
+                    alt={galleryImages[4].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
+                <div className="relative h-[45%] overflow-hidden group cursor-pointer">
+                  <img
+                    src={galleryImages[9].src}
+                    alt={galleryImages[9].alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {/* Right side - Vertical Video Reel (TikTok style) */}
-          <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end">
+          <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-8 lg:mt-0">
             <div className="relative w-full max-w-[260px]">
               <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl">
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
@@ -218,23 +271,5 @@ export function Hero() {
         }
       `}</style>
     </section>
-  )
-}
-
-function GalleryImage({ image, className = "" }: { image: typeof galleryImages[0]; className?: string }) {
-  return (
-    <div className={`group relative overflow-hidden rounded-lg cursor-pointer ${className}`}>
-      <img
-        src={image.src}
-        alt={image.alt}
-        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-        <span className="text-[10px] font-medium text-white/90 bg-black/40 backdrop-blur-sm px-2 py-1 rounded-full">
-          {image.category}
-        </span>
-      </div>
-    </div>
   )
 }
