@@ -1,9 +1,10 @@
-import { Palette, Share2, Layers, Sparkles } from "lucide-react"
+import { Palette, Share2, Layers, Sparkles } from "lucide-react";
 
 const services = [
   {
     category: "Graphic Design",
     icon: Palette,
+    color: "bg-indigo-500",
     items: [
       "Brand Identity Design",
       "Logo Creation",
@@ -13,8 +14,9 @@ const services = [
     ],
   },
   {
-    category: "Social Media Management",
+    category: "Social Media",
     icon: Share2,
+    color: "bg-[#FF6B5B]",
     items: [
       "Content Strategy",
       "Visual Content Creation",
@@ -23,45 +25,45 @@ const services = [
       "Analytics & Reporting",
     ],
   },
-]
+];
 
 export function DigitalCreative() {
   return (
-    <section id="digital" className="relative py-40 overflow-hidden">
-      {/* Aurora glow */}
-      <div 
-        className="aurora-glow absolute left-1/4 -top-[20%] w-[60%] h-[60%]"
-        style={{
-          background: "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.12) 0%, transparent 60%)",
-          filter: "blur(120px)",
-        }}
-      />
+    <section id="digital" className="py-32 px-6 relative overflow-hidden">
+      {/* Floating decorative elements */}
+      <div className="absolute top-40 right-20 w-12 h-12 bg-pink-200 rounded-xl rotate-12 opacity-60" />
+      <div className="absolute bottom-20 left-16 w-20 h-20 bg-violet-400 rounded-3xl -rotate-6 opacity-40" />
 
-      <div className="max-w-7xl mx-auto px-8">
-        <div className="text-center mb-24">
-          <p className="label-sm text-violet-400/80 mb-8">Digital Creative</p>
-          <h2 className="heading-display text-4xl md:text-5xl lg:text-7xl text-white">
-            BEYOND THE <span className="text-gradient">LENS</span>
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-20">
+          <p className="text-indigo-400 font-sans text-sm tracking-wider uppercase mb-4">
+            Digital Creative
+          </p>
+          <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
+            Beyond the<br />
+            <span className="text-pink-300">lens.</span>
           </h2>
-          <p className="mt-10 body-light text-white/40 max-w-2xl mx-auto">
+          <p className="mt-8 font-sans text-gray-400 max-w-2xl mx-auto text-lg font-light">
             Comprehensive digital services to elevate your brand presence across all platforms.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          {services.map((service, idx) => (
-            <div 
+        <div className="grid md:grid-cols-2 gap-8">
+          {services.map((service) => (
+            <div
               key={service.category}
-              className="card-dark p-12"
+              className="bg-white rounded-3xl p-10 shadow-xl"
             >
-              <service.icon className="w-6 h-6 mb-10 text-violet-400/40" />
+              <div className={`w-14 h-14 ${service.color} rounded-2xl flex items-center justify-center mb-8`}>
+                <service.icon className="w-7 h-7 text-white" />
+              </div>
 
-              <h3 className="heading-light text-2xl text-white mb-10">{service.category}</h3>
-              
-              <ul className="space-y-5">
+              <h3 className="font-serif text-2xl text-gray-900 mb-6">{service.category}</h3>
+
+              <ul className="space-y-4">
                 {service.items.map((item) => (
-                  <li key={item} className="flex items-center gap-4 body-light text-white/40">
-                    <span className="w-1 h-1 rounded-full bg-violet-500/30" />
+                  <li key={item} className="flex items-center gap-4 font-sans text-gray-600">
+                    <span className="w-2 h-2 rounded-full bg-indigo-500" />
                     {item}
                   </li>
                 ))}
@@ -71,23 +73,23 @@ export function DigitalCreative() {
         </div>
 
         {/* Feature cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
           {[
-            { icon: Layers, label: "Web Design" },
-            { icon: Sparkles, label: "Motion Graphics" },
-            { icon: Palette, label: "UI/UX Design" },
-            { icon: Share2, label: "Ad Campaigns" },
+            { icon: Layers, label: "Web Design", color: "bg-sky-400" },
+            { icon: Sparkles, label: "Motion Graphics", color: "bg-amber-400" },
+            { icon: Palette, label: "UI/UX Design", color: "bg-violet-400" },
+            { icon: Share2, label: "Ad Campaigns", color: "bg-emerald-400" },
           ].map((feature) => (
-            <div 
+            <div
               key={feature.label}
-              className="card-dark p-8 text-center group"
+              className={`${feature.color} rounded-2xl p-6 text-center group hover:scale-[1.02] transition-transform duration-300 cursor-pointer`}
             >
-              <feature.icon className="w-5 h-5 text-white/15 mx-auto mb-5 group-hover:text-violet-400/50 transition-colors duration-500" />
-              <p className="text-[11px] text-white/30 font-light tracking-[0.1em] uppercase">{feature.label}</p>
+              <feature.icon className="w-6 h-6 text-white mx-auto mb-4" />
+              <p className="text-white font-sans text-sm font-medium">{feature.label}</p>
             </div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ArrowRight, Instagram, Mail, MapPin } from "lucide-react"
+import { useState } from "react";
+import { ArrowRight, Instagram, Mail, MapPin } from "lucide-react";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -9,90 +9,89 @@ export function Contact() {
     email: "",
     service: "",
     message: "",
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log(formData)
-  }
+    e.preventDefault();
+    console.log(formData);
+  };
 
   return (
-    <section id="contact" className="relative py-40 overflow-hidden">
-      {/* Aurora glow - centered */}
-      <div 
-        className="aurora-pulse absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%]"
-        style={{
-          background: "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.08) 0%, rgba(192, 38, 211, 0.04) 40%, transparent 70%)",
-          filter: "blur(120px)",
-        }}
-      />
+    <section id="contact" className="py-32 px-6 relative overflow-hidden">
+      {/* Floating decorative elements */}
+      <div className="absolute top-32 left-10 w-20 h-20 bg-pink-200 rounded-3xl rotate-12 opacity-50" />
+      <div className="absolute bottom-20 right-20 w-14 h-14 bg-indigo-500 rounded-2xl -rotate-6 opacity-50" />
+      <div className="absolute top-1/2 right-10 w-10 h-10 bg-amber-300 rounded-xl rotate-45 opacity-40" />
 
-      <div className="max-w-7xl mx-auto px-8 relative z-10">
-        <div className="text-center mb-24">
-          <p className="label-sm text-violet-400/80 mb-8">Contact</p>
-          <h2 className="heading-display text-4xl md:text-5xl lg:text-7xl text-white">
-            LET&apos;S CREATE <span className="text-gradient">TOGETHER</span>
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-20">
+          <p className="text-indigo-400 font-sans text-sm tracking-wider uppercase mb-4">
+            Contact
+          </p>
+          <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
+            Let&apos;s create<br />
+            <span className="text-indigo-400">together.</span>
           </h2>
-          <p className="mt-10 body-light text-white/40 max-w-2xl mx-auto">
+          <p className="mt-8 font-sans text-gray-400 max-w-2xl mx-auto text-lg font-light">
             Ready to bring your vision to life? Get in touch and let&apos;s discuss your project.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-20 items-start">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Contact form */}
-          <form onSubmit={handleSubmit} className="card-dark p-12">
-            <div className="space-y-10">
+          <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-10 shadow-xl">
+            <div className="space-y-6">
               <div>
-                <label className="label-sm text-white/40 block mb-4">Your Name</label>
+                <label className="text-gray-500 font-sans text-sm block mb-2">Your Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-0 py-4 bg-transparent border-0 border-b border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-violet-500/30 transition-colors body-light"
+                  className="w-full px-5 py-4 bg-gray-50 border-0 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans"
                   placeholder="John Doe"
                 />
               </div>
 
               <div>
-                <label className="label-sm text-white/40 block mb-4">Email Address</label>
+                <label className="text-gray-500 font-sans text-sm block mb-2">Email Address</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-0 py-4 bg-transparent border-0 border-b border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-violet-500/30 transition-colors body-light"
+                  className="w-full px-5 py-4 bg-gray-50 border-0 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans"
                   placeholder="john@example.com"
                 />
               </div>
 
               <div>
-                <label className="label-sm text-white/40 block mb-4">Service Interest</label>
+                <label className="text-gray-500 font-sans text-sm block mb-2">Service Interest</label>
                 <select
                   value={formData.service}
                   onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                  className="w-full px-0 py-4 bg-transparent border-0 border-b border-white/10 text-white focus:outline-none focus:border-violet-500/30 transition-colors body-light appearance-none cursor-pointer"
+                  className="w-full px-5 py-4 bg-gray-50 border-0 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-[#0c0c10]">Select a service</option>
-                  <option value="photography" className="bg-[#0c0c10]">Photography</option>
-                  <option value="video" className="bg-[#0c0c10]">Videography</option>
-                  <option value="digital" className="bg-[#0c0c10]">Digital Creative</option>
-                  <option value="package" className="bg-[#0c0c10]">Full Package</option>
+                  <option value="">Select a service</option>
+                  <option value="photography">Photography</option>
+                  <option value="video">Videography</option>
+                  <option value="digital">Digital Creative</option>
+                  <option value="package">Full Package</option>
                 </select>
               </div>
 
               <div>
-                <label className="label-sm text-white/40 block mb-4">Your Message</label>
+                <label className="text-gray-500 font-sans text-sm block mb-2">Your Message</label>
                 <textarea
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   rows={4}
-                  className="w-full px-0 py-4 bg-transparent border-0 border-b border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-violet-500/30 transition-colors resize-none body-light"
+                  className="w-full px-5 py-4 bg-gray-50 border-0 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none font-sans"
                   placeholder="Tell me about your project..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-5 bg-violet-600 text-white text-[11px] tracking-[0.2em] uppercase font-light hover:bg-violet-500 transition-all duration-300 flex items-center justify-center gap-3 mt-4"
+                className="w-full py-4 bg-indigo-500 text-white rounded-full font-sans text-sm font-medium hover:bg-indigo-600 transition-all duration-300 flex items-center justify-center gap-3"
               >
                 Send Message
                 <ArrowRight className="w-4 h-4" />
@@ -101,55 +100,70 @@ export function Contact() {
           </form>
 
           {/* Contact info */}
-          <div className="space-y-12 lg:pl-12">
+          <div className="space-y-10 lg:pl-8">
             <div>
-              <h3 className="heading-light text-2xl text-white mb-10">Get in Touch</h3>
-              <div className="space-y-8">
-                <a 
-                  href="mailto:hello@filografie.com" 
-                  className="flex items-center gap-6 text-white/40 hover:text-white transition-colors group"
+              <h3 className="font-serif text-3xl text-white mb-8">Get in Touch</h3>
+              <div className="space-y-6">
+                <a
+                  href="mailto:hello@filografie.com"
+                  className="flex items-center gap-5 group"
                 >
-                  <Mail className="w-5 h-5 text-violet-400/40 group-hover:text-violet-400 transition-colors" />
+                  <div className="w-14 h-14 bg-indigo-500 rounded-2xl flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-white" />
+                  </div>
                   <div>
-                    <p className="label-sm text-white/20 mb-1">Email</p>
-                    <p className="body-light">hello@filografie.com</p>
+                    <p className="text-gray-500 font-sans text-sm">Email</p>
+                    <p className="text-white font-sans text-lg group-hover:text-indigo-400 transition-colors">
+                      hello@filografie.com
+                    </p>
                   </div>
                 </a>
 
-                <a 
-                  href="https://instagram.com/filografie" 
+                <a
+                  href="https://instagram.com/filografie"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-6 text-white/40 hover:text-white transition-colors group"
+                  className="flex items-center gap-5 group"
                 >
-                  <Instagram className="w-5 h-5 text-violet-400/40 group-hover:text-violet-400 transition-colors" />
+                  <div className="w-14 h-14 bg-[#FF6B5B] rounded-2xl flex items-center justify-center">
+                    <Instagram className="w-6 h-6 text-white" />
+                  </div>
                   <div>
-                    <p className="label-sm text-white/20 mb-1">Instagram</p>
-                    <p className="body-light">@filografie</p>
+                    <p className="text-gray-500 font-sans text-sm">Instagram</p>
+                    <p className="text-white font-sans text-lg group-hover:text-[#FF6B5B] transition-colors">
+                      @filografie
+                    </p>
                   </div>
                 </a>
 
-                <div className="flex items-center gap-6 text-white/40">
-                  <MapPin className="w-5 h-5 text-violet-400/40" />
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 bg-amber-400 rounded-2xl flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
                   <div>
-                    <p className="label-sm text-white/20 mb-1">Location</p>
-                    <p className="body-light">Available Worldwide</p>
+                    <p className="text-gray-500 font-sans text-sm">Location</p>
+                    <p className="text-white font-sans text-lg">Available Worldwide</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Social links */}
-            <div className="pt-10 border-t border-white/5">
-              <h3 className="heading-light text-xl text-white mb-8">Follow the Journey</h3>
+            <div className="pt-8 border-t border-white/10">
+              <h3 className="font-serif text-xl text-white mb-6">Follow the Journey</h3>
               <div className="flex gap-3">
-                {["Instagram", "Pinterest", "Behance", "LinkedIn"].map((social) => (
+                {[
+                  { name: "Instagram", abbr: "IG", color: "bg-pink-200 text-gray-900" },
+                  { name: "Pinterest", abbr: "PI", color: "bg-[#FF6B5B] text-white" },
+                  { name: "Behance", abbr: "BE", color: "bg-indigo-500 text-white" },
+                  { name: "LinkedIn", abbr: "LI", color: "bg-sky-400 text-white" },
+                ].map((social) => (
                   <a
-                    key={social}
+                    key={social.name}
                     href="#"
-                    className="px-5 py-3 border border-white/5 text-[10px] tracking-[0.15em] uppercase text-white/30 hover:text-white hover:border-white/20 transition-all duration-300"
+                    className={`${social.color} px-5 py-3 rounded-full font-sans text-sm font-medium hover:opacity-80 transition-opacity`}
                   >
-                    {social.slice(0, 2).toUpperCase()}
+                    {social.abbr}
                   </a>
                 ))}
               </div>
@@ -158,5 +172,5 @@ export function Contact() {
         </div>
       </div>
     </section>
-  )
+  );
 }

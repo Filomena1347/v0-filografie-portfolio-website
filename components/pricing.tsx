@@ -1,10 +1,11 @@
-import { Check } from "lucide-react"
+import { Check } from "lucide-react";
 
 const pricingPlans = [
   {
     name: "Essential",
     price: "299",
     description: "Perfect for personal projects and small events",
+    color: "bg-pink-200",
     features: [
       "2-hour photo session",
       "30 edited photos",
@@ -18,6 +19,7 @@ const pricingPlans = [
     name: "Professional",
     price: "599",
     description: "Ideal for weddings and corporate events",
+    color: "bg-indigo-500",
     features: [
       "Full day coverage",
       "100+ edited photos",
@@ -33,6 +35,7 @@ const pricingPlans = [
     name: "Premium",
     price: "999",
     description: "Complete creative package for brands",
+    color: "bg-[#FF6B5B]",
     features: [
       "Multi-day coverage",
       "200+ edited photos",
@@ -45,93 +48,83 @@ const pricingPlans = [
     ],
     featured: false,
   },
-]
+];
 
 export function Pricing() {
   return (
-    <section id="pricing" className="relative py-40 overflow-hidden bg-[#030305]">
-      {/* Aurora glows */}
-      <div 
-        className="aurora-pulse absolute right-1/4 top-1/4 w-[50%] h-[50%]"
-        style={{
-          background: "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.12) 0%, transparent 60%)",
-          filter: "blur(100px)",
-        }}
-      />
-      <div 
-        className="aurora-drift absolute left-1/4 bottom-1/4 w-[40%] h-[40%]"
-        style={{
-          background: "radial-gradient(ellipse at center, rgba(192, 38, 211, 0.08) 0%, transparent 60%)",
-          filter: "blur(80px)",
-          animationDelay: "-10s",
-        }}
-      />
+    <section id="pricing" className="py-32 px-6 relative overflow-hidden">
+      {/* Floating decorative elements */}
+      <div className="absolute top-20 left-10 w-16 h-16 bg-amber-300 rounded-2xl rotate-12 opacity-50" />
+      <div className="absolute bottom-40 right-16 w-20 h-20 bg-indigo-500 rounded-3xl -rotate-6 opacity-40" />
 
-      <div className="max-w-7xl mx-auto px-8">
-        <div className="text-center mb-24">
-          <p className="label-sm text-violet-400/80 mb-8">Pricing</p>
-          <h2 className="heading-display text-4xl md:text-5xl lg:text-7xl text-white">
-            INVESTMENT IN <span className="text-gradient">ART</span>
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-20">
+          <p className="text-indigo-400 font-sans text-sm tracking-wider uppercase mb-4">
+            Pricing
+          </p>
+          <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
+            Invest in<br />
+            <span className="text-indigo-400">your story.</span>
           </h2>
-          <p className="mt-10 body-light text-white/40 max-w-2xl mx-auto">
+          <p className="mt-8 font-sans text-gray-400 max-w-2xl mx-auto text-lg font-light">
             Transparent pricing for exceptional creative services. Custom packages available upon request.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-3 gap-6">
           {pricingPlans.map((plan) => (
-            <div 
+            <div
               key={plan.name}
-              className={`relative card-dark p-10 ${
-                plan.featured ? "md:-mt-8 md:mb-8" : ""
+              className={`relative bg-white rounded-3xl overflow-hidden shadow-xl ${
+                plan.featured ? "md:-mt-6 md:mb-6" : ""
               }`}
-              style={plan.featured ? { 
-                borderColor: "rgba(139, 92, 246, 0.2)" 
-              } : {}}
             >
-              {plan.featured && (
-                <div className="absolute -top-px left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
-              )}
+              {/* Color header */}
+              <div className={`${plan.color} h-2`} />
 
-              <div className="text-center mb-12">
-                <h3 className="heading-light text-xl text-white mb-3">{plan.name}</h3>
-                <p className="text-white/30 text-[12px] font-light tracking-wide">{plan.description}</p>
-              </div>
-
-              <div className="text-center mb-12">
-                <span className="text-white/30 text-[11px] tracking-[0.1em] uppercase">from</span>
-                <div className="flex items-baseline justify-center gap-1 mt-2">
-                  <span className="text-violet-400/60 text-lg">€</span>
-                  <span className="heading-display text-5xl text-gradient">{plan.price}</span>
+              <div className="p-10">
+                <div className="text-center mb-8">
+                  <h3 className="font-serif text-2xl text-gray-900 mb-2">{plan.name}</h3>
+                  <p className="text-gray-500 font-sans text-sm">{plan.description}</p>
                 </div>
+
+                <div className="text-center mb-10">
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-gray-400 font-sans text-lg">€</span>
+                    <span className="font-serif text-6xl text-gray-900">{plan.price}</span>
+                  </div>
+                  <p className="text-gray-400 font-sans text-sm mt-2">starting from</p>
+                </div>
+
+                <ul className="space-y-4 mb-10">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-center gap-3 font-sans text-gray-600 text-sm">
+                      <div className={`w-5 h-5 ${plan.featured ? "bg-indigo-500" : "bg-gray-200"} rounded-full flex items-center justify-center flex-shrink-0`}>
+                        <Check className={`w-3 h-3 ${plan.featured ? "text-white" : "text-gray-500"}`} />
+                      </div>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  className={`w-full py-4 rounded-full font-sans text-sm font-medium transition-all duration-300 ${
+                    plan.featured
+                      ? "bg-indigo-500 text-white hover:bg-indigo-600"
+                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                  }`}
+                >
+                  Get Started
+                </button>
               </div>
-
-              <ul className="space-y-4 mb-12">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-4 body-light text-white/40 text-[14px]">
-                    <Check className="w-4 h-4 text-violet-400/40 shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <button 
-                className={`w-full py-4 text-[11px] tracking-[0.15em] uppercase font-light transition-all duration-300 ${
-                  plan.featured
-                    ? "bg-violet-600 text-white hover:bg-violet-500"
-                    : "border border-white/10 text-white/60 hover:border-white/30 hover:text-white"
-                }`}
-              >
-                Get Started
-              </button>
             </div>
           ))}
         </div>
 
-        <p className="text-center mt-16 text-white/20 text-[12px] font-light tracking-wide">
+        <p className="text-center mt-12 text-gray-500 font-sans text-sm">
           All packages include consultation call. Travel fees may apply for locations outside the city.
         </p>
       </div>
     </section>
-  )
+  );
 }
