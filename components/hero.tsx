@@ -93,15 +93,15 @@ export function Hero() {
 
         {/* Two-part layout */}
         <div className="flex flex-col lg:flex-row gap-0 lg:gap-8">
-          {/* Left side - Tight Mosaic Photo Gallery with 5:7 aspect ratio */}
-          <div className="flex-1 lg:flex-[1.5]">
+          {/* Left side - Tight Mosaic Photo Gallery with 5:7 aspect ratio - 2X LARGER */}
+          <div className="flex-1 lg:flex-[2.5]">
             {/* Dense editorial mosaic grid - zero gaps, no rounded corners, 5:7 aspect ratio */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-0">
               {galleryImages.map((image) => (
                 <div 
                   key={image.id} 
                   className="relative overflow-hidden group cursor-pointer"
-                  style={{ aspectRatio: '5/7' }}
+                  style={{ aspectRatio: '5/7', minHeight: '320px' }}
                 >
                   <img
                     src={image.src}
