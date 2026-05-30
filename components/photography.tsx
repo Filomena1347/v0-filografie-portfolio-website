@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 
-const categories = ["All", "Corporate Events", "Weddings", "Fashion"];
+const categories = ["All", "Concert Collection", "Weddings", "Fashion"];
 
 const galleryItems = [
-  { category: "Corporate Events", title: "Annual Gala 2024", color: "bg-indigo-500" },
+  { category: "Concert Collection", title: "Annual Gala 2024", color: "bg-indigo-500" },
   { category: "Weddings", title: "Sarah & James", color: "bg-pink-200" },
   { category: "Fashion", title: "Summer Collection", color: "bg-[#FF6B5B]" },
-  { category: "Corporate Events", title: "Tech Summit", color: "bg-sky-400" },
+  { category: "Concert Collection", title: "Tech Summit", color: "bg-sky-400" },
   { category: "Weddings", title: "Beach Ceremony", color: "bg-amber-300" },
   { category: "Fashion", title: "Editorial Shoot", color: "bg-violet-400" },
-  { category: "Corporate Events", title: "Product Launch", color: "bg-emerald-400" },
+  { category: "Concert Collection", title: "Product Launch", color: "bg-emerald-400" },
   { category: "Weddings", title: "Garden Wedding", color: "bg-rose-300" },
   { category: "Fashion", title: "Street Style", color: "bg-orange-400" },
 ];
