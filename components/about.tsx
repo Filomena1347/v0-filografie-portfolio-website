@@ -9,9 +9,11 @@ export function About() {
           <div className="relative">
             {/* Main portrait card */}
             <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-gradient-to-br from-[#12121c] to-[#1a1a2e] relative">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Camera className="w-16 h-16 text-white/10" />
-              </div>
+              <img 
+                src="https://res.cloudinary.com/duntvai9w/image/upload/v1780150406/Snímek_obrazovky_2026-05-30_v_16.13.01_ril9vz.png" 
+                alt="Filomena portrait"
+                className="w-full h-full object-cover"
+              />
               {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14]/50 to-transparent" />
             </div>
