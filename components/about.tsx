@@ -20,7 +20,7 @@ export function About() {
             
             {/* Floating accent card */}
             <div className="absolute -bottom-6 -right-6 lg:-right-12 w-32 h-32 rounded-2xl bg-[#5046e5] animate-float flex items-center justify-center shadow-2xl">
-              <span className="text-white/90 text-sm font-medium">10+ years</span>
+              <span className="text-white/90 text-sm font-medium">4+ years</span>
             </div>
             
             {/* File badge */}
