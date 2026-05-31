@@ -29,7 +29,54 @@ const services = [
 
 export function DigitalCreative() {
   return (
-    <section id="digital" className="py-32 px-6 relative overflow-hidden">
+    <>
+      {/* Graphic Design Section */}
+      <section id="graphic-design" className="py-32 px-6 relative overflow-hidden">
+        <div className="absolute top-20 left-10 w-20 h-20 bg-violet-500/20 rounded-full blur-2xl" />
+        <div className="absolute bottom-32 right-20 w-28 h-28 bg-indigo-500/20 rounded-full blur-2xl" />
+
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <p className="text-violet-400 font-sans text-sm tracking-wider uppercase mb-4">
+              Graphic Design
+            </p>
+            <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
+              Visual<br />
+              <span className="text-violet-400">identity.</span>
+            </h2>
+            <p className="mt-8 font-sans text-gray-400 max-w-2xl mx-auto text-lg font-light">
+              Creating distinctive brand identities and visual systems that communicate your story.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { title: "Brand Identity", description: "Complete visual systems", color: "from-violet-500 to-indigo-600" },
+              { title: "Logo Design", description: "Memorable marks", color: "from-indigo-500 to-blue-600" },
+              { title: "Print Design", description: "Tangible materials", color: "from-purple-500 to-violet-600" },
+              { title: "Packaging", description: "Product presentation", color: "from-fuchsia-500 to-pink-600" },
+              { title: "Marketing Materials", description: "Campaign assets", color: "from-pink-500 to-rose-600" },
+              { title: "Digital Assets", description: "Web & social graphics", color: "from-rose-500 to-orange-500" },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="group cursor-pointer"
+              >
+                <div className={`aspect-[4/3] bg-gradient-to-br ${item.color} rounded-3xl overflow-hidden relative transition-all duration-500 group-hover:scale-[1.02]`}>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  <div className="absolute inset-0 flex flex-col justify-end p-6">
+                    <p className="text-white/60 text-sm font-sans mb-1">{item.description}</p>
+                    <h3 className="font-serif text-2xl text-white">{item.title}</h3>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Digital Creative Section */}
+      <section id="digital" className="py-32 px-6 relative overflow-hidden">
       {/* Floating decorative elements */}
       <div className="absolute top-40 right-20 w-12 h-12 bg-pink-200 rounded-xl rotate-12 opacity-60" />
       <div className="absolute bottom-20 left-16 w-20 h-20 bg-violet-400 rounded-3xl -rotate-6 opacity-40" />
@@ -91,5 +138,6 @@ export function DigitalCreative() {
         </div>
       </div>
     </section>
+    </>
   );
 }

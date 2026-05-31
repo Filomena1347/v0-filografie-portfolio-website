@@ -1,69 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight, Camera, Video, LayoutGrid } from "lucide-react";
+import { ArrowUpRight, Camera, Video, PenTool, Instagram } from "lucide-react";
 
 const portfolioItems = [
   {
     id: 1,
-    title: "Brand Campaign",
-    category: "Photography",
+    title: "Photography",
     description: "Visual storytelling",
     color: "from-indigo-500 to-indigo-700",
+    href: "#photography",
+    icon: Camera,
   },
   {
     id: 2,
-    title: "Product Launch",
-    category: "Video",
-    description: "Motion & cinema",
+    title: "Social Media Content",
+    description: "Content creation & strategy",
     color: "from-[#FF6B5B] to-orange-600",
+    href: "#digital",
+    icon: Instagram,
   },
   {
     id: 3,
-    title: "Social Series",
-    category: "Digital",
-    description: "Social media content",
+    title: "Video & Reels",
+    description: "Motion & cinema",
     color: "from-sky-400 to-cyan-600",
+    href: "#video",
+    icon: Video,
   },
   {
     id: 4,
-    title: "Editorial Shoot",
-    category: "Photography",
-    description: "Visual storytelling",
-    color: "from-pink-400 to-rose-500",
-  },
-  {
-    id: 5,
-    title: "Event Coverage",
-    category: "Video",
-    description: "Motion & cinema",
-    color: "from-amber-400 to-orange-500",
-  },
-  {
-    id: 6,
-    title: "Brand Identity",
-    category: "Digital",
-    description: "Social media content",
+    title: "Graphic Design",
+    description: "Brand & visual identity",
     color: "from-violet-500 to-purple-600",
+    href: "#graphic-design",
+    icon: PenTool,
   },
 ];
 
-// Helper function to get icon based on category
-const getCategoryIcon = (category: string) => {
-  switch (category) {
-    case "Photography":
-      return <Camera className="w-6 h-6 text-white/60 stroke-[1]" />;
-    case "Video":
-      return <Video className="w-6 h-6 text-white/60 stroke-[1]" />;
-    case "Digital":
-      return <LayoutGrid className="w-6 h-6 text-white/60 stroke-[1]" />;
-    default:
-      return null;
-  }
+// Helper function to get icon based on item
+const getItemIcon = (item: typeof portfolioItems[0]) => {
+  const IconComponent = item.icon;
+  return <IconComponent className="w-6 h-6 text-white/60 stroke-[1]" />;
 };
 
 export function Portfolio() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+
+  const handleCardClick = (href: string) => {
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <section id="work" className="py-32 px-6 relative overflow-hidden">
@@ -82,13 +71,14 @@ export function Portfolio() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {portfolioItems.map((item) => (
             <div
               key={item.id}
               className="group cursor-pointer"
               onMouseEnter={() => setHoveredId(item.id)}
               onMouseLeave={() => setHoveredId(null)}
+              onClick={() => handleCardClick(item.href)}
             >
               <div
                 className={`aspect-[4/3] bg-gradient-to-br ${item.color} rounded-3xl overflow-hidden relative transition-all duration-500 ${
@@ -100,7 +90,7 @@ export function Portfolio() {
                 
                 {/* Top right icon */}
                 <div className="absolute top-5 right-5">
-                  {getCategoryIcon(item.category)}
+                  {getItemIcon(item)}
                 </div>
                 
                 {/* Explore label on hover */}
