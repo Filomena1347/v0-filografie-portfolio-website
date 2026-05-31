@@ -11,6 +11,7 @@ const portfolioItems = [
     color: "from-indigo-500 to-indigo-700",
     href: "#photography",
     icon: Camera,
+    rotation: "-rotate-2",
   },
   {
     id: 2,
@@ -19,6 +20,7 @@ const portfolioItems = [
     color: "from-[#FF6B5B] to-orange-600",
     href: "#digital",
     icon: Instagram,
+    rotation: "rotate-1",
   },
   {
     id: 3,
@@ -27,6 +29,7 @@ const portfolioItems = [
     color: "from-sky-400 to-cyan-600",
     href: "#video",
     icon: Video,
+    rotation: "rotate-2",
   },
   {
     id: 4,
@@ -35,6 +38,7 @@ const portfolioItems = [
     color: "from-violet-500 to-purple-600",
     href: "#graphic-design",
     icon: PenTool,
+    rotation: "-rotate-1",
   },
 ];
 
@@ -71,18 +75,18 @@ export function Portfolio() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-4">
           {portfolioItems.map((item) => (
             <div
               key={item.id}
-              className="group cursor-pointer"
+              className={`group cursor-pointer ${item.rotation} transition-transform duration-300 hover:rotate-0`}
               onMouseEnter={() => setHoveredId(item.id)}
               onMouseLeave={() => setHoveredId(null)}
               onClick={() => handleCardClick(item.href)}
             >
               <div
-                className={`h-[130px] bg-gradient-to-br ${item.color} rounded-2xl overflow-hidden relative transition-all duration-300 ${
-                  hoveredId === item.id ? "scale-[1.03]" : ""
+                className={`h-[140px] bg-gradient-to-br ${item.color} rounded-2xl overflow-hidden relative transition-all duration-300 shadow-lg ${
+                  hoveredId === item.id ? "scale-[1.05] shadow-xl" : ""
                 }`}
               >
                 {/* Darker overlay for text readability */}
