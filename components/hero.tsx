@@ -4,14 +4,9 @@ import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
 
 const galleryImages = [
-  // Row 1
   { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
   { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", category: "Lifestyle" },
   { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography", category: "Events" },
-  // Row 2
-  { id: 4, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154159/Sni%CC%81mek_obrazovky_2026-05-30_v_17.15.41_wfowzq.png", alt: "Food photography", category: "Food" },
-  { id: 5, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147813/Sni%CC%81mek_obrazovky_2026-05-29_v_12.33.50_d3lite.png", alt: "Wedding photography", category: "Wedding" },
-  { id: 7, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154249/Sni%CC%81mek_obrazovky_2026-05-30_v_17.17.06_smki1b.png", alt: "Fashion photography", category: "Fashion" },
 ]
 
 const videoReels = [
@@ -66,9 +61,9 @@ export function Hero() {
       {/* Main content */}
       <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-28 pb-16">
         {/* Header text */}
-        <div className="mb-8 lg:mb-10">
-          <p className="label-text text-white/50 mb-3">Filography</p>
-          <h1 className="heading-editorial text-[clamp(2.5rem,6vw,5rem)] text-white mb-3">
+        <div className="mb-16 lg:mb-20 pt-8">
+          <p className="label-text text-white/50 mb-4">Filography</p>
+          <h1 className="heading-editorial text-[clamp(2.5rem,6vw,5rem)] text-white mb-5">
             Visual storytelling.
           </h1>
           <p className="body-text text-white/50 text-sm max-w-lg">
@@ -78,15 +73,13 @@ export function Hero() {
 
         {/* Two-part layout */}
         <div className="flex flex-col lg:flex-row gap-0 lg:gap-8">
-          {/* Left side - Photo Gallery - 3x2 grid with 5:7 aspect ratio */}
+          {/* Left side - Photo Gallery - 3 photos in a row, 380px height */}
           <div className="flex-1 lg:flex-[2]">
-            {/* 3 columns, 2 rows, zero gaps, no rounded corners, 5:7 aspect ratio */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-0">
+            <div className="flex gap-0 h-[380px]">
               {galleryImages.map((image) => (
                 <div 
                   key={image.id} 
-                  className="relative overflow-hidden group cursor-pointer"
-                  style={{ aspectRatio: '5/7' }}
+                  className="relative overflow-hidden group cursor-pointer flex-1"
                 >
                   <img
                     src={image.src}
@@ -107,7 +100,7 @@ export function Hero() {
                 <div
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
-                  className="relative h-[480px] md:h-[520px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
+                  className="relative h-[380px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {videoReels.map((video, index) => (
