@@ -71,7 +71,7 @@ export function Portfolio() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {portfolioItems.map((item) => (
             <div
               key={item.id}
@@ -81,29 +81,28 @@ export function Portfolio() {
               onClick={() => handleCardClick(item.href)}
             >
               <div
-                className={`aspect-[4/3] bg-gradient-to-br ${item.color} rounded-3xl overflow-hidden relative transition-all duration-500 ${
-                  hoveredId === item.id ? "scale-[1.02]" : ""
+                className={`h-[130px] bg-gradient-to-br ${item.color} rounded-2xl overflow-hidden relative transition-all duration-300 ${
+                  hoveredId === item.id ? "scale-[1.03]" : ""
                 }`}
               >
                 {/* Darker overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 
                 {/* Top right icon */}
-                <div className="absolute top-5 right-5">
+                <div className="absolute top-3 right-3">
                   {getItemIcon(item)}
                 </div>
                 
-                {/* Explore label on hover */}
-                <div className={`absolute top-5 left-6 flex items-center gap-2 text-white/80 text-sm font-sans transition-all duration-300 ${
-                  hoveredId === item.id ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+                {/* Arrow on hover */}
+                <div className={`absolute top-3 left-4 transition-all duration-300 ${
+                  hoveredId === item.id ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
                 }`}>
-                  Explore <ArrowUpRight className="w-4 h-4" />
+                  <ArrowUpRight className="w-4 h-4 text-white/80" />
                 </div>
                 
                 {/* Content at bottom */}
-                <div className="absolute inset-0 flex flex-col justify-end p-6">
-                  <p className="text-white/60 text-sm font-sans mb-1">{item.description}</p>
-                  <h3 className="font-serif text-3xl text-white">{item.title}</h3>
+                <div className="absolute inset-0 flex flex-col justify-end p-4">
+                  <h3 className="font-serif text-lg text-white leading-tight">{item.title}</h3>
                 </div>
               </div>
             </div>
