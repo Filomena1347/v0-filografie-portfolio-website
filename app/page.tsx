@@ -9,10 +9,12 @@ import { Pricing } from "@/components/pricing"
 import { Blog } from "@/components/blog"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
+import { CosmicElements } from "@/components/cosmic-elements"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0a0a0f]">
+    <main className="min-h-screen bg-[#0a0a0f] relative">
+      <CosmicElements />
       <Navbar />
       <Hero />
       <About />
