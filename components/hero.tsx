@@ -63,8 +63,9 @@ export function Hero() {
         {/* Header text */}
         <div className="mb-16 lg:mb-20 pt-8">
           <p className="label-text text-white/50 mb-4">Filography</p>
-          <h1 className="heading-editorial text-[clamp(2.5rem,6vw,5rem)] text-white mb-5">
-            Visual storytelling.
+          <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-5">
+            I Create visuals.<br />
+            <span className="text-indigo-400">Tell stories.</span>
           </h1>
           <p className="body-text text-white/50 text-sm max-w-lg">
             Event photography · Social media management · Video · Graphic design
