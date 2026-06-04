@@ -6,8 +6,11 @@ interface AdminContextType {
   isAdmin: boolean;
   isLoading: boolean;
   password: string | null;
+  showLoginModal: boolean;
   login: (password: string) => Promise<boolean>;
   logout: () => void;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -19,6 +22,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [password, setPassword] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Check for existing session on mount
   useEffect(() => {
@@ -60,8 +64,16 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setPassword(null);
   }, []);
 
+  const openLoginModal = useCallback(() => {
+    setShowLoginModal(true);
+  }, []);
+
+  const closeLoginModal = useCallback(() => {
+    setShowLoginModal(false);
+  }, []);
+
   return (
-    <AdminContext.Provider value={{ isAdmin, isLoading, password, login, logout }}>
+    <AdminContext.Provider value={{ isAdmin, isLoading, password, showLoginModal, login, logout, openLoginModal, closeLoginModal }}>
       {children}
     </AdminContext.Provider>
   );

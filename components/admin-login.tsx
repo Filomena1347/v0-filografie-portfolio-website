@@ -5,8 +5,7 @@ import { Lock, LogOut, X } from "lucide-react";
 import { useAdmin } from "@/contexts/admin-context";
 
 export function AdminLogin() {
-  const { isAdmin, isLoading, login, logout } = useAdmin();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isAdmin, isLoading, login, logout, showLoginModal, closeLoginModal, openLoginModal } = useAdmin();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,7 +21,7 @@ export function AdminLogin() {
     
     if (success) {
       setPassword("");
-      setIsOpen(false);
+      closeLoginModal();
     } else {
       setError("Invalid password");
     }
@@ -46,7 +45,7 @@ export function AdminLogin() {
     <>
       {/* Subtle admin trigger */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={openLoginModal}
         className="fixed bottom-6 right-6 z-40 w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center transition-colors duration-200 opacity-30 hover:opacity-100"
         aria-label="Admin login"
       >
@@ -54,18 +53,18 @@ export function AdminLogin() {
       </button>
 
       {/* Login modal */}
-      {isOpen && (
+      {showLoginModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => setIsOpen(false)}
+            onClick={closeLoginModal}
           />
 
           {/* Modal */}
           <div className="relative bg-[#12121c] rounded-2xl p-8 w-full max-w-sm border border-white/10 shadow-2xl">
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={closeLoginModal}
               className="absolute top-4 right-4 text-white/40 hover:text-white/80 transition-colors"
             >
               <X className="w-5 h-5" />

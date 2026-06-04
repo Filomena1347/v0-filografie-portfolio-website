@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, ArrowLeft, CalendarDays, Music, Heart, Briefcase, UtensilsCrossed, User, Loader2 } from "lucide-react";
+import { X, ArrowLeft, CalendarDays, Music, Heart, Briefcase, UtensilsCrossed, User, Loader2, Lock } from "lucide-react";
 import { SortableGallery } from "./sortable-gallery";
+import { useAdmin } from "@/contexts/admin-context";
 import type { GalleryImage } from "@/lib/cloudinary";
 
 // Main categories with their colors and gradient overlays
@@ -59,6 +60,7 @@ const eventsSubcategories = [
 ];
 
 export function Photography() {
+  const { isAdmin, openLoginModal } = useAdmin();
   const [view, setView] = useState<"main" | "events-sub">("main");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -339,8 +341,24 @@ export function Photography() {
             />
           ) : (
             <div className="flex flex-col items-center justify-center py-20">
+              <SortableGallery
+                images={[]}
+                category={selectedCategory || ""}
+                onImagesChange={handleImagesChange}
+                isModalOpen={isModalOpen}
+              />
               <p className="text-white/60 font-sans mb-2">No images in this category yet.</p>
-              <p className="text-white/40 font-sans text-sm">Login as admin to upload images.</p>
+              {!isAdmin ? (
+                <button
+                  onClick={openLoginModal}
+                  className="mt-4 flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 rounded-xl text-white font-medium transition-colors duration-200 font-sans"
+                >
+                  <Lock className="w-4 h-4" />
+                  <span>Login to upload images</span>
+                </button>
+              ) : (
+                <p className="text-white/40 font-sans text-sm">Use the upload button above to add images.</p>
+              )}
             </div>
           )}
         </div>
