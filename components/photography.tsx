@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X, ArrowLeft, CalendarDays, Music, Heart, Briefcase, UtensilsCrossed, User } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { X, ArrowLeft, CalendarDays, Music, Heart, Briefcase, UtensilsCrossed, User, Loader2 } from "lucide-react";
+import { SortableGallery } from "./sortable-gallery";
+import type { GalleryImage } from "@/lib/cloudinary";
 
 // Main categories with their colors and gradient overlays
 const mainCategories = [
@@ -56,40 +58,13 @@ const eventsSubcategories = [
   },
 ];
 
-// Placeholder photos for each category
-const categoryPhotos: Record<string, { id: number; src: string; height: string }[]> = {
-  "concerts": Array.from({ length: 12 }, (_, i) => ({
-    id: i + 1,
-    src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
-    height: ["h-56", "h-64", "h-72", "h-80", "h-60", "h-68"][i % 6],
-  })),
-  "weddings": Array.from({ length: 10 }, (_, i) => ({
-    id: i + 1,
-    src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
-    height: ["h-80", "h-64", "h-72", "h-56", "h-68", "h-76"][i % 6],
-  })),
-  "corporate": Array.from({ length: 10 }, (_, i) => ({
-    id: i + 1,
-    src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
-    height: ["h-64", "h-72", "h-56", "h-80", "h-60", "h-68"][i % 6],
-  })),
-  "food": Array.from({ length: 12 }, (_, i) => ({
-    id: i + 1,
-    src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
-    height: ["h-72", "h-56", "h-80", "h-64", "h-68", "h-60"][i % 6],
-  })),
-  "portraits": Array.from({ length: 12 }, (_, i) => ({
-    id: i + 1,
-    src: `/placeholder.svg?height=${350 + Math.floor(Math.random() * 200)}&width=300`,
-    height: ["h-80", "h-72", "h-64", "h-56", "h-76", "h-68"][i % 6],
-  })),
-};
-
 export function Photography() {
   const [view, setView] = useState<"main" | "events-sub">("main");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCategoryClick = (category: typeof mainCategories[0]) => {
     if (category.hasSubcategories) {
@@ -103,10 +78,27 @@ export function Photography() {
     openGallery(subcategory.id, subcategory.name);
   };
 
+  const fetchImages = useCallback(async (categoryId: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/gallery?category=${categoryId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setImages(data.images || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch images:", error);
+      setImages([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const openGallery = (categoryId: string, categoryName: string) => {
     setSelectedCategory(categoryId);
     setSelectedCategoryName(categoryName);
     setIsModalOpen(true);
+    fetchImages(categoryId);
   };
 
   const closeGallery = () => {
@@ -114,12 +106,17 @@ export function Photography() {
     setTimeout(() => {
       setSelectedCategory(null);
       setSelectedCategoryName("");
+      setImages([]);
     }, 300);
   };
 
   const goBack = () => {
     setView("main");
   };
+
+  const handleImagesChange = useCallback((newImages: GalleryImage[]) => {
+    setImages(newImages);
+  }, []);
 
   // Close on escape key
   useEffect(() => {
@@ -135,8 +132,6 @@ export function Photography() {
       document.body.style.overflow = "unset";
     };
   }, [isModalOpen]);
-
-  const selectedPhotos = selectedCategory ? categoryPhotos[selectedCategory] || [] : [];
 
   return (
     <>
@@ -329,30 +324,25 @@ export function Photography() {
             </h3>
           </div>
 
-          {/* Masonry grid - 3 columns, no gaps, sharp edges */}
-          <div className="px-0 pb-12">
-            <div className="columns-2 md:columns-3 gap-0">
-              {selectedPhotos.map((photo, index) => (
-                <div
-                  key={photo.id}
-                  className="break-inside-avoid"
-                >
-                  <div
-                    className={`${photo.height} w-full overflow-hidden transition-all duration-300 hover:brightness-110`}
-                    style={{
-                      animation: isModalOpen ? `fadeInUp 0.4s ease-out ${index * 50}ms both` : "none",
-                    }}
-                  >
-                    <img
-                      src={photo.src}
-                      alt={`${selectedCategoryName} photo ${photo.id}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              ))}
+          {/* Loading state */}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
+              <p className="text-white/60 font-sans">Loading images...</p>
             </div>
-          </div>
+          ) : images.length > 0 ? (
+            <SortableGallery
+              images={images}
+              category={selectedCategory || ""}
+              onImagesChange={handleImagesChange}
+              isModalOpen={isModalOpen}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20">
+              <p className="text-white/60 font-sans mb-2">No images in this category yet.</p>
+              <p className="text-white/40 font-sans text-sm">Login as admin to upload images.</p>
+            </div>
+          )}
         </div>
       </div>
 
