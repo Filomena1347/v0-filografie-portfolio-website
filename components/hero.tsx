@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 
 // Masonry gallery images with varying sizes
 const galleryImages = [
@@ -23,6 +24,7 @@ const videoReels = [
 ]
 
 export function Hero() {
+  const { t } = useLanguage()
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
@@ -67,14 +69,14 @@ export function Hero() {
     <section className="relative min-h-screen overflow-hidden bg-[#0a0a14]">
       {/* Main content */}
       <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-24 pb-12">
-        {/* Header text - removed Filography label */}
+        {/* Header text */}
         <div className="mb-10 lg:mb-14 pt-4">
           <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-4">
-            I Create visuals.<br />
-            <span className="text-indigo-400">Tell stories.</span>
+            {t.hero_line1}<br />
+            <span className="text-indigo-400">{t.hero_line2}</span>
           </h1>
           <p className="body-text text-white/50 text-sm max-w-lg">
-            Event photography · Social media management · Video · Graphic design
+            {t.hero_subtitle}
           </p>
         </div>
 
@@ -188,8 +190,7 @@ export function Hero() {
               </div>
             </div>
 
-            {/* Bottom gradient fade into page background */}
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/60 to-transparent pointer-events-none z-10" />
+
           </div>
 
           {/* Right side - Vertical Video Reel (TikTok style) */}
@@ -262,7 +263,7 @@ export function Hero() {
                   ))}
                 </div>
               </div>
-              <p className="text-center text-white/30 text-xs mt-3 label-text">Scroll to explore reels</p>
+              <p className="text-center text-white/30 text-xs mt-3 label-text">{t.hero_scroll_reels}</p>
             </div>
           </div>
         </div>
@@ -271,7 +272,7 @@ export function Hero() {
       {/* Bottom label - vertical */}
       <div className="absolute bottom-8 right-8 hidden lg:block">
         <p className="label-text text-white/30 tracking-wider" style={{ writingMode: "vertical-rl" }}>
-          Scroll to explore
+          {t.hero_scroll}
         </p>
       </div>
 

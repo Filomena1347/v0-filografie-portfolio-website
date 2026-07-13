@@ -3,29 +3,31 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ChevronDown, Menu, X } from "lucide-react"
-
-const navItems = [
-  { label: "Work", href: "#work" },
-  { 
-    label: "Photography", 
-    href: "#photography",
-    dropdown: [
-      { label: "Corporate Events", href: "#corporate" },
-      { label: "Weddings", href: "#weddings" },
-      { label: "Fashion", href: "#fashion" },
-    ]
-  },
-  { label: "Video", href: "#video" },
-  { label: "Digital", href: "#digital" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Journal", href: "#blog" },
-  { label: "Contact", href: "#contact" },
-]
+import { useLanguage } from "@/context/language-context"
 
 export function Navbar() {
+  const { lang, setLang, t } = useLanguage()
   const [isScrolled, setIsScrolled] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const navItems = [
+    { label: t.nav_work, href: "#work" },
+    {
+      label: t.nav_photography,
+      href: "#photography",
+      dropdown: [
+        { label: t.nav_corporate, href: "#corporate" },
+        { label: t.nav_weddings, href: "#weddings" },
+        { label: t.nav_fashion, href: "#fashion" },
+      ],
+    },
+    { label: t.nav_video, href: "#video" },
+    { label: t.nav_digital, href: "#digital" },
+    { label: t.nav_pricing, href: "#pricing" },
+    { label: t.nav_journal, href: "#blog" },
+    { label: t.nav_contact, href: "#contact" },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,14 +38,14 @@ export function Navbar() {
   }, [])
 
   return (
-    <nav 
+    <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? "py-4 bg-[#0a0a14]/95 backdrop-blur-sm" : "py-6"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="font-serif text-2xl font-bold italic text-white"
         >
           Filoména
@@ -52,7 +54,7 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-10">
           {navItems.map((item) => (
-            <div 
+            <div
               key={item.label}
               className="relative"
               onMouseEnter={() => item.dropdown && setOpenDropdown(item.label)}
@@ -65,7 +67,7 @@ export function Navbar() {
                 {item.label}
                 {item.dropdown && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
               </Link>
-              
+
               {item.dropdown && openDropdown === item.label && (
                 <div className="absolute top-full left-0 mt-4 py-3 min-w-[180px] bg-white rounded-xl shadow-xl">
                   {item.dropdown.map((subItem) => (
@@ -83,13 +85,36 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button */}
-        <a 
-          href="#contact"
-          className="hidden lg:block btn-blue text-sm"
-        >
-          Get in touch
-        </a>
+        {/* Right side: language toggle + CTA */}
+        <div className="hidden lg:flex items-center gap-4">
+          {/* Language Toggle */}
+          <div className="flex items-center gap-1 text-sm font-sans">
+            <button
+              onClick={() => setLang("EN")}
+              className={`px-2 py-1 rounded transition-colors duration-200 ${
+                lang === "EN" ? "text-white" : "text-white/40 hover:text-white/70"
+              }`}
+            >
+              EN
+            </button>
+            <span className="text-white/20">/</span>
+            <button
+              onClick={() => setLang("CZ")}
+              className={`px-2 py-1 rounded transition-colors duration-200 ${
+                lang === "CZ" ? "text-white" : "text-white/40 hover:text-white/70"
+              }`}
+            >
+              CZ
+            </button>
+          </div>
+
+          <a
+            href="#contact"
+            className="btn-blue text-sm"
+          >
+            {t.nav_cta}
+          </a>
+        </div>
 
         {/* Mobile Menu Button */}
         <button
@@ -130,12 +155,37 @@ export function Navbar() {
                 )}
               </div>
             ))}
-            <a 
+
+            {/* Mobile language toggle */}
+            <div className="flex items-center gap-2 pt-2 border-t border-white/10 mt-2">
+              <button
+                onClick={() => setLang("EN")}
+                className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
+                  lang === "EN"
+                    ? "border-white/40 text-white"
+                    : "border-white/10 text-white/40"
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLang("CZ")}
+                className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
+                  lang === "CZ"
+                    ? "border-white/40 text-white"
+                    : "border-white/10 text-white/40"
+                }`}
+              >
+                CZ
+              </button>
+            </div>
+
+            <a
               href="#contact"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="btn-blue text-sm text-center mt-4"
+              className="btn-blue text-sm text-center mt-2"
             >
-              Get in touch
+              {t.nav_cta}
             </a>
           </div>
         </div>
