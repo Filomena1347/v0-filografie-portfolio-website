@@ -86,6 +86,9 @@ export function Footer() {
             <a href="#" className="font-sans text-gray-500 text-sm hover:text-white transition-colors">
               {t.footer_terms}
             </a>
+            <Link href="/admin" className="font-sans text-gray-700 text-xs hover:text-gray-400 transition-colors">
+              Admin
+            </Link>
           </div>
           <a
             href="#"

@@ -88,42 +88,48 @@ export function Hero() {
 
         {/* Gallery + Phone overlay */}
         <div className="relative">
-          {/* Full-width masonry photo gallery — background layer */}
-          <div className="grid grid-cols-4 gap-0 h-[500px] bg-[#0a0a0f]">
-            {/* Column 1 — top 70%, bottom 30% */}
+          {/* Full-width masonry photo gallery — background layer, 5 columns, object-cover, zero gaps */}
+          <div className="grid grid-cols-5 gap-0 h-[500px]">
+            {/* Column 1 — top 65%, bottom 35% */}
             <div className="flex flex-col h-full">
-              <div className="relative bg-[#0a0a0f] animate-float-gallery-1 overflow-hidden" style={{ height: "70%" }} onMouseEnter={() => setHoveredImage(1)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[0].src} alt={galleryImages[0].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 1 ? 'brightness-110' : ''}`} />
+              <div className="relative overflow-hidden animate-float-gallery-1" style={{ height: "65%" }} onMouseEnter={() => setHoveredImage(1)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[0].src} alt={galleryImages[0].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 1 ? 'brightness-110' : ''}`} />
               </div>
-              <div className="relative bg-[#0a0a0f] animate-float-gallery-2 overflow-hidden" style={{ height: "30%" }} onMouseEnter={() => setHoveredImage(4)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[3].src} alt={galleryImages[3].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 4 ? 'brightness-110' : ''}`} />
+              <div className="relative overflow-hidden animate-float-gallery-2" style={{ height: "35%" }} onMouseEnter={() => setHoveredImage(4)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[3].src} alt={galleryImages[3].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 4 ? 'brightness-110' : ''}`} />
               </div>
             </div>
             {/* Column 2 — top 40%, bottom 60% */}
             <div className="flex flex-col h-full">
-              <div className="relative bg-[#0a0a0f] animate-float-gallery-3 overflow-hidden" style={{ height: "40%" }} onMouseEnter={() => setHoveredImage(2)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[1].src} alt={galleryImages[1].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 2 ? 'brightness-110' : ''}`} />
+              <div className="relative overflow-hidden animate-float-gallery-3" style={{ height: "40%" }} onMouseEnter={() => setHoveredImage(2)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[1].src} alt={galleryImages[1].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 2 ? 'brightness-110' : ''}`} />
               </div>
-              <div className="relative bg-[#0a0a0f] animate-float-gallery-4 overflow-hidden" style={{ height: "60%" }} onMouseEnter={() => setHoveredImage(5)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[4].src} alt={galleryImages[4].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 5 ? 'brightness-110' : ''}`} />
-              </div>
-            </div>
-            {/* Column 3 — top 65%, bottom 35% */}
-            <div className="flex flex-col h-full">
-              <div className="relative bg-[#0a0a0f] animate-float-gallery-5 overflow-hidden" style={{ height: "65%" }} onMouseEnter={() => setHoveredImage(3)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[2].src} alt={galleryImages[2].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 3 ? 'brightness-110' : ''}`} />
-              </div>
-              <div className="relative bg-[#0a0a0f] animate-float-gallery-6 overflow-hidden" style={{ height: "35%" }} onMouseEnter={() => setHoveredImage(6)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[5].src} alt={galleryImages[5].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 6 ? 'brightness-110' : ''}`} />
+              <div className="relative overflow-hidden animate-float-gallery-4" style={{ height: "60%" }} onMouseEnter={() => setHoveredImage(5)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[4].src} alt={galleryImages[4].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 5 ? 'brightness-110' : ''}`} />
               </div>
             </div>
-            {/* Column 4 — top 25%, bottom 75% */}
+            {/* Column 3 — full height single image */}
             <div className="flex flex-col h-full">
-              <div className="relative bg-[#0a0a0f] animate-float-gallery-7 overflow-hidden" style={{ height: "25%" }} onMouseEnter={() => setHoveredImage(7)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[6].src} alt={galleryImages[6].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 7 ? 'brightness-110' : ''}`} />
+              <div className="relative overflow-hidden animate-float-gallery-5 h-full" onMouseEnter={() => setHoveredImage(3)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[2].src} alt={galleryImages[2].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 3 ? 'brightness-110' : ''}`} />
               </div>
-              <div className="relative bg-[#0a0a0f] animate-float-gallery-8 overflow-hidden" style={{ height: "75%" }} onMouseEnter={() => setHoveredImage(8)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[7].src} alt={galleryImages[7].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 8 ? 'brightness-110' : ''}`} />
+            </div>
+            {/* Column 4 — top 55%, bottom 45% */}
+            <div className="flex flex-col h-full">
+              <div className="relative overflow-hidden animate-float-gallery-6" style={{ height: "55%" }} onMouseEnter={() => setHoveredImage(6)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[5].src} alt={galleryImages[5].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 6 ? 'brightness-110' : ''}`} />
+              </div>
+              <div className="relative overflow-hidden animate-float-gallery-7" style={{ height: "45%" }} onMouseEnter={() => setHoveredImage(7)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[6].src} alt={galleryImages[6].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 7 ? 'brightness-110' : ''}`} />
+              </div>
+            </div>
+            {/* Column 5 — top 30%, bottom 70% */}
+            <div className="flex flex-col h-full">
+              <div className="relative overflow-hidden animate-float-gallery-8" style={{ height: "30%" }} onMouseEnter={() => setHoveredImage(8)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[7].src} alt={galleryImages[7].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 8 ? 'brightness-110' : ''}`} />
+              </div>
+              <div className="relative overflow-hidden animate-float-gallery-1" style={{ height: "70%" }} onMouseEnter={() => setHoveredImage(1)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[0].src} alt={galleryImages[0].alt} className={`w-full h-full object-cover transition-all duration-700`} />
               </div>
             </div>
           </div>
