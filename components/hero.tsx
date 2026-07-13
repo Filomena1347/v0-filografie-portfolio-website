@@ -29,8 +29,14 @@ export function Hero() {
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
   const [hoveredImage, setHoveredImage] = useState<number | null>(null)
+  const [phoneVisible, setPhoneVisible] = useState(false)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPhoneVisible(true), 1500)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
@@ -80,129 +86,65 @@ export function Hero() {
           </p>
         </div>
 
-        {/* Two-part layout */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Left side - Masonry Photo Gallery — zero gap, object-contain, dark bg */}
-          <div className="flex-1 lg:flex-[2] relative">
-            <div className="grid grid-cols-4 gap-0 h-[420px] relative bg-[#0a0a0f]">
-              {/* Column 1 */}
-              <div className="flex flex-col gap-0">
-                <div
-                  className="relative group cursor-pointer flex-[1.4] bg-[#0a0a0f] animate-float-gallery-1"
-                  onMouseEnter={() => setHoveredImage(1)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[0].src}
-                    alt={galleryImages[0].alt}
-                    className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 1 ? 'brightness-110' : ''}`}
-                  />
-                </div>
-                <div
-                  className="relative group cursor-pointer flex-[0.6] bg-[#0a0a0f] animate-float-gallery-2"
-                  onMouseEnter={() => setHoveredImage(4)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[3].src}
-                    alt={galleryImages[3].alt}
-                    className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 4 ? 'brightness-110' : ''}`}
-                  />
-                </div>
+        {/* Gallery + Phone overlay */}
+        <div className="relative">
+          {/* Full-width masonry photo gallery — background layer */}
+          <div className="grid grid-cols-4 gap-0 h-[500px] bg-[#0a0a0f]">
+            {/* Column 1 */}
+            <div className="flex flex-col gap-0">
+              <div className="relative flex-[1.4] bg-[#0a0a0f] animate-float-gallery-1 overflow-hidden" onMouseEnter={() => setHoveredImage(1)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[0].src} alt={galleryImages[0].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 1 ? 'brightness-110' : ''}`} />
               </div>
-
-              {/* Column 2 */}
-              <div className="flex flex-col gap-0">
-                <div
-                  className="relative group cursor-pointer flex-[0.8] bg-[#0a0a0f] animate-float-gallery-3"
-                  onMouseEnter={() => setHoveredImage(2)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[1].src}
-                    alt={galleryImages[1].alt}
-                    className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 2 ? 'brightness-110' : ''}`}
-                  />
-                </div>
-                <div
-                  className="relative group cursor-pointer flex-[1.2] bg-[#0a0a0f] animate-float-gallery-4"
-                  onMouseEnter={() => setHoveredImage(5)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[4].src}
-                    alt={galleryImages[4].alt}
-                    className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 5 ? 'brightness-110' : ''}`}
-                  />
-                </div>
-              </div>
-
-              {/* Column 3 */}
-              <div className="flex flex-col gap-0">
-                <div
-                  className="relative group cursor-pointer flex-[1.3] bg-[#0a0a0f] animate-float-gallery-5"
-                  onMouseEnter={() => setHoveredImage(3)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[2].src}
-                    alt={galleryImages[2].alt}
-                    className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 3 ? 'brightness-110' : ''}`}
-                  />
-                </div>
-                <div
-                  className="relative group cursor-pointer flex-[0.7] bg-[#0a0a0f] animate-float-gallery-6"
-                  onMouseEnter={() => setHoveredImage(6)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[5].src}
-                    alt={galleryImages[5].alt}
-                    className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 6 ? 'brightness-110' : ''}`}
-                  />
-                </div>
-              </div>
-
-              {/* Column 4 */}
-              <div className="flex flex-col gap-0">
-                <div
-                  className="relative group cursor-pointer flex-[0.5] bg-[#0a0a0f] animate-float-gallery-7"
-                  onMouseEnter={() => setHoveredImage(7)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[6].src}
-                    alt={galleryImages[6].alt}
-                    className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 7 ? 'brightness-110' : ''}`}
-                  />
-                </div>
-                <div
-                  className="relative group cursor-pointer flex-[1.5] bg-[#0a0a0f] animate-float-gallery-8"
-                  onMouseEnter={() => setHoveredImage(8)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[7].src}
-                    alt={galleryImages[7].alt}
-                    className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 8 ? 'brightness-110' : ''}`}
-                  />
-                </div>
+              <div className="relative flex-[0.6] bg-[#0a0a0f] animate-float-gallery-2 overflow-hidden" onMouseEnter={() => setHoveredImage(4)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[3].src} alt={galleryImages[3].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 4 ? 'brightness-110' : ''}`} />
               </div>
             </div>
-
-
+            {/* Column 2 */}
+            <div className="flex flex-col gap-0">
+              <div className="relative flex-[0.8] bg-[#0a0a0f] animate-float-gallery-3 overflow-hidden" onMouseEnter={() => setHoveredImage(2)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[1].src} alt={galleryImages[1].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 2 ? 'brightness-110' : ''}`} />
+              </div>
+              <div className="relative flex-[1.2] bg-[#0a0a0f] animate-float-gallery-4 overflow-hidden" onMouseEnter={() => setHoveredImage(5)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[4].src} alt={galleryImages[4].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 5 ? 'brightness-110' : ''}`} />
+              </div>
+            </div>
+            {/* Column 3 */}
+            <div className="flex flex-col gap-0">
+              <div className="relative flex-[1.3] bg-[#0a0a0f] animate-float-gallery-5 overflow-hidden" onMouseEnter={() => setHoveredImage(3)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[2].src} alt={galleryImages[2].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 3 ? 'brightness-110' : ''}`} />
+              </div>
+              <div className="relative flex-[0.7] bg-[#0a0a0f] animate-float-gallery-6 overflow-hidden" onMouseEnter={() => setHoveredImage(6)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[5].src} alt={galleryImages[5].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 6 ? 'brightness-110' : ''}`} />
+              </div>
+            </div>
+            {/* Column 4 */}
+            <div className="flex flex-col gap-0">
+              <div className="relative flex-[0.5] bg-[#0a0a0f] animate-float-gallery-7 overflow-hidden" onMouseEnter={() => setHoveredImage(7)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[6].src} alt={galleryImages[6].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 7 ? 'brightness-110' : ''}`} />
+              </div>
+              <div className="relative flex-[1.5] bg-[#0a0a0f] animate-float-gallery-8 overflow-hidden" onMouseEnter={() => setHoveredImage(8)} onMouseLeave={() => setHoveredImage(null)}>
+                <img src={galleryImages[7].src} alt={galleryImages[7].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 8 ? 'brightness-110' : ''}`} />
+              </div>
+            </div>
           </div>
 
-          {/* Right side - Vertical Video Reel (TikTok style) */}
-          <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-6 lg:mt-0">
-            <div className="relative w-full max-w-[260px]">
-              <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl">
+          {/* Phone centered on top — fade + scale entrance after 1.5s */}
+          <div
+            className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+            style={{
+              opacity: phoneVisible ? 1 : 0,
+              transform: phoneVisible ? 'scale(1)' : 'scale(0.9)',
+              transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+            }}
+          >
+            <div className="relative w-full max-w-[240px] pointer-events-auto">
+              <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl ring-1 ring-white/10">
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
-                
+
                 <div
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
-                  className="relative h-[380px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
+                  className="relative h-[400px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {videoReels.map((video, index) => (
