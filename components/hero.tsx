@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { Volume2, VolumeX, Play, ChevronDown, ChevronUp, Loader2, Lock } from "lucide-react"
-import { SortableGallery } from "@/components/sortable-gallery"
-import { useAdmin } from "@/contexts/admin-context"
+import { useState, useRef, useEffect } from "react"
+import { Volume2, VolumeX, Play } from "lucide-react"
+
 import type { GalleryImage } from "@/lib/cloudinary"
 
 const videoReels = [
@@ -13,88 +12,59 @@ const videoReels = [
   { id: 4, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1780151825/Starbucks_video_copy_jdqqld.mp4", title: "Starbucks Story", category: "Commercial" },
 ]
 
-// How many photos the collapsed masonry grid shows
-const PREVIEW_COUNT = 8
-
 interface HeroProps {
   photos: GalleryImage[]
-  onPhotosChange: (images: GalleryImage[]) => void
-  isExpanded: boolean
-  onExpandChange: (expanded: boolean) => void
 }
 
-export function Hero({ photos, onPhotosChange, isExpanded, onExpandChange }: HeroProps) {
-  const { openLoginModal, isAdmin } = useAdmin()
+export function Hero({ photos }: HeroProps) {
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
   const [hoveredImage, setHoveredImage] = useState<number | null>(null)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const galleryRef = useRef<HTMLDivElement>(null)
 
-  // Use photos for the masonry grid (padded to 8 slots)
-  const previewPhotos = photos.slice(0, PREVIEW_COUNT)
-  const hasMore = photos.length > PREVIEW_COUNT
+  // Map GalleryImage to the shape used in JSX below
+  const galleryImages = photos.map((p) => ({ src: p.url, alt: p.category ?? "Photography" }))
+
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (video) {
+        video.muted = isMuted
+        if (index === activeVideo) {
+          if (isPlaying) {
+            video.play().catch(() => {})
+          } else {
+            video.pause()
+          }
+        } else {
+          video.pause()
+          video.currentTime = 0
+        }
+      }
+    })
+  }, [activeVideo, isMuted, isPlaying])
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current
-      const newIndex = Math.round(container.scrollTop / container.clientHeight)
+      const scrollTop = container.scrollTop
+      const itemHeight = container.clientHeight
+      const newIndex = Math.round(scrollTop / itemHeight)
       if (newIndex !== activeVideo && newIndex >= 0 && newIndex < videoReels.length) {
         setActiveVideo(newIndex)
-        videoRefs.current.forEach((video, index) => {
-          if (!video) return
-          video.muted = isMuted
-          if (index === newIndex) {
-            if (isPlaying) video.play().catch(() => {})
-          } else {
-            video.pause()
-            video.currentTime = 0
-          }
-        })
       }
     }
   }
 
-  const toggleMute = () => {
-    const next = !isMuted
-    setIsMuted(next)
-    videoRefs.current.forEach((v) => { if (v) v.muted = next })
-  }
-
-  const togglePlay = () => {
-    const next = !isPlaying
-    setIsPlaying(next)
-    const active = videoRefs.current[activeVideo]
-    if (active) {
-      if (next) active.play().catch(() => {})
-      else active.pause()
-    }
-  }
-
-  const handleExpand = () => {
-    onExpandChange(true)
-    // Small delay so state updates before we scroll
-    setTimeout(() => {
-      galleryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
-    }, 50)
-  }
-
-  const handleCollapse = () => {
-    onExpandChange(false)
-    galleryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
-
-  // Helper: get a photo src with fallback
-  const src = (index: number) => previewPhotos[index]?.url ?? ""
-  const alt = (index: number) => previewPhotos[index]?.category ?? "Photography"
+  const toggleMute = () => setIsMuted(!isMuted)
+  const togglePlay = () => setIsPlaying(!isPlaying)
 
   return (
-    <section id="photography" className="relative min-h-screen overflow-hidden bg-[#0a0a14]">
+    <section className="relative min-h-screen overflow-hidden bg-[#0a0a14]">
       {/* Main content */}
       <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-24 pb-12">
-        {/* Heading */}
+        {/* Header text - removed Filography label */}
         <div className="mb-10 lg:mb-14 pt-4">
           <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-4">
             I Create visuals.<br />
@@ -105,66 +75,128 @@ export function Hero({ photos, onPhotosChange, isExpanded, onExpandChange }: Her
           </p>
         </div>
 
-        {/* Two-part layout: masonry grid + phone mockup */}
+        {/* Two-part layout */}
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Left side - Masonry Photo Grid (collapsed preview) */}
-          <div ref={galleryRef} className="flex-1 lg:flex-[2] relative">
+          {/* Left side - Dynamic Masonry Photo Gallery */}
+          <div className="flex-1 lg:flex-[2] relative">
+            {/* Masonry Grid */}
             <div className="grid grid-cols-4 gap-2 h-[420px] relative">
               {/* Column 1 */}
               <div className="flex flex-col gap-2">
-                <div className="relative overflow-hidden group cursor-pointer flex-[1.4] animate-float-gallery-1"
-                  onMouseEnter={() => setHoveredImage(1)} onMouseLeave={() => setHoveredImage(null)}>
-                  <img src={src(0)} alt={alt(0)} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 1 ? "scale-110 brightness-110" : "scale-100"}`} />
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[1.4] animate-float-gallery-1"
+                  onMouseEnter={() => setHoveredImage(1)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[0].src}
+                    alt={galleryImages[0].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 1 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
-                <div className="relative overflow-hidden group cursor-pointer flex-[0.6] animate-float-gallery-2"
-                  onMouseEnter={() => setHoveredImage(4)} onMouseLeave={() => setHoveredImage(null)}>
-                  <img src={src(3)} alt={alt(3)} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 4 ? "scale-110 brightness-110" : "scale-100"}`} />
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[0.6] animate-float-gallery-2"
+                  onMouseEnter={() => setHoveredImage(4)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[3].src}
+                    alt={galleryImages[3].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 4 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
                 </div>
               </div>
+
               {/* Column 2 */}
               <div className="flex flex-col gap-2">
-                <div className="relative overflow-hidden group cursor-pointer flex-[0.8] animate-float-gallery-3"
-                  onMouseEnter={() => setHoveredImage(2)} onMouseLeave={() => setHoveredImage(null)}>
-                  <img src={src(1)} alt={alt(1)} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 2 ? "scale-110 brightness-110" : "scale-100"}`} />
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[0.8] animate-float-gallery-3"
+                  onMouseEnter={() => setHoveredImage(2)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[1].src}
+                    alt={galleryImages[1].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 2 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
                 </div>
-                <div className="relative overflow-hidden group cursor-pointer flex-[1.2] animate-float-gallery-4"
-                  onMouseEnter={() => setHoveredImage(5)} onMouseLeave={() => setHoveredImage(null)}>
-                  <img src={src(4)} alt={alt(4)} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 5 ? "scale-110 brightness-110" : "scale-100"}`} />
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[1.2] animate-float-gallery-4"
+                  onMouseEnter={() => setHoveredImage(5)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[4].src}
+                    alt={galleryImages[4].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 5 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
                 </div>
               </div>
+
               {/* Column 3 */}
               <div className="flex flex-col gap-2">
-                <div className="relative overflow-hidden group cursor-pointer flex-[1.3] animate-float-gallery-5"
-                  onMouseEnter={() => setHoveredImage(3)} onMouseLeave={() => setHoveredImage(null)}>
-                  <img src={src(2)} alt={alt(2)} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 3 ? "scale-110 brightness-110" : "scale-100"}`} />
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[1.3] animate-float-gallery-5"
+                  onMouseEnter={() => setHoveredImage(3)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[2].src}
+                    alt={galleryImages[2].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 3 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
                 </div>
-                <div className="relative overflow-hidden group cursor-pointer flex-[0.7] animate-float-gallery-6"
-                  onMouseEnter={() => setHoveredImage(6)} onMouseLeave={() => setHoveredImage(null)}>
-                  <img src={src(5)} alt={alt(5)} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 6 ? "scale-110 brightness-110" : "scale-100"}`} />
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[0.7] animate-float-gallery-6"
+                  onMouseEnter={() => setHoveredImage(6)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[5].src}
+                    alt={galleryImages[5].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 6 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
                 </div>
               </div>
+
               {/* Column 4 */}
               <div className="flex flex-col gap-2">
-                <div className="relative overflow-hidden group cursor-pointer flex-[0.5] animate-float-gallery-7"
-                  onMouseEnter={() => setHoveredImage(7)} onMouseLeave={() => setHoveredImage(null)}>
-                  <img src={src(6)} alt={alt(6)} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 7 ? "scale-110 brightness-110" : "scale-100"}`} />
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[0.5] animate-float-gallery-7"
+                  onMouseEnter={() => setHoveredImage(7)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[6].src}
+                    alt={galleryImages[6].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 7 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
                 </div>
-                <div className="relative overflow-hidden group cursor-pointer flex-[1.5] animate-float-gallery-8"
-                  onMouseEnter={() => setHoveredImage(8)} onMouseLeave={() => setHoveredImage(null)}>
-                  <img src={src(7)} alt={alt(7)} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 8 ? "scale-110 brightness-110" : "scale-100"}`} />
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[1.5] animate-float-gallery-8"
+                  onMouseEnter={() => setHoveredImage(8)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[7].src}
+                    alt={galleryImages[7].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 8 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
                 </div>
               </div>
             </div>
+
             {/* Bottom gradient fade */}
             <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/60 to-transparent pointer-events-none z-10" />
           </div>
 
-          {/* Right side - Vertical Video Reel */}
+          {/* Right side - Vertical Video Reel (TikTok style) */}
           <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-6 lg:mt-0">
             <div className="relative w-full max-w-[260px]">
               <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl">
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
+                
                 <div
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
@@ -177,11 +209,16 @@ export function Hero({ photos, onPhotosChange, isExpanded, onExpandChange }: Her
                         ref={(el) => { videoRefs.current[index] = el }}
                         src={video.src}
                         className="w-full h-full object-cover"
-                        loop muted={isMuted} playsInline autoPlay={index === 0}
+                        loop
+                        muted={isMuted}
+                        playsInline
+                        autoPlay={index === 0}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none" />
                       <div className="absolute bottom-6 left-4 right-4 z-20">
-                        <span className="text-xs font-medium text-white/60 bg-white/10 px-2 py-1 rounded-full">{video.category}</span>
+                        <span className="text-xs font-medium text-white/60 bg-white/10 px-2 py-1 rounded-full">
+                          {video.category}
+                        </span>
                         <h3 className="text-white font-medium text-sm mt-2">{video.title}</h3>
                       </div>
                       <div className="absolute top-12 left-4 z-20">
@@ -190,21 +227,37 @@ export function Hero({ photos, onPhotosChange, isExpanded, onExpandChange }: Her
                     </div>
                   ))}
                 </div>
+
                 <div className="absolute bottom-20 right-4 z-30 flex flex-col gap-3">
-                  <button onClick={toggleMute} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors">
+                  <button
+                    onClick={toggleMute}
+                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+                  >
                     {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                   </button>
-                  <button onClick={togglePlay} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors">
+                  <button
+                    onClick={togglePlay}
+                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+                  >
                     {isPlaying ? (
-                      <div className="flex gap-0.5"><div className="w-1 h-3 bg-white rounded-full" /><div className="w-1 h-3 bg-white rounded-full" /></div>
+                      <div className="flex gap-0.5">
+                        <div className="w-1 h-3 bg-white rounded-full" />
+                        <div className="w-1 h-3 bg-white rounded-full" />
+                      </div>
                     ) : (
                       <Play className="w-4 h-4 fill-white" />
                     )}
                   </button>
                 </div>
+
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2">
                   {videoReels.map((_, index) => (
-                    <div key={index} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === activeVideo ? "bg-white h-4" : "bg-white/30"}`} />
+                    <div
+                      key={index}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                        index === activeVideo ? "bg-white h-4" : "bg-white/30"
+                      }`}
+                    />
                   ))}
                 </div>
               </div>
@@ -212,54 +265,9 @@ export function Hero({ photos, onPhotosChange, isExpanded, onExpandChange }: Her
             </div>
           </div>
         </div>
-
-        {/* ── Expanded gallery (same place, below the masonry + phone) ── */}
-        {isExpanded && (
-          <div className="mt-12">
-            <div className="border-t border-white/10 pt-10">
-              {photos.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <p className="text-white/60 font-sans mb-4">No photos uploaded yet.</p>
-                  {!isAdmin && (
-                    <button
-                      onClick={openLoginModal}
-                      className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 rounded-xl text-white font-medium transition-colors duration-200 font-sans"
-                    >
-                      <Lock className="w-4 h-4" />
-                      Login to upload images
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <SortableGallery
-                  images={photos}
-                  category="photography"
-                  onImagesChange={onPhotosChange}
-                  isModalOpen={true}
-                />
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Expand / collapse toggle */}
-        {(hasMore || isExpanded) && (
-          <div className="flex justify-center mt-8">
-            <button
-              onClick={isExpanded ? handleCollapse : handleExpand}
-              className="flex items-center gap-2 px-8 py-3 border border-white/20 rounded-full text-white/70 hover:text-white hover:border-white/50 transition-all duration-200 font-sans text-sm"
-            >
-              {isExpanded ? (
-                <><ChevronUp className="w-4 h-4" />Show less</>
-              ) : (
-                <><ChevronDown className="w-4 h-4" />View all photos ({photos.length})</>
-              )}
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* Vertical label */}
+      {/* Bottom label - vertical */}
       <div className="absolute bottom-8 right-8 hidden lg:block">
         <p className="label-text text-white/30 tracking-wider" style={{ writingMode: "vertical-rl" }}>
           Scroll to explore
@@ -267,15 +275,41 @@ export function Hero({ photos, onPhotosChange, isExpanded, onExpandChange }: Her
       </div>
 
       <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        @keyframes floatGallery1 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
-        @keyframes floatGallery2 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(5px); } }
-        @keyframes floatGallery3 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-4px); } }
-        @keyframes floatGallery4 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(6px); } }
-        @keyframes floatGallery5 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
-        @keyframes floatGallery6 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(4px); } }
-        @keyframes floatGallery7 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-3px); } }
-        @keyframes floatGallery8 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(5px); } }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        @keyframes floatGallery1 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-6px); }
+        }
+        @keyframes floatGallery2 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(5px); }
+        }
+        @keyframes floatGallery3 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-4px); }
+        }
+        @keyframes floatGallery4 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(6px); }
+        }
+        @keyframes floatGallery5 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-5px); }
+        }
+        @keyframes floatGallery6 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(4px); }
+        }
+        @keyframes floatGallery7 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-3px); }
+        }
+        @keyframes floatGallery8 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(5px); }
+        }
         .animate-float-gallery-1 { animation: floatGallery1 5s ease-in-out infinite; }
         .animate-float-gallery-2 { animation: floatGallery2 6s ease-in-out infinite 0.5s; }
         .animate-float-gallery-3 { animation: floatGallery3 5.5s ease-in-out infinite 0.3s; }
