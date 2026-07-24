@@ -1,19 +1,26 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Volume2, VolumeX, Play } from "lucide-react"
+import { Volume2, VolumeX, Play, ArrowRight } from "lucide-react"
 
-// Masonry gallery images with varying sizes
-const galleryImages = [
-  { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", size: "tall" },
-  { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", size: "wide" },
-  { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography", size: "medium" },
-  { id: 4, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154159/Sni%CC%81mek_obrazovky_2026-05-30_v_17.15.41_wfowzq.png", alt: "Food photography", size: "small" },
-  { id: 5, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147813/Sni%CC%81mek_obrazovky_2026-05-29_v_12.33.50_d3lite.png", alt: "Wedding photography", size: "tall" },
-  { id: 6, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154527/Sni%CC%81mek_obrazovky_2026-05-30_v_17.21.54_uhziv7.png", alt: "Product photography", size: "medium" },
-  { id: 7, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154249/Sni%CC%81mek_obrazovky_2026-05-30_v_17.17.06_smki1b.png", alt: "Fashion photography", size: "wide" },
-  { id: 8, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780155677/Sni%CC%81mek_obrazovky_2026-05-30_v_17.41.00_symplk.png", alt: "Commercial photography", size: "small" },
+// Fallback hardcoded images (used while live data loads or if gallery is empty)
+const FALLBACK_IMAGES = [
+  { id: "f1", url: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography" },
+  { id: "f2", url: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography" },
+  { id: "f3", url: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography" },
+  { id: "f4", url: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154159/Sni%CC%81mek_obrazovky_2026-05-30_v_17.15.41_wfowzq.png", alt: "Food photography" },
+  { id: "f5", url: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147813/Sni%CC%81mek_obrazovky_2026-05-29_v_12.33.50_d3lite.png", alt: "Wedding photography" },
+  { id: "f6", url: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154527/Sni%CC%81mek_obrazovky_2026-05-30_v_17.21.54_uhziv7.png", alt: "Product photography" },
+  { id: "f7", url: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154249/Sni%CC%81mek_obrazovky_2026-05-30_v_17.17.06_smki1b.png", alt: "Fashion photography" },
+  { id: "f8", url: "https://res.cloudinary.com/duntvai9w/image/upload/v1780155677/Sni%CC%81mek_obrazovky_2026-05-30_v_17.41.00_symplk.png", alt: "Commercial photography" },
 ]
+
+const HERO_PHOTO_COUNT = 6
+
+// Dispatch the custom event that Photography listens to
+function triggerPhotoExpand() {
+  window.dispatchEvent(new Event("photography:expand"))
+}
 
 const videoReels = [
   { id: 1, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1/Frapp%C3%A9_Matcha_Maracuja_rc9ti6.mp4", title: "Matcha Frappé", category: "Food" },
@@ -22,13 +29,35 @@ const videoReels = [
   { id: 4, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1780151825/Starbucks_video_copy_jdqqld.mp4", title: "Starbucks Story", category: "Commercial" },
 ]
 
+interface LivePhoto {
+  id: string
+  url: string
+  alt?: string
+}
+
 export function Hero() {
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
   const [hoveredImage, setHoveredImage] = useState<number | null>(null)
+  const [livePhotos, setLivePhotos] = useState<LivePhoto[]>(FALLBACK_IMAGES)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  // Fetch live photos from the photography gallery
+  useEffect(() => {
+    fetch("/api/gallery?category=photography")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.images && data.images.length > 0) {
+          setLivePhotos(data.images)
+        }
+      })
+      .catch(() => {/* keep fallbacks */})
+  }, [])
+
+  const heroPhotos = livePhotos.slice(0, HERO_PHOTO_COUNT)
+  const totalPhotos = livePhotos.length
 
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
@@ -80,118 +109,99 @@ export function Hero() {
 
         {/* Two-part layout */}
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Left side - Dynamic Masonry Photo Gallery */}
+          {/* Left side - Live Photo Gallery */}
           <div className="flex-1 lg:flex-[2] relative">
-            {/* Masonry Grid */}
-            <div className="grid grid-cols-4 gap-2 h-[420px] relative">
+
+            {/* ── Mobile: horizontal scroll strip ── */}
+            <div className="flex lg:hidden gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {heroPhotos.map((photo, index) => (
+                <div
+                  key={photo.id}
+                  className="relative flex-shrink-0 w-32 h-44 overflow-hidden rounded-xl"
+                  onMouseEnter={() => setHoveredImage(index)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={photo.url}
+                    alt={photo.alt ?? "Photography"}
+                    className={`w-full h-full object-cover transition-all duration-500 ${hoveredImage === index ? "scale-110 brightness-110" : "scale-100"}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                </div>
+              ))}
+
+              {/* View all card — mobile */}
+              <button
+                onClick={triggerPhotoExpand}
+                className="flex-shrink-0 w-32 h-44 rounded-xl border border-white/20 bg-white/5 flex flex-col items-center justify-center gap-2 text-white/70 hover:text-white hover:border-white/50 hover:bg-white/10 transition-all duration-300"
+                aria-label="View all photos"
+              >
+                <ArrowRight className="w-5 h-5" />
+                <span className="text-xs font-sans text-center leading-tight px-2">
+                  View all{totalPhotos > HERO_PHOTO_COUNT ? ` (${totalPhotos})` : ""}
+                </span>
+              </button>
+            </div>
+
+            {/* ── Desktop: masonry columns ── */}
+            <div className="hidden lg:grid grid-cols-4 gap-2 h-[420px] relative">
               {/* Column 1 */}
               <div className="flex flex-col gap-2">
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[1.4] animate-float-gallery-1"
-                  onMouseEnter={() => setHoveredImage(1)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[0].src}
-                    alt={galleryImages[0].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 1 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[0.6] animate-float-gallery-2"
-                  onMouseEnter={() => setHoveredImage(4)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[3].src}
-                    alt={galleryImages[3].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 4 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
+                {[heroPhotos[0], heroPhotos[3]].filter(Boolean).map((photo, i) => (
+                  <div
+                    key={photo.id}
+                    className={`relative overflow-hidden group cursor-pointer ${i === 0 ? "flex-[1.4] animate-float-gallery-1" : "flex-[0.6] animate-float-gallery-2"}`}
+                    onMouseEnter={() => setHoveredImage(i === 0 ? 0 : 3)}
+                    onMouseLeave={() => setHoveredImage(null)}
+                  >
+                    <img src={photo.url} alt={photo.alt ?? ""} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === (i === 0 ? 0 : 3) ? "scale-110 brightness-110" : "scale-100"}`} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
+                ))}
               </div>
-
               {/* Column 2 */}
               <div className="flex flex-col gap-2">
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[0.8] animate-float-gallery-3"
-                  onMouseEnter={() => setHoveredImage(2)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[1].src}
-                    alt={galleryImages[1].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 2 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[1.2] animate-float-gallery-4"
-                  onMouseEnter={() => setHoveredImage(5)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[4].src}
-                    alt={galleryImages[4].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 5 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
+                {[heroPhotos[1], heroPhotos[4]].filter(Boolean).map((photo, i) => (
+                  <div
+                    key={photo.id}
+                    className={`relative overflow-hidden group cursor-pointer ${i === 0 ? "flex-[0.8] animate-float-gallery-3" : "flex-[1.2] animate-float-gallery-4"}`}
+                    onMouseEnter={() => setHoveredImage(i === 0 ? 1 : 4)}
+                    onMouseLeave={() => setHoveredImage(null)}
+                  >
+                    <img src={photo.url} alt={photo.alt ?? ""} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === (i === 0 ? 1 : 4) ? "scale-110 brightness-110" : "scale-100"}`} />
+                  </div>
+                ))}
               </div>
-
               {/* Column 3 */}
               <div className="flex flex-col gap-2">
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[1.3] animate-float-gallery-5"
-                  onMouseEnter={() => setHoveredImage(3)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[2].src}
-                    alt={galleryImages[2].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 3 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[0.7] animate-float-gallery-6"
-                  onMouseEnter={() => setHoveredImage(6)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[5].src}
-                    alt={galleryImages[5].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 6 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
+                {[heroPhotos[2], heroPhotos[5]].filter(Boolean).map((photo, i) => (
+                  <div
+                    key={photo.id}
+                    className={`relative overflow-hidden group cursor-pointer ${i === 0 ? "flex-[1.3] animate-float-gallery-5" : "flex-[0.7] animate-float-gallery-6"}`}
+                    onMouseEnter={() => setHoveredImage(i === 0 ? 2 : 5)}
+                    onMouseLeave={() => setHoveredImage(null)}
+                  >
+                    <img src={photo.url} alt={photo.alt ?? ""} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === (i === 0 ? 2 : 5) ? "scale-110 brightness-110" : "scale-100"}`} />
+                  </div>
+                ))}
               </div>
-
-              {/* Column 4 */}
+              {/* Column 4 — View all card */}
               <div className="flex flex-col gap-2">
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[0.5] animate-float-gallery-7"
-                  onMouseEnter={() => setHoveredImage(7)}
-                  onMouseLeave={() => setHoveredImage(null)}
+                <button
+                  onClick={triggerPhotoExpand}
+                  className="flex-1 rounded-xl border border-white/20 bg-white/5 flex flex-col items-center justify-center gap-3 text-white/60 hover:text-white hover:border-white/40 hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                  aria-label="View all photos"
                 >
-                  <img
-                    src={galleryImages[6].src}
-                    alt={galleryImages[6].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 7 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[1.5] animate-float-gallery-8"
-                  onMouseEnter={() => setHoveredImage(8)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[7].src}
-                    alt={galleryImages[7].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 8 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
+                  <ArrowRight className="w-6 h-6" />
+                  <span className="text-xs font-sans text-center leading-snug px-3">
+                    View all photos{totalPhotos > HERO_PHOTO_COUNT ? `\n(${totalPhotos})` : ""}
+                  </span>
+                </button>
               </div>
             </div>
 
-            {/* Bottom gradient fade */}
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/60 to-transparent pointer-events-none z-10" />
+            {/* Bottom gradient fade (desktop only) */}
+            <div className="hidden lg:block absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/60 to-transparent pointer-events-none z-10" />
           </div>
 
           {/* Right side - Vertical Video Reel (TikTok style) */}
