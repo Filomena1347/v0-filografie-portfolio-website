@@ -187,8 +187,18 @@ export function Hero({ photos }: HeroProps) {
               </div>
             </div>
 
-            {/* Bottom gradient fade */}
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/60 to-transparent pointer-events-none z-10" />
+            {/* View all button */}
+            <div className="mt-3 flex justify-start">
+              <button
+                onClick={() => {
+                  document.getElementById("photography")?.scrollIntoView({ behavior: "smooth" })
+                }}
+                className="text-sm text-white/50 hover:text-white transition-colors duration-200 flex items-center gap-1.5"
+              >
+                View all photos
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
           </div>
 
           {/* Right side - Vertical Video Reel (TikTok style) */}
