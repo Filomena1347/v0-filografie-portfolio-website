@@ -3,16 +3,10 @@
 import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
 
-// Masonry gallery images with varying sizes
 const galleryImages = [
-  { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", size: "tall" },
-  { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", size: "wide" },
-  { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography", size: "medium" },
-  { id: 4, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154159/Sni%CC%81mek_obrazovky_2026-05-30_v_17.15.41_wfowzq.png", alt: "Food photography", size: "small" },
-  { id: 5, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147813/Sni%CC%81mek_obrazovky_2026-05-29_v_12.33.50_d3lite.png", alt: "Wedding photography", size: "tall" },
-  { id: 6, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154527/Sni%CC%81mek_obrazovky_2026-05-30_v_17.21.54_uhziv7.png", alt: "Product photography", size: "medium" },
-  { id: 7, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154249/Sni%CC%81mek_obrazovky_2026-05-30_v_17.17.06_smki1b.png", alt: "Fashion photography", size: "wide" },
-  { id: 8, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780155677/Sni%CC%81mek_obrazovky_2026-05-30_v_17.41.00_symplk.png", alt: "Commercial photography", size: "small" },
+  { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
+  { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", category: "Lifestyle" },
+  { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography", category: "Events" },
 ]
 
 const videoReels = [
@@ -26,7 +20,6 @@ export function Hero() {
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
-  const [hoveredImage, setHoveredImage] = useState<number | null>(null)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
@@ -66,10 +59,11 @@ export function Hero() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#0a0a14]">
       {/* Main content */}
-      <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-24 pb-12">
-        {/* Header text - removed Filography label */}
-        <div className="mb-10 lg:mb-14 pt-4">
-          <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-4">
+      <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-28 pb-16">
+        {/* Header text */}
+        <div className="mb-16 lg:mb-20 pt-8">
+          <p className="label-text text-white/50 mb-4">Filography</p>
+          <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-5">
             I Create visuals.<br />
             <span className="text-indigo-400">Tell stories.</span>
           </h1>
@@ -79,123 +73,27 @@ export function Hero() {
         </div>
 
         {/* Two-part layout */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Left side - Dynamic Masonry Photo Gallery */}
-          <div className="flex-1 lg:flex-[2] relative">
-            {/* Masonry Grid */}
-            <div className="grid grid-cols-4 gap-2 h-[420px] relative">
-              {/* Column 1 */}
-              <div className="flex flex-col gap-2">
+        <div className="flex flex-col lg:flex-row gap-0 lg:gap-8">
+          {/* Left side - Photo Gallery - 3 photos in a row, 380px height */}
+          <div className="flex-1 lg:flex-[2]">
+            <div className="flex gap-0 h-[380px]">
+              {galleryImages.map((image) => (
                 <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[1.4] animate-float-gallery-1"
-                  onMouseEnter={() => setHoveredImage(1)}
-                  onMouseLeave={() => setHoveredImage(null)}
+                  key={image.id} 
+                  className="relative overflow-hidden group cursor-pointer flex-1"
                 >
                   <img
-                    src={galleryImages[0].src}
-                    alt={galleryImages[0].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 1 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[0.6] animate-float-gallery-2"
-                  onMouseEnter={() => setHoveredImage(4)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[3].src}
-                    alt={galleryImages[3].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 4 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
                   />
                 </div>
-              </div>
-
-              {/* Column 2 */}
-              <div className="flex flex-col gap-2">
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[0.8] animate-float-gallery-3"
-                  onMouseEnter={() => setHoveredImage(2)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[1].src}
-                    alt={galleryImages[1].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 2 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[1.2] animate-float-gallery-4"
-                  onMouseEnter={() => setHoveredImage(5)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[4].src}
-                    alt={galleryImages[4].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 5 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-              </div>
-
-              {/* Column 3 */}
-              <div className="flex flex-col gap-2">
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[1.3] animate-float-gallery-5"
-                  onMouseEnter={() => setHoveredImage(3)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[2].src}
-                    alt={galleryImages[2].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 3 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[0.7] animate-float-gallery-6"
-                  onMouseEnter={() => setHoveredImage(6)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[5].src}
-                    alt={galleryImages[5].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 6 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-              </div>
-
-              {/* Column 4 */}
-              <div className="flex flex-col gap-2">
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[0.5] animate-float-gallery-7"
-                  onMouseEnter={() => setHoveredImage(7)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[6].src}
-                    alt={galleryImages[6].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 7 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-                <div 
-                  className="relative overflow-hidden group cursor-pointer flex-[1.5] animate-float-gallery-8"
-                  onMouseEnter={() => setHoveredImage(8)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={galleryImages[7].src}
-                    alt={galleryImages[7].alt}
-                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 8 ? 'scale-110 brightness-110' : 'scale-100'}`}
-                  />
-                </div>
-              </div>
+              ))}
             </div>
-
-            {/* Bottom gradient fade */}
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/60 to-transparent pointer-events-none z-10" />
           </div>
 
           {/* Right side - Vertical Video Reel (TikTok style) */}
-          <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-6 lg:mt-0">
+          <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-8 lg:mt-0">
             <div className="relative w-full max-w-[260px]">
               <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl">
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
@@ -264,14 +162,14 @@ export function Hero() {
                   ))}
                 </div>
               </div>
-              <p className="text-center text-white/30 text-xs mt-3 label-text">Scroll to explore reels</p>
+              <p className="text-center text-white/30 text-xs mt-4 label-text">Scroll to explore reels</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Bottom label - vertical */}
-      <div className="absolute bottom-8 right-8 hidden lg:block">
+      <div className="absolute bottom-12 right-8 hidden lg:block">
         <p className="label-text text-white/30 tracking-wider" style={{ writingMode: "vertical-rl" }}>
           Scroll to explore
         </p>
@@ -281,46 +179,6 @@ export function Hero() {
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
-        @keyframes floatGallery1 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-        }
-        @keyframes floatGallery2 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(5px); }
-        }
-        @keyframes floatGallery3 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-4px); }
-        }
-        @keyframes floatGallery4 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(6px); }
-        }
-        @keyframes floatGallery5 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-5px); }
-        }
-        @keyframes floatGallery6 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(4px); }
-        }
-        @keyframes floatGallery7 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-3px); }
-        }
-        @keyframes floatGallery8 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(5px); }
-        }
-        .animate-float-gallery-1 { animation: floatGallery1 5s ease-in-out infinite; }
-        .animate-float-gallery-2 { animation: floatGallery2 6s ease-in-out infinite 0.5s; }
-        .animate-float-gallery-3 { animation: floatGallery3 5.5s ease-in-out infinite 0.3s; }
-        .animate-float-gallery-4 { animation: floatGallery4 6.5s ease-in-out infinite 0.8s; }
-        .animate-float-gallery-5 { animation: floatGallery5 5s ease-in-out infinite 0.2s; }
-        .animate-float-gallery-6 { animation: floatGallery6 6s ease-in-out infinite 0.6s; }
-        .animate-float-gallery-7 { animation: floatGallery7 5.5s ease-in-out infinite 0.4s; }
-        .animate-float-gallery-8 { animation: floatGallery8 6s ease-in-out infinite 0.7s; }
       `}</style>
     </section>
   )
