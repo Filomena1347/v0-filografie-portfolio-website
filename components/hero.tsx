@@ -185,34 +185,19 @@ export function Hero() {
                   </div>
                 ))}
               </div>
-              {/* Column 4 — photos (loop back if fewer than 8) */}
+              {/* Column 4 — View all card */}
               <div className="flex flex-col gap-2">
-                {[livePhotos[6] ?? livePhotos[0], livePhotos[7] ?? livePhotos[1]].filter(Boolean).map((photo, i) => (
-                  <div
-                    key={photo.id + "-col4-" + i}
-                    className={`relative overflow-hidden group cursor-pointer ${i === 0 ? "flex-[0.5] animate-float-gallery-7" : "flex-[1.5] animate-float-gallery-8"}`}
-                    onMouseEnter={() => setHoveredImage(i === 0 ? 6 : 7)}
-                    onMouseLeave={() => setHoveredImage(null)}
-                  >
-                    <img src={photo.url} alt={photo.alt ?? ""} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === (i === 0 ? 6 : 7) ? "scale-110 brightness-110" : "scale-100"}`} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  </div>
-                ))}
+                <button
+                  onClick={triggerPhotoExpand}
+                  className="flex-1 rounded-xl border border-white/20 bg-white/5 flex flex-col items-center justify-center gap-3 text-white/60 hover:text-white hover:border-white/40 hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                  aria-label="View all photos"
+                >
+                  <ArrowRight className="w-6 h-6" />
+                  <span className="text-xs font-sans text-center leading-snug px-3">
+                    View all photos{totalPhotos > HERO_PHOTO_COUNT ? `\n(${totalPhotos})` : ""}
+                  </span>
+                </button>
               </div>
-            </div>
-
-            {/* View all photos — floating button below masonry (desktop) */}
-            <div className="hidden lg:flex absolute bottom-6 left-0 z-20">
-              <button
-                onClick={triggerPhotoExpand}
-                className="flex items-center gap-2 text-xs text-white/50 hover:text-white transition-colors duration-200"
-                aria-label="View all photos"
-              >
-                <ArrowRight className="w-3.5 h-3.5" />
-                <span className="font-sans">
-                  View all photos{totalPhotos > HERO_PHOTO_COUNT ? ` (${totalPhotos})` : ""}
-                </span>
-              </button>
             </div>
 
             {/* Bottom gradient fade (desktop only) */}
