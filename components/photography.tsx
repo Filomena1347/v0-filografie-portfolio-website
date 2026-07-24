@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useRef } from "react";
 import { Loader2, Lock, ChevronDown, ChevronUp } from "lucide-react";
 import { SortableGallery } from "./sortable-gallery";
 import { useAdmin } from "@/contexts/admin-context";
@@ -8,51 +8,19 @@ import type { GalleryImage } from "@/lib/cloudinary";
 
 const PREVIEW_COUNT = 8;
 
-export function Photography() {
+interface PhotographyProps {
+  photos: GalleryImage[];
+  onPhotosChange: (images: GalleryImage[]) => void;
+  isExpanded: boolean;
+  onExpandChange: (expanded: boolean) => void;
+}
+
+export function Photography({ photos, onPhotosChange, isExpanded, onExpandChange }: PhotographyProps) {
   const { isAdmin, openLoginModal } = useAdmin();
-  const [images, setImages] = useState<GalleryImage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
-  const fetchImages = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/gallery?category=photography");
-      if (response.ok) {
-        const data = await response.json();
-        setImages(data.images || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch images:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchImages();
-  }, [fetchImages]);
-
-  // Listen for the expand event triggered by Navbar and Hero
-  useEffect(() => {
-    const handleExpand = () => {
-      setIsExpanded(true);
-      setTimeout(() => {
-        sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 50);
-    };
-    window.addEventListener("photography:expand", handleExpand);
-    return () => window.removeEventListener("photography:expand", handleExpand);
-  }, []);
-
-  const handleImagesChange = useCallback((newImages: GalleryImage[]) => {
-    setImages(newImages);
-  }, []);
-
-  const previewImages = images.slice(0, PREVIEW_COUNT);
-  const displayedImages = isExpanded ? images : previewImages;
-  const hasMore = images.length > PREVIEW_COUNT;
+  const displayedPhotos = isExpanded ? photos : photos.slice(0, PREVIEW_COUNT);
+  const hasMore = photos.length > PREVIEW_COUNT;
 
   return (
     <section id="photography" ref={sectionRef} className="py-32 px-6 relative overflow-hidden">
@@ -73,48 +41,12 @@ export function Photography() {
         </div>
 
         {/* Gallery */}
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 text-indigo-400 animate-spin mb-4" />
-            <p className="text-white/60 font-sans">Loading images...</p>
-          </div>
-        ) : images.length > 0 ? (
-          <>
-            <SortableGallery
-              images={displayedImages}
-              category="photography"
-              onImagesChange={handleImagesChange}
-              isModalOpen={true}
-            />
-
-            {/* Expand / collapse button */}
-            {hasMore && (
-              <div className="flex justify-center mt-10">
-                <button
-                  onClick={() => setIsExpanded((prev) => !prev)}
-                  className="flex items-center gap-2 px-8 py-3 border border-white/20 rounded-full text-white/70 hover:text-white hover:border-white/50 transition-all duration-200 font-sans text-sm"
-                >
-                  {isExpanded ? (
-                    <>
-                      <ChevronUp className="w-4 h-4" />
-                      Show less
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-4 h-4" />
-                      View all photos ({images.length})
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
+        {photos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <SortableGallery
               images={[]}
               category="photography"
-              onImagesChange={handleImagesChange}
+              onImagesChange={onPhotosChange}
               isModalOpen={true}
             />
             <p className="text-white/60 font-sans mb-2">No images yet.</p>
@@ -130,6 +62,37 @@ export function Photography() {
               <p className="text-white/40 font-sans text-sm">Use the upload button above to add images.</p>
             )}
           </div>
+        ) : (
+          <>
+            <SortableGallery
+              images={displayedPhotos}
+              category="photography"
+              onImagesChange={onPhotosChange}
+              isModalOpen={true}
+            />
+
+            {/* Expand / collapse button */}
+            {hasMore && (
+              <div className="flex justify-center mt-10">
+                <button
+                  onClick={() => onExpandChange(!isExpanded)}
+                  className="flex items-center gap-2 px-8 py-3 border border-white/20 rounded-full text-white/70 hover:text-white hover:border-white/50 transition-all duration-200 font-sans text-sm"
+                >
+                  {isExpanded ? (
+                    <>
+                      <ChevronUp className="w-4 h-4" />
+                      Show less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4" />
+                      View all photos ({photos.length})
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

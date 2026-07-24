@@ -3,17 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
 
-// Fallback images shown before live data loads or if gallery is empty
-const FALLBACK_IMAGES = [
-  { src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography" },
-  { src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography" },
-  { src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography" },
-  { src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154159/Sni%CC%81mek_obrazovky_2026-05-30_v_17.15.41_wfowzq.png", alt: "Food photography" },
-  { src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147813/Sni%CC%81mek_obrazovky_2026-05-29_v_12.33.50_d3lite.png", alt: "Wedding photography" },
-  { src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154527/Sni%CC%81mek_obrazovky_2026-05-30_v_17.21.54_uhziv7.png", alt: "Product photography" },
-  { src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154249/Sni%CC%81mek_obrazovky_2026-05-30_v_17.17.06_smki1b.png", alt: "Fashion photography" },
-  { src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780155677/Sni%CC%81mek_obrazovky_2026-05-30_v_17.41.00_symplk.png", alt: "Commercial photography" },
-]
+import type { GalleryImage } from "@/lib/cloudinary"
 
 const videoReels = [
   { id: 1, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1/Frapp%C3%A9_Matcha_Maracuja_rc9ti6.mp4", title: "Matcha Frappé", category: "Food" },
@@ -22,33 +12,20 @@ const videoReels = [
   { id: 4, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1780151825/Starbucks_video_copy_jdqqld.mp4", title: "Starbucks Story", category: "Commercial" },
 ]
 
-export function Hero() {
+interface HeroProps {
+  photos: GalleryImage[]
+}
+
+export function Hero({ photos }: HeroProps) {
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
   const [hoveredImage, setHoveredImage] = useState<number | null>(null)
-  const [galleryImages, setGalleryImages] = useState(FALLBACK_IMAGES)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  // Fetch live photography images; keep fallbacks if gallery is empty
-  useEffect(() => {
-    fetch("/api/gallery?category=photography")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.images && data.images.length >= 1) {
-          // Map to the same shape as FALLBACK_IMAGES
-          const mapped = data.images.map((img: { url: string; alt?: string }) => ({
-            src: img.url,
-            alt: img.alt ?? "Photography",
-          }))
-          // Pad with fallbacks if fewer than 8 live images exist
-          const padded = [...mapped, ...FALLBACK_IMAGES].slice(0, 8)
-          setGalleryImages(padded)
-        }
-      })
-      .catch(() => {/* keep fallbacks */})
-  }, [])
+  // Map GalleryImage to the shape used in JSX below
+  const galleryImages = photos.map((p) => ({ src: p.url, alt: p.category ?? "Photography" }))
 
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
