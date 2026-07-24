@@ -2,11 +2,19 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import { ChevronDown, Menu, X } from "lucide-react"
 
 const navItems = [
   { label: "Work", href: "#work" },
-  { label: "Photography", href: "#photography", expandPhotography: true },
+  { 
+    label: "Photography", 
+    href: "#photography",
+    dropdown: [
+      { label: "Corporate Events", href: "#corporate" },
+      { label: "Weddings", href: "#weddings" },
+      { label: "Fashion", href: "#fashion" },
+    ]
+  },
   { label: "Video", href: "#video" },
   { label: "Digital", href: "#digital" },
   { label: "Pricing", href: "#pricing" },
@@ -16,6 +24,7 @@ const navItems = [
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -43,14 +52,33 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-10">
           {navItems.map((item) => (
-            <div key={item.label} className="relative">
+            <div 
+              key={item.label}
+              className="relative"
+              onMouseEnter={() => item.dropdown && setOpenDropdown(item.label)}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
               <Link
                 href={item.href}
-                onClick={item.expandPhotography ? () => window.dispatchEvent(new Event("photography:expand")) : undefined}
                 className="flex items-center gap-1 text-sm text-white/70 hover:text-white transition-colors duration-200"
               >
                 {item.label}
+                {item.dropdown && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
               </Link>
+              
+              {item.dropdown && openDropdown === item.label && (
+                <div className="absolute top-full left-0 mt-4 py-3 min-w-[180px] bg-white rounded-xl shadow-xl">
+                  {item.dropdown.map((subItem) => (
+                    <Link
+                      key={subItem.label}
+                      href={subItem.href}
+                      className="block px-5 py-2.5 text-sm text-gray-700 hover:text-[#5046e5] hover:bg-gray-50 transition-all duration-200"
+                    >
+                      {subItem.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -81,16 +109,25 @@ export function Navbar() {
               <div key={item.label}>
                 <Link
                   href={item.href}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false)
-                    if (item.expandPhotography) {
-                      window.dispatchEvent(new Event("photography:expand"))
-                    }
-                  }}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="text-base text-white/70 hover:text-white transition-colors py-2 block"
                 >
                   {item.label}
                 </Link>
+                {item.dropdown && (
+                  <div className="ml-4 mt-2 flex flex-col gap-2">
+                    {item.dropdown.map((subItem) => (
+                      <Link
+                        key={subItem.label}
+                        href={subItem.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-sm text-white/50 hover:text-white transition-colors py-1"
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
             <a 
