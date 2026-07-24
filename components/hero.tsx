@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
-import { useLanguage } from "@/context/language-context"
 
 // Masonry gallery images with varying sizes
 const galleryImages = [
@@ -24,19 +23,12 @@ const videoReels = [
 ]
 
 export function Hero() {
-  const { t } = useLanguage()
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
   const [hoveredImage, setHoveredImage] = useState<number | null>(null)
-  const [phoneVisible, setPhoneVisible] = useState(false)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setPhoneVisible(true), 1500)
-    return () => clearTimeout(timer)
-  }, [])
 
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
@@ -75,82 +67,143 @@ export function Hero() {
     <section className="relative min-h-screen overflow-hidden bg-[#0a0a14]">
       {/* Main content */}
       <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-24 pb-12">
-        {/* Header text */}
+        {/* Header text - removed Filography label */}
         <div className="mb-10 lg:mb-14 pt-4">
           <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-4">
-            {t.hero_line1}<br />
-            <span className="text-indigo-400">{t.hero_line2}</span>
+            I Create visuals.<br />
+            <span className="text-indigo-400">Tell stories.</span>
           </h1>
           <p className="body-text text-white/50 text-sm max-w-lg">
-            {t.hero_subtitle}
+            Event photography · Social media management · Video · Graphic design
           </p>
         </div>
 
-        {/* Gallery + Phone overlay */}
-        <div className="relative">
-          {/* Full-width masonry photo gallery — background layer, 5 columns, object-cover, zero gaps */}
-          <div className="grid grid-cols-5 gap-0 h-[500px]">
-            {/* Column 1 — top 65%, bottom 35% */}
-            <div className="flex flex-col h-full">
-              <div className="relative overflow-hidden animate-float-gallery-1" style={{ height: "65%" }} onMouseEnter={() => setHoveredImage(1)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[0].src} alt={galleryImages[0].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 1 ? 'brightness-110' : ''}`} />
+        {/* Two-part layout */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Left side - Dynamic Masonry Photo Gallery */}
+          <div className="flex-1 lg:flex-[2] relative">
+            {/* Masonry Grid */}
+            <div className="grid grid-cols-4 gap-2 h-[420px] relative">
+              {/* Column 1 */}
+              <div className="flex flex-col gap-2">
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[1.4] animate-float-gallery-1"
+                  onMouseEnter={() => setHoveredImage(1)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[0].src}
+                    alt={galleryImages[0].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 1 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </div>
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[0.6] animate-float-gallery-2"
+                  onMouseEnter={() => setHoveredImage(4)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[3].src}
+                    alt={galleryImages[3].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 4 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
+                </div>
               </div>
-              <div className="relative overflow-hidden animate-float-gallery-2" style={{ height: "35%" }} onMouseEnter={() => setHoveredImage(4)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[3].src} alt={galleryImages[3].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 4 ? 'brightness-110' : ''}`} />
+
+              {/* Column 2 */}
+              <div className="flex flex-col gap-2">
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[0.8] animate-float-gallery-3"
+                  onMouseEnter={() => setHoveredImage(2)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[1].src}
+                    alt={galleryImages[1].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 2 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
+                </div>
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[1.2] animate-float-gallery-4"
+                  onMouseEnter={() => setHoveredImage(5)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[4].src}
+                    alt={galleryImages[4].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 5 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
+                </div>
+              </div>
+
+              {/* Column 3 */}
+              <div className="flex flex-col gap-2">
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[1.3] animate-float-gallery-5"
+                  onMouseEnter={() => setHoveredImage(3)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[2].src}
+                    alt={galleryImages[2].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 3 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
+                </div>
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[0.7] animate-float-gallery-6"
+                  onMouseEnter={() => setHoveredImage(6)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[5].src}
+                    alt={galleryImages[5].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 6 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
+                </div>
+              </div>
+
+              {/* Column 4 */}
+              <div className="flex flex-col gap-2">
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[0.5] animate-float-gallery-7"
+                  onMouseEnter={() => setHoveredImage(7)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[6].src}
+                    alt={galleryImages[6].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 7 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
+                </div>
+                <div 
+                  className="relative overflow-hidden group cursor-pointer flex-[1.5] animate-float-gallery-8"
+                  onMouseEnter={() => setHoveredImage(8)}
+                  onMouseLeave={() => setHoveredImage(null)}
+                >
+                  <img
+                    src={galleryImages[7].src}
+                    alt={galleryImages[7].alt}
+                    className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 8 ? 'scale-110 brightness-110' : 'scale-100'}`}
+                  />
+                </div>
               </div>
             </div>
-            {/* Column 2 — top 40%, bottom 60% */}
-            <div className="flex flex-col h-full">
-              <div className="relative overflow-hidden animate-float-gallery-3" style={{ height: "40%" }} onMouseEnter={() => setHoveredImage(2)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[1].src} alt={galleryImages[1].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 2 ? 'brightness-110' : ''}`} />
-              </div>
-              <div className="relative overflow-hidden animate-float-gallery-4" style={{ height: "60%" }} onMouseEnter={() => setHoveredImage(5)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[4].src} alt={galleryImages[4].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 5 ? 'brightness-110' : ''}`} />
-              </div>
-            </div>
-            {/* Column 3 — full height single image */}
-            <div className="flex flex-col h-full">
-              <div className="relative overflow-hidden animate-float-gallery-5 h-full" onMouseEnter={() => setHoveredImage(3)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[2].src} alt={galleryImages[2].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 3 ? 'brightness-110' : ''}`} />
-              </div>
-            </div>
-            {/* Column 4 — top 55%, bottom 45% */}
-            <div className="flex flex-col h-full">
-              <div className="relative overflow-hidden animate-float-gallery-6" style={{ height: "55%" }} onMouseEnter={() => setHoveredImage(6)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[5].src} alt={galleryImages[5].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 6 ? 'brightness-110' : ''}`} />
-              </div>
-              <div className="relative overflow-hidden animate-float-gallery-7" style={{ height: "45%" }} onMouseEnter={() => setHoveredImage(7)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[6].src} alt={galleryImages[6].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 7 ? 'brightness-110' : ''}`} />
-              </div>
-            </div>
-            {/* Column 5 — top 30%, bottom 70% */}
-            <div className="flex flex-col h-full">
-              <div className="relative overflow-hidden animate-float-gallery-8" style={{ height: "30%" }} onMouseEnter={() => setHoveredImage(8)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[7].src} alt={galleryImages[7].alt} className={`w-full h-full object-cover transition-all duration-700 ${hoveredImage === 8 ? 'brightness-110' : ''}`} />
-              </div>
-              <div className="relative overflow-hidden animate-float-gallery-1" style={{ height: "70%" }} onMouseEnter={() => setHoveredImage(1)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[0].src} alt={galleryImages[0].alt} className={`w-full h-full object-cover transition-all duration-700`} />
-              </div>
-            </div>
+
+            {/* Bottom gradient fade */}
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/60 to-transparent pointer-events-none z-10" />
           </div>
 
-          {/* Phone centered on top — fade + scale entrance after 1.5s */}
-          <div
-            className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
-            style={{
-              opacity: phoneVisible ? 1 : 0,
-              transform: phoneVisible ? 'scale(1)' : 'scale(0.9)',
-              transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
-            }}
-          >
-            <div className="relative w-full max-w-[240px] pointer-events-auto">
-              <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl ring-1 ring-white/10">
+          {/* Right side - Vertical Video Reel (TikTok style) */}
+          <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-6 lg:mt-0">
+            <div className="relative w-full max-w-[260px]">
+              <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl">
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
-
+                
                 <div
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
-                  className="relative h-[400px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
+                  className="relative h-[380px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {videoReels.map((video, index) => (
@@ -211,7 +264,7 @@ export function Hero() {
                   ))}
                 </div>
               </div>
-              <p className="text-center text-white/30 text-xs mt-3 label-text">{t.hero_scroll_reels}</p>
+              <p className="text-center text-white/30 text-xs mt-3 label-text">Scroll to explore reels</p>
             </div>
           </div>
         </div>
@@ -220,7 +273,7 @@ export function Hero() {
       {/* Bottom label - vertical */}
       <div className="absolute bottom-8 right-8 hidden lg:block">
         <p className="label-text text-white/30 tracking-wider" style={{ writingMode: "vertical-rl" }}>
-          {t.hero_scroll}
+          Scroll to explore
         </p>
       </div>
 
