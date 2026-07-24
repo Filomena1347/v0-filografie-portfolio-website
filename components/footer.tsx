@@ -1,19 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import { Instagram, Mail, ArrowUp } from "lucide-react";
-import { useLanguage } from "@/context/language-context";
 
 export function Footer() {
-  const { t } = useLanguage();
-
-  const serviceLinks = [
-    { label: t.footer_photography, href: "#photography" },
-    { label: t.footer_videography, href: "#video" },
-    { label: t.footer_digital, href: "#digital" },
-    { label: t.footer_pricing, href: "#pricing" },
-  ];
-
   return (
     <footer className="py-20 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
@@ -24,21 +12,22 @@ export function Footer() {
               Filografie
             </Link>
             <p className="mt-6 font-sans text-gray-400 max-w-md font-light leading-relaxed">
-              {t.footer_tagline}
+              Premium creative services for those who seek to capture life&apos;s most precious moments
+              with artistry and intention.
             </p>
           </div>
 
           {/* Quick links */}
           <div>
-            <h4 className="font-sans text-white text-sm font-medium mb-6">{t.footer_services}</h4>
+            <h4 className="font-sans text-white text-sm font-medium mb-6">Services</h4>
             <ul className="space-y-4">
-              {serviceLinks.map((link) => (
-                <li key={link.label}>
+              {["Photography", "Videography", "Digital Creative", "Pricing"].map((link) => (
+                <li key={link}>
                   <a
-                    href={link.href}
+                    href={`#${link.toLowerCase().replace(" ", "-")}`}
                     className="font-sans text-gray-400 text-sm hover:text-white transition-colors duration-300"
                   >
-                    {link.label}
+                    {link}
                   </a>
                 </li>
               ))}
@@ -47,7 +36,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-sans text-white text-sm font-medium mb-6">{t.footer_connect}</h4>
+            <h4 className="font-sans text-white text-sm font-medium mb-6">Connect</h4>
             <ul className="space-y-4">
               <li>
                 <a
@@ -73,25 +62,30 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Divider */}
         <div className="h-px bg-white/10 mb-8" />
 
+        {/* Bottom bar */}
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="font-sans text-gray-500 text-sm">
-            © {new Date().getFullYear()} Filografie. {t.footer_copyright}
+            © {new Date().getFullYear()} Filografie. All rights reserved.
           </p>
+
           <div className="flex items-center gap-8 mt-6 md:mt-0">
             <a href="#" className="font-sans text-gray-500 text-sm hover:text-white transition-colors">
-              {t.footer_privacy}
+              Privacy
             </a>
             <a href="#" className="font-sans text-gray-500 text-sm hover:text-white transition-colors">
-              {t.footer_terms}
+              Terms
             </a>
           </div>
+
+          {/* Back to top */}
           <a
             href="#"
             className="hidden md:flex items-center gap-2 bg-white/5 hover:bg-white/10 px-5 py-3 rounded-full font-sans text-gray-400 text-sm transition-colors group"
           >
-            {t.footer_back_top}
+            Back to Top
             <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
           </a>
         </div>

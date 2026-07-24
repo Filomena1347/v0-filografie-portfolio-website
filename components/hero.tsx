@@ -2,18 +2,11 @@
 
 import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
-import { useLanguage } from "@/context/language-context"
 
-// Masonry gallery images with varying sizes
 const galleryImages = [
-  { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", size: "tall" },
-  { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", size: "wide" },
-  { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography", size: "medium" },
-  { id: 4, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154159/Sni%CC%81mek_obrazovky_2026-05-30_v_17.15.41_wfowzq.png", alt: "Food photography", size: "small" },
-  { id: 5, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147813/Sni%CC%81mek_obrazovky_2026-05-29_v_12.33.50_d3lite.png", alt: "Wedding photography", size: "tall" },
-  { id: 6, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154527/Sni%CC%81mek_obrazovky_2026-05-30_v_17.21.54_uhziv7.png", alt: "Product photography", size: "medium" },
-  { id: 7, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154249/Sni%CC%81mek_obrazovky_2026-05-30_v_17.17.06_smki1b.png", alt: "Fashion photography", size: "wide" },
-  { id: 8, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780155677/Sni%CC%81mek_obrazovky_2026-05-30_v_17.41.00_symplk.png", alt: "Commercial photography", size: "small" },
+  { id: 1, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147847/Snímek_obrazovky_2026-05-29_v_12.34.41_f4alzi.png", alt: "Portrait photography", category: "Portrait" },
+  { id: 2, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780147898/Snímek_obrazovky_2026-05-30_v_15.31.19_ob3aun.png", alt: "Lifestyle photography", category: "Lifestyle" },
+  { id: 3, src: "https://res.cloudinary.com/duntvai9w/image/upload/v1780154203/Sni%CC%81mek_obrazovky_2026-05-30_v_17.16.18_xfoggt.png", alt: "Event photography", category: "Events" },
 ]
 
 const videoReels = [
@@ -24,19 +17,11 @@ const videoReels = [
 ]
 
 export function Hero() {
-  const { t } = useLanguage()
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
-  const [hoveredImage, setHoveredImage] = useState<number | null>(null)
-  const [phoneVisible, setPhoneVisible] = useState(false)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setPhoneVisible(true), 1500)
-    return () => clearTimeout(timer)
-  }, [])
 
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
@@ -74,77 +59,49 @@ export function Hero() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#0a0a14]">
       {/* Main content */}
-      <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-24 pb-12">
+      <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-28 pb-16">
         {/* Header text */}
-        <div className="mb-10 lg:mb-14 pt-4">
-          <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-4">
-            {t.hero_line1}<br />
-            <span className="text-indigo-400">{t.hero_line2}</span>
+        <div className="mb-16 lg:mb-20 pt-8">
+          <p className="label-text text-white/50 mb-4">Filography</p>
+          <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-5">
+            I Create visuals.<br />
+            <span className="text-indigo-400">Tell stories.</span>
           </h1>
           <p className="body-text text-white/50 text-sm max-w-lg">
-            {t.hero_subtitle}
+            Event photography · Social media management · Video · Graphic design
           </p>
         </div>
 
-        {/* Gallery + Phone overlay */}
-        <div className="relative">
-          {/* Full-width masonry photo gallery — background layer */}
-          <div className="grid grid-cols-4 gap-0 h-[500px] bg-[#0a0a0f]">
-            {/* Column 1 */}
-            <div className="flex flex-col gap-0">
-              <div className="relative flex-[1.4] bg-[#0a0a0f] animate-float-gallery-1 overflow-hidden" onMouseEnter={() => setHoveredImage(1)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[0].src} alt={galleryImages[0].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 1 ? 'brightness-110' : ''}`} />
-              </div>
-              <div className="relative flex-[0.6] bg-[#0a0a0f] animate-float-gallery-2 overflow-hidden" onMouseEnter={() => setHoveredImage(4)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[3].src} alt={galleryImages[3].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 4 ? 'brightness-110' : ''}`} />
-              </div>
-            </div>
-            {/* Column 2 */}
-            <div className="flex flex-col gap-0">
-              <div className="relative flex-[0.8] bg-[#0a0a0f] animate-float-gallery-3 overflow-hidden" onMouseEnter={() => setHoveredImage(2)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[1].src} alt={galleryImages[1].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 2 ? 'brightness-110' : ''}`} />
-              </div>
-              <div className="relative flex-[1.2] bg-[#0a0a0f] animate-float-gallery-4 overflow-hidden" onMouseEnter={() => setHoveredImage(5)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[4].src} alt={galleryImages[4].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 5 ? 'brightness-110' : ''}`} />
-              </div>
-            </div>
-            {/* Column 3 */}
-            <div className="flex flex-col gap-0">
-              <div className="relative flex-[1.3] bg-[#0a0a0f] animate-float-gallery-5 overflow-hidden" onMouseEnter={() => setHoveredImage(3)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[2].src} alt={galleryImages[2].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 3 ? 'brightness-110' : ''}`} />
-              </div>
-              <div className="relative flex-[0.7] bg-[#0a0a0f] animate-float-gallery-6 overflow-hidden" onMouseEnter={() => setHoveredImage(6)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[5].src} alt={galleryImages[5].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 6 ? 'brightness-110' : ''}`} />
-              </div>
-            </div>
-            {/* Column 4 */}
-            <div className="flex flex-col gap-0">
-              <div className="relative flex-[0.5] bg-[#0a0a0f] animate-float-gallery-7 overflow-hidden" onMouseEnter={() => setHoveredImage(7)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[6].src} alt={galleryImages[6].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 7 ? 'brightness-110' : ''}`} />
-              </div>
-              <div className="relative flex-[1.5] bg-[#0a0a0f] animate-float-gallery-8 overflow-hidden" onMouseEnter={() => setHoveredImage(8)} onMouseLeave={() => setHoveredImage(null)}>
-                <img src={galleryImages[7].src} alt={galleryImages[7].alt} className={`w-full h-full object-contain transition-all duration-700 ${hoveredImage === 8 ? 'brightness-110' : ''}`} />
-              </div>
+        {/* Two-part layout */}
+        <div className="flex flex-col lg:flex-row gap-0 lg:gap-8">
+          {/* Left side - Photo Gallery - 3 photos in a row, 380px height */}
+          <div className="flex-1 lg:flex-[2]">
+            <div className="flex gap-0 h-[380px]">
+              {galleryImages.map((image) => (
+                <div 
+                  key={image.id} 
+                  className="relative overflow-hidden group cursor-pointer flex-1"
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Phone centered on top — fade + scale entrance after 1.5s */}
-          <div
-            className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
-            style={{
-              opacity: phoneVisible ? 1 : 0,
-              transform: phoneVisible ? 'scale(1)' : 'scale(0.9)',
-              transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
-            }}
-          >
-            <div className="relative w-full max-w-[240px] pointer-events-auto">
-              <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl ring-1 ring-white/10">
+          {/* Right side - Vertical Video Reel (TikTok style) */}
+          <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-8 lg:mt-0">
+            <div className="relative w-full max-w-[260px]">
+              <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl">
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
-
+                
                 <div
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
-                  className="relative h-[400px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
+                  className="relative h-[380px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {videoReels.map((video, index) => (
@@ -205,16 +162,16 @@ export function Hero() {
                   ))}
                 </div>
               </div>
-              <p className="text-center text-white/30 text-xs mt-3 label-text">{t.hero_scroll_reels}</p>
+              <p className="text-center text-white/30 text-xs mt-4 label-text">Scroll to explore reels</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Bottom label - vertical */}
-      <div className="absolute bottom-8 right-8 hidden lg:block">
+      <div className="absolute bottom-12 right-8 hidden lg:block">
         <p className="label-text text-white/30 tracking-wider" style={{ writingMode: "vertical-rl" }}>
-          {t.hero_scroll}
+          Scroll to explore
         </p>
       </div>
 
@@ -222,46 +179,6 @@ export function Hero() {
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
-        @keyframes floatGallery1 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-        }
-        @keyframes floatGallery2 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(5px); }
-        }
-        @keyframes floatGallery3 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-4px); }
-        }
-        @keyframes floatGallery4 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(6px); }
-        }
-        @keyframes floatGallery5 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-5px); }
-        }
-        @keyframes floatGallery6 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(4px); }
-        }
-        @keyframes floatGallery7 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-3px); }
-        }
-        @keyframes floatGallery8 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(5px); }
-        }
-        .animate-float-gallery-1 { animation: floatGallery1 5s ease-in-out infinite; }
-        .animate-float-gallery-2 { animation: floatGallery2 6s ease-in-out infinite 0.5s; }
-        .animate-float-gallery-3 { animation: floatGallery3 5.5s ease-in-out infinite 0.3s; }
-        .animate-float-gallery-4 { animation: floatGallery4 6.5s ease-in-out infinite 0.8s; }
-        .animate-float-gallery-5 { animation: floatGallery5 5s ease-in-out infinite 0.2s; }
-        .animate-float-gallery-6 { animation: floatGallery6 6s ease-in-out infinite 0.6s; }
-        .animate-float-gallery-7 { animation: floatGallery7 5.5s ease-in-out infinite 0.4s; }
-        .animate-float-gallery-8 { animation: floatGallery8 6s ease-in-out infinite 0.7s; }
       `}</style>
     </section>
   )
