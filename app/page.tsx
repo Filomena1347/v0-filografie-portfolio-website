@@ -5,7 +5,6 @@ import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
 import { Portfolio } from "@/components/portfolio"
-import { Photography } from "@/components/photography"
 import { Video } from "@/components/video"
 import { DigitalCreative } from "@/components/digital-creative"
 import { Pricing } from "@/components/pricing"
@@ -74,15 +73,14 @@ export default function Home() {
     <main className="min-h-screen bg-[#0a0a0f] relative">
       <CosmicElements />
       <Navbar />
-      <Hero photos={heroPhotos} />
-      <About />
-      <Portfolio />
-      <Photography
+      <Hero
         photos={photos}
         onPhotosChange={setPhotos}
         isExpanded={isPhotoExpanded}
         onExpandChange={setIsPhotoExpanded}
       />
+      <About />
+      <Portfolio />
       <Video />
       <DigitalCreative />
       <Pricing />
