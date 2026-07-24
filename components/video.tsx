@@ -3,10 +3,19 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
+import { createClient } from "@/lib/supabase/client";
+import type { MediaItem } from "@/lib/types";
 
-// ─── Data ────────────────────────────────────────────────────────────────────
-// Replace / extend this array to connect to a CMS later.
-const VIDEO_DATA = [
+// ─── Types ───────────────────────────────────────────────────────────────────
+type VideoItem = {
+  id: string | number;
+  src: string;
+  poster: string;
+  category: string;
+};
+
+// ─── Fallback data (shown when DB is empty or unavailable) ───────────────────
+const FALLBACK_DATA: VideoItem[] = [
   {
     id: 1,
     src: "https://res.cloudinary.com/duntvai9w/video/upload/v1780147800/sample_video_1.mp4",
@@ -38,9 +47,6 @@ const VIDEO_DATA = [
     category: "Reel",
   },
 ];
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-type VideoItem = (typeof VIDEO_DATA)[number];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function getCardStyle(offset: number): React.CSSProperties {
@@ -348,6 +354,31 @@ function VideoCarousel({
 export function Video() {
   const { t } = useLanguage();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [videos, setVideos] = useState<VideoItem[]>(FALLBACK_DATA);
+
+  // Load published videos from Supabase; fall back to hardcoded data if empty
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("media_items")
+      .select("id, src, thumbnail_url, category")
+      .eq("type", "video")
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setVideos(
+            (data as MediaItem[]).map((item) => ({
+              id: item.id,
+              src: item.src,
+              poster: item.thumbnail_url ?? "",
+              category: item.category ?? "",
+            }))
+          );
+        }
+        // else keep FALLBACK_DATA
+      });
+  }, []);
 
   return (
     <section id="video" className="py-20 px-6 relative overflow-hidden">
@@ -370,7 +401,7 @@ export function Video() {
 
         {/* 3D Carousel */}
         <VideoCarousel
-          videos={VIDEO_DATA}
+          videos={videos}
           onOpenLightbox={(i) => setLightboxIndex(i)}
         />
       </div>
@@ -378,7 +409,7 @@ export function Video() {
       {/* Fullscreen Lightbox */}
       {lightboxIndex !== null && (
         <Lightbox
-          videos={VIDEO_DATA}
+          videos={videos}
           startIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
         />
