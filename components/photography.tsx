@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { Loader2, Lock, ChevronDown, ChevronUp } from "lucide-react";
 import { SortableGallery } from "./sortable-gallery";
 import { useAdmin } from "@/contexts/admin-context";
+import { useLanguage } from "@/contexts/language-context";
 import type { GalleryImage } from "@/lib/cloudinary";
 
 const PREVIEW_COUNT = 8;
@@ -17,6 +18,7 @@ interface PhotographyProps {
 
 export function Photography({ photos, onPhotosChange, isExpanded, onExpandChange }: PhotographyProps) {
   const { isAdmin, openLoginModal } = useAdmin();
+  const { t } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
 
   const displayedPhotos = isExpanded ? photos : photos.slice(0, PREVIEW_COUNT);
@@ -32,11 +34,11 @@ export function Photography({ photos, onPhotosChange, isExpanded, onExpandChange
         {/* Header */}
         <div className="text-center mb-16">
           <p className="text-indigo-400 font-sans text-sm tracking-wider uppercase mb-4">
-            Photography
+            {t.photography.eyebrow}
           </p>
           <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-            Capture life.<br />
-            <span className="text-[#FF6B5B]">Keep forever.</span>
+            {t.photography.headingLine1}<br />
+            <span className="text-[#FF6B5B]">{t.photography.headingLine2}</span>
           </h2>
         </div>
 
@@ -49,17 +51,17 @@ export function Photography({ photos, onPhotosChange, isExpanded, onExpandChange
               onImagesChange={onPhotosChange}
               isModalOpen={true}
             />
-            <p className="text-white/60 font-sans mb-2">No images yet.</p>
+            <p className="text-white/60 font-sans mb-2">{t.photography.noImages}</p>
             {!isAdmin ? (
               <button
                 onClick={openLoginModal}
                 className="mt-4 flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 rounded-xl text-white font-medium transition-colors duration-200 font-sans"
               >
                 <Lock className="w-4 h-4" />
-                <span>Login to upload images</span>
+                <span>{t.photography.loginToUpload}</span>
               </button>
             ) : (
-              <p className="text-white/40 font-sans text-sm">Use the upload button above to add images.</p>
+              <p className="text-white/40 font-sans text-sm">{t.photography.useUploadButton}</p>
             )}
           </div>
         ) : (
@@ -81,12 +83,12 @@ export function Photography({ photos, onPhotosChange, isExpanded, onExpandChange
                   {isExpanded ? (
                     <>
                       <ChevronUp className="w-4 h-4" />
-                      Show less
+                      {t.photography.showLess}
                     </>
                   ) : (
                     <>
                       <ChevronDown className="w-4 h-4" />
-                      View all photos ({photos.length})
+                      {t.photography.viewAllPhotos} ({photos.length})
                     </>
                   )}
                 </button>

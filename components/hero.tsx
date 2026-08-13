@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Play } from "lucide-react"
+import { useLanguage } from "@/contexts/language-context"
 
 import type { GalleryImage } from "@/lib/cloudinary"
 
@@ -17,6 +18,7 @@ interface HeroProps {
 }
 
 export function Hero({ photos }: HeroProps) {
+  const { t } = useLanguage()
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
@@ -67,11 +69,11 @@ export function Hero({ photos }: HeroProps) {
         {/* Header text - removed Filography label */}
         <div className="mb-10 lg:mb-14 pt-4">
           <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-4">
-            I Create visuals.<br />
-            <span className="text-indigo-400">Tell stories.</span>
+            {t.hero.headingLine1}<br />
+            <span className="text-indigo-400">{t.hero.headingLine2}</span>
           </h1>
           <p className="body-text text-white/50 text-sm max-w-lg">
-            Event photography · Social media management · Video · Graphic design
+            {t.hero.subtitle}
           </p>
         </div>
 
@@ -195,7 +197,7 @@ export function Hero({ photos }: HeroProps) {
                 }}
                 className="text-sm text-white/50 hover:text-white transition-colors duration-200 flex items-center gap-1.5"
               >
-                View all photos
+                {t.hero.viewAllPhotos}
                 <span aria-hidden="true">→</span>
               </button>
             </div>
@@ -271,7 +273,7 @@ export function Hero({ photos }: HeroProps) {
                   ))}
                 </div>
               </div>
-              <p className="text-center text-white/30 text-xs mt-3 label-text">Scroll to explore reels</p>
+              <p className="text-center text-white/30 text-xs mt-3 label-text">{t.hero.scrollExplore}</p>
             </div>
           </div>
         </div>
@@ -280,7 +282,7 @@ export function Hero({ photos }: HeroProps) {
       {/* Bottom label - vertical */}
       <div className="absolute bottom-8 right-8 hidden lg:block">
         <p className="label-text text-white/30 tracking-wider" style={{ writingMode: "vertical-rl" }}>
-          Scroll to explore
+          {t.hero.scrollExploreVertical}
         </p>
       </div>
 

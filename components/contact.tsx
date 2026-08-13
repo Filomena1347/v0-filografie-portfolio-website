@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { ArrowRight, Instagram, Mail, MapPin } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
 
 export function Contact() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,14 +28,14 @@ export function Contact() {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-20">
           <p className="text-indigo-400 font-sans text-sm tracking-wider uppercase mb-4">
-            Contact
+            {t.contact.eyebrow}
           </p>
           <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-            Let&apos;s create<br />
-            <span className="text-indigo-400">together.</span>
+            {t.contact.headingLine1}<br />
+            <span className="text-indigo-400">{t.contact.headingLine2}</span>
           </h2>
           <p className="mt-8 font-sans text-gray-400 max-w-2xl mx-auto text-lg font-light">
-            Ready to bring your vision to life? Get in touch and let&apos;s discuss your project.
+            {t.contact.description}
           </p>
         </div>
 
@@ -42,50 +44,50 @@ export function Contact() {
           <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-10 shadow-xl">
             <div className="space-y-6">
               <div>
-                <label className="text-gray-500 font-sans text-sm block mb-2">Your Name</label>
+                <label className="text-gray-500 font-sans text-sm block mb-2">{t.contact.form.name}</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-5 py-4 bg-gray-50 border-0 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans"
-                  placeholder="John Doe"
+                  placeholder={t.contact.form.namePlaceholder}
                 />
               </div>
 
               <div>
-                <label className="text-gray-500 font-sans text-sm block mb-2">Email Address</label>
+                <label className="text-gray-500 font-sans text-sm block mb-2">{t.contact.form.email}</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-5 py-4 bg-gray-50 border-0 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans"
-                  placeholder="john@example.com"
+                  placeholder={t.contact.form.emailPlaceholder}
                 />
               </div>
 
               <div>
-                <label className="text-gray-500 font-sans text-sm block mb-2">Service Interest</label>
+                <label className="text-gray-500 font-sans text-sm block mb-2">{t.contact.form.service}</label>
                 <select
                   value={formData.service}
                   onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                   className="w-full px-5 py-4 bg-gray-50 border-0 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans appearance-none cursor-pointer"
                 >
-                  <option value="">Select a service</option>
-                  <option value="photography">Photography</option>
-                  <option value="video">Videography</option>
-                  <option value="digital">Digital Creative</option>
-                  <option value="package">Full Package</option>
+                  <option value="">{t.contact.form.selectService}</option>
+                  <option value="photography">{t.contact.form.serviceOptions.photography}</option>
+                  <option value="video">{t.contact.form.serviceOptions.video}</option>
+                  <option value="digital">{t.contact.form.serviceOptions.digital}</option>
+                  <option value="package">{t.contact.form.serviceOptions.package}</option>
                 </select>
               </div>
 
               <div>
-                <label className="text-gray-500 font-sans text-sm block mb-2">Your Message</label>
+                <label className="text-gray-500 font-sans text-sm block mb-2">{t.contact.form.message}</label>
                 <textarea
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   rows={4}
                   className="w-full px-5 py-4 bg-gray-50 border-0 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none font-sans"
-                  placeholder="Tell me about your project..."
+                  placeholder={t.contact.form.messagePlaceholder}
                 />
               </div>
 
@@ -93,7 +95,7 @@ export function Contact() {
                 type="submit"
                 className="w-full py-4 bg-indigo-500 text-white rounded-full font-sans text-sm font-medium hover:bg-indigo-600 transition-all duration-300 flex items-center justify-center gap-3"
               >
-                Send Message
+                {t.contact.form.submit}
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -102,7 +104,7 @@ export function Contact() {
           {/* Contact info */}
           <div className="space-y-10 lg:pl-8">
             <div>
-              <h3 className="font-serif text-3xl text-white mb-8">Get in Touch</h3>
+              <h3 className="font-serif text-3xl text-white mb-8">{t.contact.getInTouch}</h3>
               <div className="space-y-6">
                 <a
                   href="mailto:hello@filografie.com"
@@ -112,7 +114,7 @@ export function Contact() {
                     <Mail className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-500 font-sans text-sm">Email</p>
+                    <p className="text-gray-500 font-sans text-sm">{t.contact.email}</p>
                     <p className="text-white font-sans text-lg group-hover:text-indigo-400 transition-colors">
                       hello@filografie.com
                     </p>
@@ -129,7 +131,7 @@ export function Contact() {
                     <Instagram className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-500 font-sans text-sm">Instagram</p>
+                    <p className="text-gray-500 font-sans text-sm">{t.contact.instagram}</p>
                     <p className="text-white font-sans text-lg group-hover:text-[#FF6B5B] transition-colors">
                       @filografie
                     </p>
@@ -141,8 +143,8 @@ export function Contact() {
                     <MapPin className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-500 font-sans text-sm">Location</p>
-                    <p className="text-white font-sans text-lg">Available Worldwide</p>
+                    <p className="text-gray-500 font-sans text-sm">{t.contact.location}</p>
+                    <p className="text-white font-sans text-lg">{t.contact.locationValue}</p>
                   </div>
                 </div>
               </div>
@@ -150,7 +152,7 @@ export function Contact() {
 
             {/* Social links */}
             <div className="pt-8 border-t border-white/10">
-              <h3 className="font-serif text-xl text-white mb-6">Follow the Journey</h3>
+              <h3 className="font-serif text-xl text-white mb-6">{t.contact.followJourney}</h3>
               <div className="flex gap-3">
                 {[
                   { name: "Instagram", abbr: "IG", color: "bg-pink-200 text-gray-900" },

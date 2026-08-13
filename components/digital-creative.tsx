@@ -1,33 +1,36 @@
 import { Palette, Share2, Layers, Sparkles } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
 
-const services = [
-  {
-    category: "Graphic Design",
-    icon: Palette,
-    color: "bg-indigo-500",
-    items: [
-      "Brand Identity Design",
-      "Logo Creation",
-      "Marketing Materials",
-      "Print Design",
-      "Packaging Design",
-    ],
-  },
-  {
-    category: "Social Media",
-    icon: Share2,
-    color: "bg-[#FF6B5B]",
-    items: [
-      "Content Strategy",
-      "Visual Content Creation",
-      "Post Scheduling",
-      "Community Management",
-      "Analytics & Reporting",
-    ],
-  },
+const serviceIcons = [
+  { icon: Palette, color: "bg-indigo-500" },
+  { icon: Share2, color: "bg-[#FF6B5B]" },
+];
+
+const graphicDesignVisuals = [
+  { color: "from-violet-500 to-indigo-600" },
+  { color: "from-indigo-500 to-blue-600" },
+  { color: "from-purple-500 to-violet-600" },
+  { color: "from-fuchsia-500 to-pink-600" },
+  { color: "from-pink-500 to-rose-600" },
+  { color: "from-rose-500 to-orange-500" },
+];
+
+const featureIcons = [
+  { icon: Layers, color: "bg-sky-400" },
+  { icon: Sparkles, color: "bg-amber-400" },
+  { icon: Palette, color: "bg-violet-400" },
+  { icon: Share2, color: "bg-emerald-400" },
 ];
 
 export function DigitalCreative() {
+  const { t } = useLanguage();
+  const services = t.digital.services.map((service, i) => ({ ...service, ...serviceIcons[i] }));
+  const graphicDesignItems = t.digital.graphicDesignItems.map((item, i) => ({
+    ...item,
+    ...graphicDesignVisuals[i],
+  }));
+  const features = t.digital.features.map((feature, i) => ({ ...feature, ...featureIcons[i] }));
+
   return (
     <>
       {/* Graphic Design Section */}
@@ -38,26 +41,19 @@ export function DigitalCreative() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <p className="text-violet-400 font-sans text-sm tracking-wider uppercase mb-4">
-              Graphic Design
+              {t.digital.graphicDesignEyebrow}
             </p>
             <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-              Visual<br />
-              <span className="text-violet-400">identity.</span>
+              {t.digital.graphicDesignHeadingLine1}<br />
+              <span className="text-violet-400">{t.digital.graphicDesignHeadingLine2}</span>
             </h2>
             <p className="mt-8 font-sans text-gray-400 max-w-2xl mx-auto text-lg font-light">
-              Creating distinctive brand identities and visual systems that communicate your story.
+              {t.digital.graphicDesignDescription}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { title: "Brand Identity", description: "Complete visual systems", color: "from-violet-500 to-indigo-600" },
-              { title: "Logo Design", description: "Memorable marks", color: "from-indigo-500 to-blue-600" },
-              { title: "Print Design", description: "Tangible materials", color: "from-purple-500 to-violet-600" },
-              { title: "Packaging", description: "Product presentation", color: "from-fuchsia-500 to-pink-600" },
-              { title: "Marketing Materials", description: "Campaign assets", color: "from-pink-500 to-rose-600" },
-              { title: "Digital Assets", description: "Web & social graphics", color: "from-rose-500 to-orange-500" },
-            ].map((item) => (
+            {graphicDesignItems.map((item) => (
               <div
                 key={item.title}
                 className="group cursor-pointer"
@@ -84,14 +80,14 @@ export function DigitalCreative() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20">
           <p className="text-indigo-400 font-sans text-sm tracking-wider uppercase mb-4">
-            Digital Creative
+            {t.digital.creativeEyebrow}
           </p>
           <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-            Beyond the<br />
-            <span className="text-pink-300">lens.</span>
+            {t.digital.creativeHeadingLine1}<br />
+            <span className="text-pink-300">{t.digital.creativeHeadingLine2}</span>
           </h2>
           <p className="mt-8 font-sans text-gray-400 max-w-2xl mx-auto text-lg font-light">
-            Comprehensive digital services to elevate your brand presence across all platforms.
+            {t.digital.creativeDescription}
           </p>
         </div>
 
@@ -121,12 +117,7 @@ export function DigitalCreative() {
 
         {/* Feature cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-          {[
-            { icon: Layers, label: "Web Design", color: "bg-sky-400" },
-            { icon: Sparkles, label: "Motion Graphics", color: "bg-amber-400" },
-            { icon: Palette, label: "UI/UX Design", color: "bg-violet-400" },
-            { icon: Share2, label: "Ad Campaigns", color: "bg-emerald-400" },
-          ].map((feature) => (
+          {features.map((feature) => (
             <div
               key={feature.label}
               className={`${feature.color} rounded-2xl p-6 text-center group hover:scale-[1.02] transition-transform duration-300 cursor-pointer`}

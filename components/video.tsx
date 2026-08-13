@@ -12,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useAdmin } from "@/contexts/admin-context";
+import { useLanguage } from "@/contexts/language-context";
 
 // ── Platform SVG icons ──────────────────────────────────────────────────────
 
@@ -532,6 +533,7 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
 
 export function Video() {
   const { isAdmin, password } = useAdmin();
+  const { t } = useLanguage();
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -663,12 +665,12 @@ export function Video() {
           {/* Header */}
           <div className="text-center mb-20">
             <p className="text-primary font-sans text-sm tracking-wider uppercase mb-4">
-              Videography
+              {t.video.eyebrow}
             </p>
             <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-              Stories in
+              {t.video.headingLine1}
               <br />
-              <span className="text-primary">motion.</span>
+              <span className="text-primary">{t.video.headingLine2}</span>
             </h2>
           </div>
 

@@ -3,20 +3,22 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
-
-const navItems = [
-  { label: "Work", href: "#work" },
-  { label: "Photography", href: "#photography", expandPhotography: true },
-  { label: "Video", href: "#video" },
-  { label: "Digital", href: "#digital" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Journal", href: "#blog" },
-  { label: "Contact", href: "#contact" },
-]
+import { useLanguage } from "@/contexts/language-context"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { language, toggleLanguage, t } = useLanguage()
+
+  const navItems = [
+    { label: t.nav.work, href: "#work" },
+    { label: t.nav.photography, href: "#photography", expandPhotography: true },
+    { label: t.nav.video, href: "#video" },
+    { label: t.nav.digital, href: "#digital" },
+    { label: t.nav.pricing, href: "#pricing" },
+    { label: t.nav.journal, href: "#blog" },
+    { label: t.nav.contact, href: "#contact" },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,6 +27,18 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const LanguageToggle = ({ className = "" }: { className?: string }) => (
+    <button
+      onClick={toggleLanguage}
+      aria-label="Toggle language"
+      className={`flex items-center gap-1 text-sm font-medium text-white/70 hover:text-white transition-colors duration-200 ${className}`}
+    >
+      <span className={language === "en" ? "text-white" : ""}>EN</span>
+      <span className="text-white/30">/</span>
+      <span className={language === "cz" ? "text-white" : ""}>CZ</span>
+    </button>
+  )
 
   return (
     <nav 
@@ -43,7 +57,7 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-10">
           {navItems.map((item) => (
-            <div key={item.label} className="relative">
+            <div key={item.href} className="relative">
               <Link
                 href={item.href}
                 onClick={item.expandPhotography ? () => window.dispatchEvent(new Event("photography:expand")) : undefined}
@@ -55,13 +69,16 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button */}
-        <a 
-          href="#contact"
-          className="hidden lg:block btn-blue text-sm"
-        >
-          Get in touch
-        </a>
+        {/* Language toggle + CTA Button */}
+        <div className="hidden lg:flex items-center gap-6">
+          <LanguageToggle />
+          <a 
+            href="#contact"
+            className="btn-blue text-sm"
+          >
+            {t.nav.getInTouch}
+          </a>
+        </div>
 
         {/* Mobile Menu Button */}
         <button
@@ -78,7 +95,7 @@ export function Navbar() {
         <div className="lg:hidden absolute top-full left-0 right-0 bg-[#0a0a14] border-t border-white/10 py-6">
           <div className="max-w-7xl mx-auto px-6 flex flex-col gap-4">
             {navItems.map((item) => (
-              <div key={item.label}>
+              <div key={item.href}>
                 <Link
                   href={item.href}
                   onClick={() => {
@@ -93,12 +110,13 @@ export function Navbar() {
                 </Link>
               </div>
             ))}
+            <LanguageToggle className="py-2" />
             <a 
               href="#contact"
               onClick={() => setIsMobileMenuOpen(false)}
               className="btn-blue text-sm text-center mt-4"
             >
-              Get in touch
+              {t.nav.getInTouch}
             </a>
           </div>
         </div>

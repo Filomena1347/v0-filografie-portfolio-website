@@ -1,56 +1,22 @@
-import { Check } from "lucide-react";
+"use client";
 
-const pricingPlans = [
-  {
-    name: "Essential",
-    price: "299",
-    description: "Perfect for personal projects and small events",
-    color: "bg-pink-200",
-    features: [
-      "2-hour photo session",
-      "30 edited photos",
-      "Digital delivery",
-      "1 location",
-      "Basic retouching",
-    ],
-    featured: false,
-  },
-  {
-    name: "Professional",
-    price: "599",
-    description: "Ideal for weddings and corporate events",
-    color: "bg-indigo-500",
-    features: [
-      "Full day coverage",
-      "100+ edited photos",
-      "Video highlights (3 min)",
-      "Multiple locations",
-      "Advanced retouching",
-      "Online gallery",
-      "Print-ready files",
-    ],
-    featured: true,
-  },
-  {
-    name: "Premium",
-    price: "999",
-    description: "Complete creative package for brands",
-    color: "bg-[#FF6B5B]",
-    features: [
-      "Multi-day coverage",
-      "200+ edited photos",
-      "Full video production",
-      "Drone footage",
-      "Social media package",
-      "Brand consultation",
-      "Rush delivery option",
-      "Lifetime gallery access",
-    ],
-    featured: false,
-  },
+import { Check } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
+
+const planVisuals = [
+  { color: "bg-pink-200", featured: false },
+  { color: "bg-indigo-500", featured: true },
+  { color: "bg-[#FF6B5B]", featured: false },
 ];
 
 export function Pricing() {
+  const { t } = useLanguage();
+  const pricingPlans = t.pricing.plans.map((plan, i) => ({
+    ...plan,
+    price: ["299", "599", "999"][i],
+    ...planVisuals[i],
+  }));
+
   return (
     <section id="pricing" className="py-32 px-6 relative overflow-hidden">
       {/* Floating decorative elements */}
@@ -60,14 +26,14 @@ export function Pricing() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20">
           <p className="text-indigo-400 font-sans text-sm tracking-wider uppercase mb-4">
-            Pricing
+            {t.pricing.eyebrow}
           </p>
           <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-            Invest in<br />
-            <span className="text-indigo-400">your story.</span>
+            {t.pricing.headingLine1}<br />
+            <span className="text-indigo-400">{t.pricing.headingLine2}</span>
           </h2>
           <p className="mt-8 font-sans text-gray-400 max-w-2xl mx-auto text-lg font-light">
-            Transparent pricing for exceptional creative services. Custom packages available upon request.
+            {t.pricing.description}
           </p>
         </div>
 
@@ -93,7 +59,7 @@ export function Pricing() {
                     <span className="text-gray-400 font-sans text-lg">€</span>
                     <span className="font-serif text-6xl text-gray-900">{plan.price}</span>
                   </div>
-                  <p className="text-gray-400 font-sans text-sm mt-2">starting from</p>
+                  <p className="text-gray-400 font-sans text-sm mt-2">{t.pricing.startingFrom}</p>
                 </div>
 
                 <ul className="space-y-4 mb-10">
@@ -114,7 +80,7 @@ export function Pricing() {
                       : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                   }`}
                 >
-                  Get Started
+                  {t.pricing.getStarted}
                 </button>
               </div>
             </div>
@@ -122,7 +88,7 @@ export function Pricing() {
         </div>
 
         <p className="text-center mt-12 text-gray-500 font-sans text-sm">
-          All packages include consultation call. Travel fees may apply for locations outside the city.
+          {t.pricing.footnote}
         </p>
       </div>
     </section>
