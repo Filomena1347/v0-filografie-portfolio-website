@@ -11,7 +11,8 @@ export function Navbar() {
   const { language, toggleLanguage, t } = useLanguage()
 
   const navItems = [
-    { label: t.nav.work, href: "#work" },
+    // HIDDEN - uncomment to show
+    // { label: t.nav.work, href: "#work" },
     { label: t.nav.photography, href: "#photography", expandPhotography: true },
     { label: t.nav.video, href: "#video" },
     // HIDDEN - uncomment to show

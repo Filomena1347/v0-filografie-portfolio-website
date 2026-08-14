@@ -76,7 +76,8 @@ export default function Home() {
       <Navbar />
       <Hero photos={heroPhotos} />
       <About />
-      <Portfolio />
+      {/* HIDDEN - uncomment to show */}
+      {/* <div className="hidden"><Portfolio /></div> */}
       <Photography
         photos={photos}
         onPhotosChange={setPhotos}
