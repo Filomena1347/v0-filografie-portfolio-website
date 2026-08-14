@@ -2,6 +2,22 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import {
   Play,
   ChevronLeft,
   ChevronRight,
@@ -10,6 +26,7 @@ import {
   Upload,
   Loader2,
   Trash2,
+  GripVertical,
 } from "lucide-react";
 import { useAdmin } from "@/contexts/admin-context";
 import { useLanguage } from "@/contexts/language-context";
@@ -111,6 +128,8 @@ interface CardProps {
   position: number; // relative to active: -2,-1,0,1,2
   onClick: () => void;
   onDelete?: () => void;
+  onTitleSave?: (title: string) => void;
+  onPlatformToggle?: () => void;
   isAdmin: boolean;
   isDeleting: boolean;
 }
@@ -120,43 +139,77 @@ function CoverFlowCard({
   position,
   onClick,
   onDelete,
+  onTitleSave,
+  onPlatformToggle,
   isAdmin,
   isDeleting,
 }: CardProps) {
   const abs = Math.abs(position);
+  const isDemo = video.id.startsWith("demo");
+
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(video.title);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform: dndTransform,
+    transition: dndTransition,
+    isDragging,
+  } = useSortable({ id: video.id, disabled: !isAdmin || isDemo });
 
   // Only render up to 2 cards away
   if (abs > 2) return null;
 
   const isActive = position === 0;
 
-  // Transform values
+  // Coverflow transform values
   const translateX = position * 62; // % offset
   const rotateY = position * -35; // degrees
   const scale = isActive ? 1 : abs === 1 ? 0.78 : 0.6;
   const opacity = isActive ? 1 : abs === 1 ? 0.65 : 0.35;
-  const zIndex = isActive ? 10 : abs === 1 ? 6 : 2;
+  const zIndex = isDragging ? 20 : isActive ? 10 : abs === 1 ? 6 : 2;
   const brightness = isActive ? 1 : abs === 1 ? 0.6 : 0.35;
+
+  // Compose the drag offset (screen-space) on top of the coverflow position
+  const dragOffset = dndTransform
+    ? `translate3d(${dndTransform.x}px, ${dndTransform.y}px, 0) `
+    : "";
+
+  const commitTitle = () => {
+    setIsEditingTitle(false);
+    const trimmed = titleDraft.trim();
+    if (trimmed && trimmed !== video.title) {
+      onTitleSave?.(trimmed);
+    } else {
+      setTitleDraft(video.title);
+    }
+  };
 
   return (
     <div
+      ref={setNodeRef}
       className="absolute top-1/2 left-1/2 cursor-pointer select-none"
       style={{
         transform: `
+          ${dragOffset}
           translateX(-50%)
           translateY(-50%)
           translateX(${translateX}%)
           rotateY(${rotateY}deg)
           scale(${scale})
         `,
-        opacity,
+        opacity: isDragging ? 0.85 : opacity,
         zIndex,
         filter: `brightness(${brightness})`,
-        transition: "all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        transition: dndTransition || "all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         transformStyle: "preserve-3d",
         width: "min(240px, 42vw)",
       }}
-      onClick={onClick}
+      onClick={() => {
+        if (!isEditingTitle) onClick();
+      }}
       role="button"
       aria-label={isActive ? `Play ${video.title}` : `Go to ${video.title}`}
     >
@@ -176,9 +229,24 @@ function CoverFlowCard({
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-        {/* Platform badge */}
-        <div className="absolute top-3 right-3">
-          {video.platform === "instagram" ? (
+        {/* Platform badge / selector */}
+        <div className="absolute top-3 right-3 z-20">
+          {isAdmin && !isDemo ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onPlatformToggle?.();
+              }}
+              className="w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+              aria-label="Toggle platform"
+            >
+              {video.platform === "instagram" ? (
+                <InstagramIcon className="w-4 h-4 text-white/90" />
+              ) : (
+                <TikTokIcon className="w-4 h-4 text-white/90" />
+              )}
+            </button>
+          ) : video.platform === "instagram" ? (
             <InstagramIcon className="w-5 h-5 text-white/90 drop-shadow-lg" />
           ) : (
             <TikTokIcon className="w-5 h-5 text-white/90 drop-shadow-lg" />
@@ -186,7 +254,7 @@ function CoverFlowCard({
         </div>
 
         {/* Admin delete button */}
-        {isAdmin && isActive && onDelete && !video.id.startsWith("demo") && (
+        {isAdmin && onDelete && !isDemo && (
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -199,13 +267,26 @@ function CoverFlowCard({
             {isDeleting ? (
               <Loader2 className="w-4 h-4 text-white animate-spin" />
             ) : (
-              <Trash2 className="w-4 h-4 text-white" />
+              <X className="w-4 h-4 text-white" />
             )}
           </button>
         )}
 
+        {/* Admin drag handle */}
+        {isAdmin && !isDemo && (
+          <button
+            {...attributes}
+            {...listeners}
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-3 right-3 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing z-20"
+            aria-label="Drag to reorder"
+          >
+            <GripVertical className="w-4 h-4 text-white" />
+          </button>
+        )}
+
         {/* Play button overlay on active */}
-        {isActive && (
+        {isActive && !isEditingTitle && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 shadow-xl transition-transform duration-300 group-hover:scale-110">
               <Play className="w-7 h-7 text-white ml-1" fill="white" />
@@ -214,10 +295,39 @@ function CoverFlowCard({
         )}
 
         {/* Title */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <p className="text-white font-serif text-base leading-tight line-clamp-2">
-            {video.title}
-          </p>
+        <div className="absolute bottom-0 left-0 right-0 p-4 pr-14">
+          {isAdmin && !isDemo && isEditingTitle ? (
+            <input
+              autoFocus
+              value={titleDraft}
+              onChange={(e) => setTitleDraft(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              onBlur={commitTitle}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitTitle();
+                if (e.key === "Escape") {
+                  setTitleDraft(video.title);
+                  setIsEditingTitle(false);
+                }
+              }}
+              className="w-full bg-white/10 border border-white/30 rounded-lg px-2 py-1 text-white font-serif text-sm focus:outline-none focus:border-primary/60"
+            />
+          ) : (
+            <p
+              className={`text-white font-serif text-base leading-tight line-clamp-2 ${
+                isAdmin && !isDemo ? "cursor-text hover:underline" : ""
+              }`}
+              onClick={(e) => {
+                if (isAdmin && !isDemo) {
+                  e.stopPropagation();
+                  setTitleDraft(video.title);
+                  setIsEditingTitle(true);
+                }
+              }}
+            >
+              {video.title}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -317,7 +427,7 @@ function VideoPlayerModal({ video, onClose }: PlayerModalProps) {
   );
 }
 
-// ── Upload Form Modal ───────────────────────────────────────────────────────
+// ── Upload Modal (drag & drop or click-to-browse video file) ───────────────
 
 interface UploadModalProps {
   onClose: () => void;
@@ -328,10 +438,10 @@ interface UploadModalProps {
 
 function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalProps) {
   const [title, setTitle] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
   const [platform, setPlatform] = useState<"instagram" | "tiktok">("instagram");
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -347,13 +457,31 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
     };
   }, [onClose]);
 
-  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  useEffect(() => {
+    return () => {
+      if (videoPreview) URL.revokeObjectURL(videoPreview);
+    };
+  }, [videoPreview]);
+
+  const acceptFile = (file: File | undefined | null) => {
     if (!file) return;
-    setThumbnailFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => setThumbnailPreview(reader.result as string);
-    reader.readAsDataURL(file);
+    if (!file.type.startsWith("video/")) {
+      setError("Please select a video file.");
+      return;
+    }
+    setError("");
+    setVideoFile(file);
+    setVideoPreview(URL.createObjectURL(file));
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    acceptFile(e.target.files?.[0]);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDraggingOver(false);
+    acceptFile(e.dataTransfer.files?.[0]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -362,18 +490,19 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
       setError("Title is required.");
       return;
     }
+    if (!videoFile) {
+      setError("Please select a video file to upload.");
+      return;
+    }
 
     setIsUploading(true);
     setError("");
 
     const formData = new FormData();
     formData.append("title", title.trim());
-    formData.append("videoUrl", videoUrl.trim());
     formData.append("platform", platform);
     formData.append("order", String(nextOrder));
-    if (thumbnailFile) {
-      formData.append("thumbnail", thumbnailFile);
-    }
+    formData.append("file", videoFile);
 
     try {
       const response = await fetch("/api/videos/upload", {
@@ -416,7 +545,7 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
           <X className="w-5 h-5" />
         </button>
 
-        <h2 className="font-serif text-2xl text-white mb-6">Add Video</h2>
+        <h2 className="font-serif text-2xl text-white mb-6">Upload Video</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
@@ -461,45 +590,51 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
             </div>
           </div>
 
-          {/* Video URL */}
+          {/* Video dropzone / file picker */}
           <div>
             <label className="block text-white/60 text-sm font-sans mb-1">
-              Video URL (YouTube, Vimeo, or direct link)
+              Video File <span className="text-accent">*</span>
             </label>
-            <input
-              type="url"
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder="https://youtube.com/watch?v=..."
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 font-sans text-sm"
-            />
-          </div>
-
-          {/* Thumbnail */}
-          <div>
-            <label className="block text-white/60 text-sm font-sans mb-1">
-              Thumbnail Image
-            </label>
-            <label className="flex flex-col items-center justify-center w-full h-32 border border-dashed border-white/20 rounded-xl cursor-pointer hover:border-primary/50 transition-colors relative overflow-hidden">
-              {thumbnailPreview ? (
-                <img
-                  src={thumbnailPreview}
-                  alt="Preview"
+            <label
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDraggingOver(true);
+              }}
+              onDragLeave={() => setIsDraggingOver(false)}
+              onDrop={handleDrop}
+              className={`flex flex-col items-center justify-center w-full h-40 border rounded-xl cursor-pointer transition-colors relative overflow-hidden ${
+                isDraggingOver
+                  ? "border-primary bg-primary/10"
+                  : "border-dashed border-white/20 hover:border-primary/50"
+              }`}
+            >
+              {videoPreview ? (
+                <video
+                  src={videoPreview}
                   className="absolute inset-0 w-full h-full object-cover"
+                  muted
+                  playsInline
                 />
               ) : (
-                <div className="flex flex-col items-center gap-2 text-white/40">
+                <div className="flex flex-col items-center gap-2 text-white/40 px-4 text-center">
                   <Upload className="w-6 h-6" />
-                  <span className="text-sm font-sans">Click to upload thumbnail</span>
+                  <span className="text-sm font-sans">
+                    Drag & drop a video, or click to browse
+                  </span>
                 </div>
               )}
               <input
                 type="file"
-                accept="image/*"
-                onChange={handleThumbnailChange}
+                accept="video/*"
+                onChange={handleFileInputChange}
                 className="hidden"
               />
             </label>
+            {videoFile && (
+              <p className="text-white/40 text-xs font-sans mt-1 truncate">
+                {videoFile.name}
+              </p>
+            )}
           </div>
 
           {error && (
@@ -508,7 +643,7 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
 
           <button
             type="submit"
-            disabled={isUploading || !title.trim()}
+            disabled={isUploading || !title.trim() || !videoFile}
             className="w-full py-3 bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-colors duration-200 font-sans flex items-center justify-center gap-2"
           >
             {isUploading ? (
@@ -519,7 +654,7 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
             ) : (
               <>
                 <Upload className="w-5 h-5" />
-                Add Video
+                Upload Video
               </>
             )}
           </button>
@@ -540,10 +675,20 @@ export function Video() {
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
 
-  // Drag/swipe state
+  // Drag/swipe state (navigation)
   const dragStartX = useRef<number | null>(null);
   const isDragging = useRef(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Fetch videos
   const fetchVideos = useCallback(async () => {
@@ -600,6 +745,7 @@ export function Video() {
         },
         body: JSON.stringify({ publicId: video.publicId }),
       });
+
       if (response.ok) {
         const newVideos = videos.filter((v) => v.publicId !== video.publicId);
         setVideos(newVideos.length > 0 ? newVideos : DEMO_VIDEOS);
@@ -614,6 +760,96 @@ export function Video() {
     }
   };
 
+  const persistMeta = useCallback(
+    async (updated: VideoItem) => {
+      if (!password) return;
+      try {
+        await fetch("/api/videos/update", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-admin-password": password,
+          },
+          body: JSON.stringify({
+            publicId: updated.publicId,
+            title: updated.title,
+            platform: updated.platform,
+            order: updated.order,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to save video:", error);
+      }
+    },
+    [password]
+  );
+
+  const handleTitleSave = (video: VideoItem, newTitle: string) => {
+    const updated = { ...video, title: newTitle };
+    setVideos((prev) =>
+      prev.map((v) => (v.publicId === video.publicId ? updated : v))
+    );
+    persistMeta(updated);
+  };
+
+  const handlePlatformToggle = (video: VideoItem) => {
+    const updated = {
+      ...video,
+      platform:
+        video.platform === "instagram"
+          ? ("tiktok" as const)
+          : ("instagram" as const),
+    };
+    setVideos((prev) =>
+      prev.map((v) => (v.publicId === video.publicId ? updated : v))
+    );
+    persistMeta(updated);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id || !password) return;
+
+    const oldIndex = displayVideos.findIndex((v) => v.id === active.id);
+    const newIndex = displayVideos.findIndex((v) => v.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(displayVideos, oldIndex, newIndex).map(
+      (v, index) => ({ ...v, order: index + 1 })
+    );
+    setVideos(reordered);
+
+    // Keep the same video active after reordering
+    const activeVideoId = displayVideos[activeIndex]?.id;
+    const newActiveIndex = reordered.findIndex((v) => v.id === activeVideoId);
+    if (newActiveIndex !== -1) setActiveIndex(newActiveIndex);
+
+    setIsSavingOrder(true);
+    try {
+      await fetch("/api/videos/reorder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({
+          videos: reordered
+            .filter((v) => !v.id.startsWith("demo"))
+            .map((v) => ({
+              publicId: v.publicId,
+              title: v.title,
+              platform: v.platform,
+              order: v.order,
+            })),
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to save order:", error);
+    } finally {
+      setIsSavingOrder(false);
+    }
+  };
+
   // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -625,7 +861,7 @@ export function Video() {
     return () => window.removeEventListener("keydown", handler);
   }, [activeIndex, displayVideos.length, playingVideo, showUploadModal]);
 
-  // Drag/swipe handlers
+  // Drag/swipe handlers (navigation via stage background)
   const handlePointerDown = (e: React.PointerEvent) => {
     dragStartX.current = e.clientX;
     isDragging.current = false;
@@ -663,7 +899,7 @@ export function Video() {
 
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-20">
+          <div className="text-center mb-12">
             <p className="text-primary font-sans text-sm tracking-wider uppercase mb-4">
               {t.video.eyebrow}
             </p>
@@ -674,6 +910,25 @@ export function Video() {
             </h2>
           </div>
 
+          {/* Admin: Upload Video button */}
+          {isAdmin && (
+            <div className="flex justify-center mb-8">
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 rounded-xl text-white font-medium transition-colors duration-200 font-sans"
+              >
+                <Upload className="w-5 h-5" />
+                <span>Upload Video</span>
+              </button>
+              {isSavingOrder && (
+                <div className="ml-4 flex items-center gap-2 text-white/60 text-sm self-center">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Saving order...</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* CoverFlow Carousel */}
           {isLoading ? (
             <div className="flex items-center justify-center h-[420px]">
@@ -682,101 +937,115 @@ export function Video() {
           ) : (
             <>
               {/* 3D Stage */}
-              <div
-                className="relative mx-auto overflow-visible"
-                style={{
-                  perspective: "1200px",
-                  perspectiveOrigin: "50% 50%",
-                  height: "min(420px, 72vw)",
-                  maxWidth: "700px",
-                }}
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={() => {
-                  dragStartX.current = null;
-                  isDragging.current = false;
-                }}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                {displayVideos.map((video, index) => {
-                  const position = index - activeIndex;
-                  return (
-                    <CoverFlowCard
-                      key={video.id}
-                      video={video}
-                      position={position}
-                      onClick={() => {
-                        if (!isDragging.current) handleCardClick(index);
-                      }}
-                      onDelete={
-                        isAdmin && !video.id.startsWith("demo")
-                          ? () => handleDelete(video)
-                          : undefined
-                      }
-                      isAdmin={isAdmin}
-                      isDeleting={deletingId === video.publicId}
-                    />
-                  );
-                })}
+                <SortableContext
+                  items={displayVideos.map((v) => v.id)}
+                  strategy={horizontalListSortingStrategy}
+                  disabled={!isAdmin}
+                >
+                  <div
+                    className="relative mx-auto overflow-visible"
+                    style={{
+                      perspective: "1200px",
+                      perspectiveOrigin: "50% 50%",
+                      height: "min(420px, 72vw)",
+                      maxWidth: "700px",
+                    }}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={() => {
+                      dragStartX.current = null;
+                      isDragging.current = false;
+                    }}
+                  >
+                    {displayVideos.map((video, index) => {
+                      const position = index - activeIndex;
+                      return (
+                        <CoverFlowCard
+                          key={video.id}
+                          video={video}
+                          position={position}
+                          onClick={() => {
+                            if (!isDragging.current) handleCardClick(index);
+                          }}
+                          onDelete={
+                            isAdmin && !video.id.startsWith("demo")
+                              ? () => handleDelete(video)
+                              : undefined
+                          }
+                          onTitleSave={(newTitle) => handleTitleSave(video, newTitle)}
+                          onPlatformToggle={() => handlePlatformToggle(video)}
+                          isAdmin={isAdmin}
+                          isDeleting={deletingId === video.publicId}
+                        />
+                      );
+                    })}
 
-                {/* Admin: Add video card at the end */}
-                {isAdmin && (() => {
-                  const addPosition = displayVideos.length - activeIndex;
-                  const abs = Math.abs(addPosition);
-                  if (abs > 2) return null;
-                  const translateX = addPosition * 62;
-                  const rotateY = addPosition * -35;
-                  const scale = addPosition === 0 ? 1 : abs === 1 ? 0.78 : 0.6;
-                  const opacity = addPosition === 0 ? 1 : abs === 1 ? 0.65 : 0.35;
-                  const zIndex = addPosition === 0 ? 10 : abs === 1 ? 6 : 2;
-                  const brightness = addPosition === 0 ? 1 : abs === 1 ? 0.6 : 0.35;
+                    {/* Admin: Add video card at the end */}
+                    {isAdmin && (() => {
+                      const addPosition = displayVideos.length - activeIndex;
+                      const abs = Math.abs(addPosition);
+                      if (abs > 2) return null;
+                      const translateX = addPosition * 62;
+                      const rotateY = addPosition * -35;
+                      const scale = addPosition === 0 ? 1 : abs === 1 ? 0.78 : 0.6;
+                      const opacity = addPosition === 0 ? 1 : abs === 1 ? 0.65 : 0.35;
+                      const zIndex = addPosition === 0 ? 10 : abs === 1 ? 6 : 2;
+                      const brightness = addPosition === 0 ? 1 : abs === 1 ? 0.6 : 0.35;
 
-                  return (
-                    <button
-                      key="add-card"
-                      className="absolute top-1/2 left-1/2 cursor-pointer select-none"
-                      style={{
-                        transform: `
-                          translateX(-50%)
-                          translateY(-50%)
-                          translateX(${translateX}%)
-                          rotateY(${rotateY}deg)
-                          scale(${scale})
-                        `,
-                        opacity,
-                        zIndex,
-                        filter: `brightness(${brightness})`,
-                        transition: "all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                        transformStyle: "preserve-3d",
-                        width: "min(240px, 42vw)",
-                        border: "none",
-                        background: "none",
-                        padding: 0,
-                      }}
-                      onClick={() => {
-                        if (addPosition !== 0) {
-                          goTo(displayVideos.length);
-                        } else {
-                          setShowUploadModal(true);
-                        }
-                      }}
-                      aria-label="Add new video"
-                    >
-                      <div
-                        className="relative rounded-3xl overflow-hidden border-2 border-dashed border-white/20 hover:border-primary/60 transition-colors flex flex-col items-center justify-center gap-3 bg-white/5"
-                        style={{ aspectRatio: "9/16" }}
-                      >
-                        <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center">
-                          <Plus className="w-7 h-7 text-primary" />
-                        </div>
-                        <p className="text-white/60 font-sans text-sm text-center px-4">
-                          Add Video
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })()}
-              </div>
+                      return (
+                        <button
+                          key="add-card"
+                          className="absolute top-1/2 left-1/2 cursor-pointer select-none"
+                          style={{
+                            transform: `
+                              translateX(-50%)
+                              translateY(-50%)
+                              translateX(${translateX}%)
+                              rotateY(${rotateY}deg)
+                              scale(${scale})
+                            `,
+                            opacity,
+                            zIndex,
+                            filter: `brightness(${brightness})`,
+                            transition: "all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                            transformStyle: "preserve-3d",
+                            width: "min(240px, 42vw)",
+                            border: "none",
+                            background: "none",
+                            padding: 0,
+                          }}
+                          onClick={() => {
+                            if (addPosition !== 0) {
+                              goTo(displayVideos.length);
+                            } else {
+                              setShowUploadModal(true);
+                            }
+                          }}
+                          aria-label="Add new video"
+                        >
+                          <div
+                            className="relative rounded-3xl overflow-hidden border-2 border-dashed border-white/20 hover:border-primary/60 transition-colors flex flex-col items-center justify-center gap-3 bg-white/5"
+                            style={{ aspectRatio: "9/16" }}
+                          >
+                            <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center">
+                              <Plus className="w-7 h-7 text-primary" />
+                            </div>
+                            <p className="text-white/60 font-sans text-sm text-center px-4">
+                              Add Video
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })()}
+                  </div>
+                </SortableContext>
+              </DndContext>
 
               {/* Navigation arrows */}
               <div className="flex items-center justify-center gap-6 mt-12">

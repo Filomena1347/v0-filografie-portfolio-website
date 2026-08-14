@@ -155,4 +155,134 @@ export async function reorderImages(
   }
 }
 
+// ── Video (Reels) helpers ───────────────────────────────────────────────────
+
+export interface VideoItem {
+  id: string;
+  publicId: string;
+  thumbnailUrl: string;
+  videoUrl: string;
+  title: string;
+  platform: "instagram" | "tiktok";
+  order: number;
+}
+
+const VIDEO_FOLDER = `${FOLDER_PREFIX}/videos`;
+
+function buildVideoContext(title: string, platform: string, order: number): string {
+  // Sanitize to keep the pipe-delimited context format safe
+  const safeTitle = title.replace(/[|=]/g, " ").slice(0, 200);
+  return `title=${safeTitle}|platform=${platform}|order=${order}`;
+}
+
+export async function getVideos(): Promise<VideoItem[]> {
+  try {
+    const result = await cloudinary.api.resources({
+      type: "upload",
+      resource_type: "video",
+      prefix: VIDEO_FOLDER,
+      max_results: 100,
+      context: true,
+    });
+
+    const videos: VideoItem[] = result.resources.map((resource: {
+      public_id: string;
+      secure_url: string;
+      context?: { custom?: { title?: string; platform?: string; order?: string } };
+    }) => ({
+      id: resource.public_id,
+      publicId: resource.public_id,
+      thumbnailUrl: cloudinary.url(resource.public_id, {
+        resource_type: "video",
+        format: "jpg",
+      }),
+      videoUrl: resource.secure_url,
+      title: resource.context?.custom?.title || "Untitled",
+      platform: (resource.context?.custom?.platform as "instagram" | "tiktok") || "instagram",
+      order: resource.context?.custom?.order
+        ? parseInt(resource.context.custom.order, 10)
+        : 999,
+    }));
+
+    return videos.sort((a, b) => a.order - b.order);
+  } catch (error) {
+    console.error("Error fetching videos from Cloudinary:", error);
+    return [];
+  }
+}
+
+export async function uploadVideo(
+  file: Buffer,
+  filename: string,
+  title: string,
+  platform: string,
+  order: number
+): Promise<VideoItem | null> {
+  try {
+    const result = await new Promise<{ public_id: string; secure_url: string }>(
+      (resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              folder: VIDEO_FOLDER,
+              public_id: filename.replace(/\.[^/.]+$/, ""),
+              resource_type: "video",
+              context: buildVideoContext(title, platform, order),
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result as { public_id: string; secure_url: string });
+            }
+          )
+          .end(file);
+      }
+    );
+
+    return {
+      id: result.public_id,
+      publicId: result.public_id,
+      thumbnailUrl: cloudinary.url(result.public_id, {
+        resource_type: "video",
+        format: "jpg",
+      }),
+      videoUrl: result.secure_url,
+      title,
+      platform: platform as "instagram" | "tiktok",
+      order,
+    };
+  } catch (error) {
+    console.error("Error uploading video:", error);
+    return null;
+  }
+}
+
+export async function updateVideoMeta(
+  publicId: string,
+  title: string,
+  platform: string,
+  order: number
+): Promise<boolean> {
+  try {
+    await cloudinary.uploader.explicit(publicId, {
+      type: "upload",
+      resource_type: "video",
+      context: buildVideoContext(title, platform, order),
+    });
+    return true;
+  } catch (error) {
+    console.error("Error updating video:", error);
+    return false;
+  }
+}
+
+export async function deleteVideo(publicId: string): Promise<boolean> {
+  try {
+    await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
+    return true;
+  } catch (error) {
+    console.error("Error deleting video:", error);
+    return false;
+  }
+}
+
 export default cloudinary;
