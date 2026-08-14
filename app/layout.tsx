@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AdminProvider } from '@/contexts/admin-context'
+import { LanguageProvider } from '@/contexts/language-context'
 import { AdminLogin } from '@/components/admin-login'
 import './globals.css'
 
@@ -51,10 +52,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable} bg-[#0a0a14]`}>
       <body className="font-sans antialiased bg-[#0a0a14] text-white">
-        <AdminProvider>
-          {children}
-          <AdminLogin />
-        </AdminProvider>
+        <LanguageProvider>
+          <AdminProvider>
+            {children}
+            <AdminLogin />
+          </AdminProvider>
+        </LanguageProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

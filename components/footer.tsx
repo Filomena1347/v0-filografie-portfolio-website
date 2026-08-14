@@ -1,7 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { Instagram, Mail, ArrowUp } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
+
+const serviceHrefs = ["#photography", "#video", "#digital", "#pricing"];
 
 export function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="py-20 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
@@ -12,19 +19,18 @@ export function Footer() {
               Filografie
             </Link>
             <p className="mt-6 font-sans text-gray-400 max-w-md font-light leading-relaxed">
-              Premium creative services for those who seek to capture life&apos;s most precious moments
-              with artistry and intention.
+              {t.footer.description}
             </p>
           </div>
 
           {/* Quick links */}
           <div>
-            <h4 className="font-sans text-white text-sm font-medium mb-6">Services</h4>
+            <h4 className="font-sans text-white text-sm font-medium mb-6">{t.footer.servicesHeading}</h4>
             <ul className="space-y-4">
-              {["Photography", "Videography", "Digital Creative", "Pricing"].map((link) => (
+              {t.footer.services.map((link, i) => (
                 <li key={link}>
                   <a
-                    href={`#${link.toLowerCase().replace(" ", "-")}`}
+                    href={serviceHrefs[i]}
                     className="font-sans text-gray-400 text-sm hover:text-white transition-colors duration-300"
                   >
                     {link}
@@ -36,7 +42,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-sans text-white text-sm font-medium mb-6">Connect</h4>
+            <h4 className="font-sans text-white text-sm font-medium mb-6">{t.footer.connectHeading}</h4>
             <ul className="space-y-4">
               <li>
                 <a
@@ -68,15 +74,15 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="font-sans text-gray-500 text-sm">
-            © {new Date().getFullYear()} Filografie. All rights reserved.
+            © {new Date().getFullYear()} Filografie. {t.footer.allRightsReserved}
           </p>
 
           <div className="flex items-center gap-8 mt-6 md:mt-0">
             <a href="#" className="font-sans text-gray-500 text-sm hover:text-white transition-colors">
-              Privacy
+              {t.footer.privacy}
             </a>
             <a href="#" className="font-sans text-gray-500 text-sm hover:text-white transition-colors">
-              Terms
+              {t.footer.terms}
             </a>
           </div>
 
@@ -85,7 +91,7 @@ export function Footer() {
             href="#"
             className="hidden md:flex items-center gap-2 bg-white/5 hover:bg-white/10 px-5 py-3 rounded-full font-sans text-gray-400 text-sm transition-colors group"
           >
-            Back to Top
+            {t.footer.backToTop}
             <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
           </a>
         </div>

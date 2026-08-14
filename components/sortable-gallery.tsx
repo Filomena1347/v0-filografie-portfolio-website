@@ -58,18 +58,13 @@ function SortableImage({ image, isAdmin, onDelete, isDeleting }: SortableImagePr
     <div
       ref={setNodeRef}
       style={style}
-      className="break-inside-avoid mb-0 group relative"
+      className="break-inside-avoid mb-0 group relative bg-[#0a0a0f]"
     >
-      <div
-        className="w-full overflow-hidden transition-all duration-300 hover:brightness-110"
-        style={{
-          aspectRatio: `${image.width} / ${image.height}`,
-        }}
-      >
+      <div className="w-full overflow-hidden transition-all duration-300 hover:brightness-110 bg-[#0a0a0f]">
         <img
           src={image.url}
           alt=""
-          className="w-full h-full object-cover"
+          className="w-full h-auto object-contain bg-[#0a0a0f]"
           loading="lazy"
         />
       </div>
@@ -296,13 +291,13 @@ export function SortableGallery({
           strategy={rectSortingStrategy}
           disabled={!isAdmin}
         >
-          <div className="columns-2 md:columns-3 gap-0">
+          <div className="columns-2 md:columns-4 gap-0 bg-[#0a0a0f]">
             {images.map((image, index) => (
               <div
                 key={image.id}
                 style={{
                   animation: isModalOpen
-                    ? `fadeInUp 0.4s ease-out ${index * 50}ms both`
+                    ? `fadeInUp 0.5s ease-out ${index * 50}ms both`
                     : "none",
                 }}
               >
