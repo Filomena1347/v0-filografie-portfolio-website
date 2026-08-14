@@ -84,9 +84,12 @@ export default function Home() {
         onExpandChange={setIsPhotoExpanded}
       />
       <Video />
-      <DigitalCreative />
-      <Pricing />
-      <Blog />
+      {/* HIDDEN - uncomment to show */}
+      {/* <div className="hidden"><DigitalCreative /></div> */}
+      {/* HIDDEN - uncomment to show */}
+      {/* <div className="hidden"><Pricing /></div> */}
+      {/* HIDDEN - uncomment to show */}
+      {/* <div className="hidden"><Blog /></div> */}
       <Contact />
       <Footer />
     </main>

@@ -14,9 +14,12 @@ export function Navbar() {
     { label: t.nav.work, href: "#work" },
     { label: t.nav.photography, href: "#photography", expandPhotography: true },
     { label: t.nav.video, href: "#video" },
-    { label: t.nav.digital, href: "#digital" },
-    { label: t.nav.pricing, href: "#pricing" },
-    { label: t.nav.journal, href: "#blog" },
+    // HIDDEN - uncomment to show
+    // { label: t.nav.digital, href: "#digital" },
+    // HIDDEN - uncomment to show
+    // { label: t.nav.pricing, href: "#pricing" },
+    // HIDDEN - uncomment to show
+    // { label: t.nav.journal, href: "#blog" },
     { label: t.nav.contact, href: "#contact" },
   ]
 
