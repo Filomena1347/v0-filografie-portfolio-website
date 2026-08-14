@@ -107,7 +107,7 @@ const translations: Record<Language, Translations> = {
     nav: {
       work: "Práce",
       photography: "Fotografie",
-      video: "Video",
+      video: "Reels",
       digital: "Digitální",
       pricing: "Ceník",
       journal: "Blog",
@@ -133,9 +133,9 @@ const translations: Record<Language, Translations> = {
       viewAllPhotos: "Zobrazit všechny fotky",
     },
     video: {
-      eyebrow: "Videografie",
+      eyebrow: "Reels",
       headingLine1: "Příběhy v",
-      headingLine2: "pohybu.",
+      headingLine2: "reels.",
     },
     digital: {
       graphicDesignEyebrow: "Grafický design",
@@ -246,7 +246,7 @@ const translations: Record<Language, Translations> = {
         selectService: "Vyberte službu",
         serviceOptions: {
           photography: "Fotografie",
-          video: "Videotvorba",
+          video: "Reels",
           digital: "Digitální tvorba",
           package: "Kompletní balíček",
         },
@@ -264,7 +264,7 @@ const translations: Record<Language, Translations> = {
     footer: {
       description: "Prémiové kreativní služby pro ty, kdo chtějí zachytit nejvzácnější okamžiky života s uměním a záměrem.",
       servicesHeading: "Služby",
-      services: ["Fotografie", "Videotvorba", "Digitální tvorba", "Ceník"],
+      services: ["Fotografie", "Reels", "Digitální tvorba", "Ceník"],
       connectHeading: "Kontakt",
       allRightsReserved: "Všechna práva vyhrazena.",
       privacy: "Ochrana soukromí",
@@ -276,7 +276,7 @@ const translations: Record<Language, Translations> = {
     nav: {
       work: "Work",
       photography: "Photography",
-      video: "Video",
+      video: "Reels",
       digital: "Digital",
       pricing: "Pricing",
       journal: "Journal",
@@ -302,9 +302,9 @@ const translations: Record<Language, Translations> = {
       viewAllPhotos: "View all photos",
     },
     video: {
-      eyebrow: "Videography",
+      eyebrow: "Reels",
       headingLine1: "Stories in",
-      headingLine2: "motion.",
+      headingLine2: "reels.",
     },
     digital: {
       graphicDesignEyebrow: "Graphic Design",
@@ -415,7 +415,7 @@ const translations: Record<Language, Translations> = {
         selectService: "Select a service",
         serviceOptions: {
           photography: "Photography",
-          video: "Videography",
+          video: "Reels",
           digital: "Digital Creative",
           package: "Full Package",
         },
@@ -433,7 +433,7 @@ const translations: Record<Language, Translations> = {
     footer: {
       description: "Premium creative services for those who seek to capture life's most precious moments with artistry and intention.",
       servicesHeading: "Services",
-      services: ["Photography", "Videography", "Digital Creative", "Pricing"],
+      services: ["Photography", "Reels", "Digital Creative", "Pricing"],
       connectHeading: "Connect",
       allRightsReserved: "All rights reserved.",
       privacy: "Privacy",
