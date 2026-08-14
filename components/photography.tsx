@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { Loader2, Lock, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import { SortableGallery } from "./sortable-gallery";
 import { useAdmin } from "@/contexts/admin-context";
 import { useLanguage } from "@/contexts/language-context";
@@ -66,29 +66,31 @@ export function Photography({ photos, onPhotosChange, isExpanded, onExpandChange
           </div>
         ) : (
           <>
-            <SortableGallery
-              images={displayedPhotos}
-              category="photography"
-              onImagesChange={onPhotosChange}
-              isModalOpen={true}
-            />
+            <div key={isExpanded ? "expanded" : "collapsed"} className="animate-gallery-expand">
+              <SortableGallery
+                images={displayedPhotos}
+                category="photography"
+                onImagesChange={onPhotosChange}
+                isModalOpen={true}
+              />
+            </div>
 
             {/* Expand / collapse button */}
             {hasMore && (
               <div className="flex justify-center mt-10">
                 <button
                   onClick={() => onExpandChange(!isExpanded)}
-                  className="flex items-center gap-2 px-8 py-3 border border-white/20 rounded-full text-white/70 hover:text-white hover:border-white/50 transition-all duration-200 font-sans text-sm"
+                  className="group relative flex items-center gap-2 px-8 py-3 bg-[#0a0a0f] border border-violet-500/50 rounded-full text-white transition-all duration-300 font-sans text-sm shadow-[0_0_20px_rgba(139,92,246,0.25)] hover:shadow-[0_0_35px_rgba(139,92,246,0.55)] hover:border-violet-400 hover:scale-105"
                 >
                   {isExpanded ? (
                     <>
-                      <ChevronUp className="w-4 h-4" />
-                      {t.photography.showLess}
+                      {t.photography.closeGallery}
+                      <span aria-hidden="true">↑</span>
                     </>
                   ) : (
                     <>
-                      <ChevronDown className="w-4 h-4" />
                       {t.photography.viewAllPhotos} ({photos.length})
+                      <span aria-hidden="true">→</span>
                     </>
                   )}
                 </button>

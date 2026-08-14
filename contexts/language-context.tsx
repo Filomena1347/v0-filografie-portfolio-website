@@ -30,7 +30,7 @@ export interface Translations {
     noImages: string;
     loginToUpload: string;
     useUploadButton: string;
-    showLess: string;
+    closeGallery: string;
     viewAllPhotos: string;
   };
   video: {
@@ -129,7 +129,7 @@ const translations: Record<Language, Translations> = {
       noImages: "Zatím žádné obrázky.",
       loginToUpload: "Přihlásit se pro nahrání obrázků",
       useUploadButton: "Pro přidání obrázků použijte tlačítko nahrát výše.",
-      showLess: "Zobrazit méně",
+      closeGallery: "Zavřít galerii",
       viewAllPhotos: "Zobrazit všechny fotky",
     },
     video: {
@@ -298,7 +298,7 @@ const translations: Record<Language, Translations> = {
       noImages: "No images yet.",
       loginToUpload: "Login to upload images",
       useUploadButton: "Use the upload button above to add images.",
-      showLess: "Show less",
+      closeGallery: "Close gallery",
       viewAllPhotos: "View all photos",
     },
     video: {
