@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="90" fill="#0a0a0f"/>
+  <text x="100" y="138" font-family="Georgia, serif" font-style="italic" font-size="110" fill="white" text-anchor="middle" font-weight="400">F</text>
+  <path d="M148 38 L153 25 L158 38 L171 43 L158 48 L153 61 L148 48 L135 43 Z" fill="white" opacity="0.95"/>
+  <path d="M128 55 L132 46 L136 55 L145 59 L136 63 L132 72 L128 63 L119 59 Z" fill="white" opacity="0.6"/>
+  <path d="M155 58 L158 51 L161 58 L168 61 L161 64 L158 71 L155 64 L148 61 Z" fill="white" opacity="0.4"/>
+</svg>
