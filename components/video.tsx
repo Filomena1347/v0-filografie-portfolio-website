@@ -496,19 +496,29 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
       return;
     }
 
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-    if (!cloudName || !uploadPreset) {
-      setError(
-        "Cloudinary is not configured. Please add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET."
-      );
-      return;
-    }
-
     setIsUploading(true);
     setProgress(0);
     setError("");
+
+    // Resolve the correct cloud name + preset from the server (source of truth),
+    // since the public env var may be misconfigured.
+    let cloudName = "";
+    let uploadPreset = "";
+    try {
+      const cfgRes = await fetch("/api/videos/config");
+      const cfg = await cfgRes.json();
+      cloudName = cfg.cloudName;
+      uploadPreset = cfg.uploadPreset;
+      if (!cfg.configured) {
+        setError("Cloudinary is not configured on the server.");
+        setIsUploading(false);
+        return;
+      }
+    } catch {
+      setError("Could not load Cloudinary configuration.");
+      setIsUploading(false);
+      return;
+    }
 
     const trimmedTitle = title.trim();
     // Match the server-side context format so getVideos() reads it back correctly

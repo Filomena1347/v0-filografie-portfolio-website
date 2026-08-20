@@ -26,13 +26,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   // Check for existing session on mount
   useEffect(() => {
-    // TEMP_DEBUG_BYPASS - remove after testing
-    if (new URLSearchParams(window.location.search).get("debugAdmin") === "1") {
-      setIsAdmin(true);
-      setPassword("debug-bypass-not-real");
-      setIsLoading(false);
-      return;
-    }
     const session = sessionStorage.getItem(ADMIN_SESSION_KEY);
     const storedPassword = sessionStorage.getItem(ADMIN_PASSWORD_KEY);
     if (session === "authenticated" && storedPassword) {
