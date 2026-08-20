@@ -26,7 +26,11 @@ export const metadata: Metadata = {
   description: 'Premium creative services - Photography, Videography, and Digital Creative by Filomena',
   generator: 'v0.app',
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
+    apple: '/favicon-192.png',
   },
 }
 
