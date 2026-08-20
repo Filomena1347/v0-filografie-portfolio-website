@@ -443,6 +443,7 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -496,31 +497,105 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
     }
 
     setIsUploading(true);
+    setProgress(0);
     setError("");
 
-    const formData = new FormData();
-    formData.append("title", title.trim());
-    formData.append("platform", platform);
-    formData.append("order", String(nextOrder));
-    formData.append("file", videoFile);
-
+    // Resolve the correct cloud name + preset from the server (source of truth),
+    // since the public env var may be misconfigured.
+    let cloudName = "";
+    let uploadPreset = "";
     try {
-      const response = await fetch("/api/videos/upload", {
-        method: "POST",
-        headers: { "x-admin-password": password },
-        body: formData,
-      });
-
-      if (response.ok) {
-        const { video } = await response.json();
-        onUploaded(video);
-        onClose();
-      } else {
-        const data = await response.json();
-        setError(data.error || "Upload failed.");
+      const cfgRes = await fetch("/api/videos/config");
+      const cfg = await cfgRes.json();
+      cloudName = cfg.cloudName;
+      uploadPreset = cfg.uploadPreset;
+      if (!cfg.configured) {
+        setError("Cloudinary is not configured on the server.");
+        setIsUploading(false);
+        return;
       }
     } catch {
-      setError("An error occurred.");
+      setError("Could not load Cloudinary configuration.");
+      setIsUploading(false);
+      return;
+    }
+
+    const trimmedTitle = title.trim();
+    // Match the server-side context format so getVideos() reads it back correctly
+    const safeTitle = trimmedTitle.replace(/[|=]/g, " ").slice(0, 200);
+    const context = `title=${safeTitle}|platform=${platform}|order=${nextOrder}`;
+
+    const formData = new FormData();
+    formData.append("file", videoFile);
+    formData.append("upload_preset", uploadPreset);
+    formData.append("folder", "filografie/videos");
+    formData.append("context", context);
+
+    // Upload directly to Cloudinary as a video resource. Using XHR so we can
+    // report progress and allow a long timeout for large video files.
+    const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`;
+
+    try {
+      const result = await new Promise<{
+        public_id: string;
+        secure_url: string;
+      }>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", uploadUrl);
+        xhr.timeout = 10 * 60 * 1000; // 10 minutes for large files
+
+        xhr.upload.onprogress = (ev) => {
+          if (ev.lengthComputable) {
+            setProgress(Math.round((ev.loaded / ev.total) * 100));
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              resolve(JSON.parse(xhr.responseText));
+            } catch {
+              reject(new Error("Received an invalid response from Cloudinary."));
+            }
+          } else {
+            // Surface Cloudinary's specific error message
+            let message = `Upload failed (HTTP ${xhr.status}).`;
+            try {
+              const body = JSON.parse(xhr.responseText);
+              if (body?.error?.message) message = body.error.message;
+            } catch {
+              /* keep default message */
+            }
+            reject(new Error(message));
+          }
+        };
+
+        xhr.onerror = () =>
+          reject(
+            new Error(
+              "Network error reaching Cloudinary. Check your connection and that the upload preset allows unsigned video uploads."
+            )
+          );
+        xhr.ontimeout = () =>
+          reject(new Error("Upload timed out. The video file may be too large."));
+
+        xhr.send(formData);
+      });
+
+      const thumbnailUrl = result.secure_url.replace(/\.[^/.]+$/, ".jpg");
+
+      onUploaded({
+        id: result.public_id,
+        publicId: result.public_id,
+        thumbnailUrl,
+        videoUrl: result.secure_url,
+        title: trimmedTitle,
+        platform,
+        order: nextOrder,
+      });
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred.");
     } finally {
       setIsUploading(false);
     }
@@ -649,7 +724,7 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
             {isUploading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Uploading...
+                {progress > 0 ? `Uploading... ${progress}%` : "Uploading..."}
               </>
             ) : (
               <>

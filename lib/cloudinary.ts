@@ -2,8 +2,10 @@ import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  // "videos web" key (unrestricted: upload + delete). Falls back to the
+  // original CLOUDINARY_* vars if the newer ones are not present.
+  api_key: process.env.API_KEY || process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.API_KEY_2 || process.env.CLOUDINARY_API_SECRET,
 });
 
 export interface GalleryImage {
