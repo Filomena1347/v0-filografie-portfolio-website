@@ -505,12 +505,18 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
     let cloudName = "";
     let uploadPreset = "";
     try {
-      const cfgRes = await fetch("/api/videos/config");
+      const cfgRes = await fetch("/api/videos/config", { cache: "no-store" });
       const cfg = await cfgRes.json();
       cloudName = cfg.cloudName;
       uploadPreset = cfg.uploadPreset;
       if (!cfg.configured) {
-        setError("Cloudinary is not configured on the server.");
+        const missing = [
+          !cloudName && "cloud name",
+          !uploadPreset && "upload preset",
+        ]
+          .filter(Boolean)
+          .join(" and ");
+        setError(`Cloudinary is missing its ${missing}. Please check the server configuration.`);
         setIsUploading(false);
         return;
       }
