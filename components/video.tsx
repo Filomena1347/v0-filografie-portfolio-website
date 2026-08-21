@@ -985,9 +985,7 @@ export function Video() {
               {t.video.eyebrow}
             </p>
             <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-              {t.video.headingLine1}
-              <br />
-              <span className="text-primary">{t.video.headingLine2}</span>
+              Reels
             </h2>
           </div>
 
