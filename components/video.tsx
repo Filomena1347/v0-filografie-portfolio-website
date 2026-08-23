@@ -205,7 +205,7 @@ function CoverFlowCard({
         filter: `brightness(${brightness})`,
         transition: dndTransition || "all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         transformStyle: "preserve-3d",
-        width: "min(240px, 42vw)",
+        width: "min(240px, 56vw)",
       }}
       onClick={() => {
         if (!isEditingTitle) onClick();
@@ -1031,7 +1031,7 @@ export function Video() {
                     style={{
                       perspective: "1200px",
                       perspectiveOrigin: "50% 50%",
-                      height: "min(420px, 72vw)",
+                      height: "min(420px, 100vw)",
                       maxWidth: "700px",
                     }}
                     onPointerDown={handlePointerDown}
