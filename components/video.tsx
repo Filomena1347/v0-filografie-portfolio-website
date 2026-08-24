@@ -205,7 +205,7 @@ function CoverFlowCard({
         filter: `brightness(${brightness})`,
         transition: dndTransition || "all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         transformStyle: "preserve-3d",
-        width: "min(240px, 42vw)",
+        width: "min(240px, 56vw)",
       }}
       onClick={() => {
         if (!isEditingTitle) onClick();
@@ -505,12 +505,18 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
     let cloudName = "";
     let uploadPreset = "";
     try {
-      const cfgRes = await fetch("/api/videos/config");
+      const cfgRes = await fetch("/api/videos/config", { cache: "no-store" });
       const cfg = await cfgRes.json();
       cloudName = cfg.cloudName;
       uploadPreset = cfg.uploadPreset;
       if (!cfg.configured) {
-        setError("Cloudinary is not configured on the server.");
+        const missing = [
+          !cloudName && "cloud name",
+          !uploadPreset && "upload preset",
+        ]
+          .filter(Boolean)
+          .join(" and ");
+        setError(`Cloudinary is missing its ${missing}. Please check the server configuration.`);
         setIsUploading(false);
         return;
       }
@@ -979,9 +985,7 @@ export function Video() {
               {t.video.eyebrow}
             </p>
             <h2 className="font-serif text-5xl md:text-7xl text-white leading-none">
-              {t.video.headingLine1}
-              <br />
-              <span className="text-primary">{t.video.headingLine2}</span>
+              Reels
             </h2>
           </div>
 
@@ -1027,7 +1031,7 @@ export function Video() {
                     style={{
                       perspective: "1200px",
                       perspectiveOrigin: "50% 50%",
-                      height: "min(420px, 72vw)",
+                      height: "min(420px, 100vw)",
                       maxWidth: "700px",
                     }}
                     onPointerDown={handlePointerDown}

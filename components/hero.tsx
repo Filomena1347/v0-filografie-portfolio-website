@@ -116,14 +116,14 @@ export function Hero({ photos }: HeroProps) {
 
           {/* Right side - Vertical Video Reel (TikTok style) */}
           <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-6 lg:mt-0">
-            <div className="relative w-full max-w-[260px]">
+            <div className="relative w-full max-w-[210px] lg:max-w-[260px]">
               <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl">
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
                 
                 <div
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
-                  className="relative h-[380px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
+                  className="relative h-[430px] lg:h-[380px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {videoReels.map((video, index) => (
