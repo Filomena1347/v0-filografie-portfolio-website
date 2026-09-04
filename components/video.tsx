@@ -500,28 +500,30 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
     setProgress(0);
     setError("");
 
-    // Resolve the correct cloud name + preset from the server (source of truth),
-    // since the public env var may be misconfigured.
-    let cloudName = "";
-    let uploadPreset = "";
-    try {
-      const cfgRes = await fetch("/api/videos/config", { cache: "no-store" });
-      const cfg = await cfgRes.json();
-      cloudName = cfg.cloudName;
-      uploadPreset = cfg.uploadPreset;
-      if (!cfg.configured) {
-        const missing = [
-          !cloudName && "cloud name",
-          !uploadPreset && "upload preset",
-        ]
-          .filter(Boolean)
-          .join(" and ");
-        setError(`Cloudinary is missing its ${missing}. Please check the server configuration.`);
-        setIsUploading(false);
-        return;
-      }
-    } catch {
-      setError("Could not load Cloudinary configuration.");
+    // Read the public Cloudinary values directly from NEXT_PUBLIC_* env vars.
+    // These are inlined into the client bundle at build time and are safe to
+    // expose (the cloud name appears in every delivery URL, and the preset is
+    // meant for unsigned client uploads).
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "";
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
+
+    // Print the actual configuration so we can see exactly what is missing.
+    console.log("[v0] Cloudinary config", {
+      cloudName: cloudName || "(missing)",
+      uploadPreset: uploadPreset || "(missing)",
+      hasCloudName: Boolean(cloudName),
+      hasUploadPreset: Boolean(uploadPreset),
+    });
+
+    if (!cloudName || !uploadPreset) {
+      const missing = [
+        !cloudName && "cloud name (NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME)",
+        !uploadPreset && "upload preset (NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET)",
+      ]
+        .filter(Boolean)
+        .join(" and ");
+      console.log("[v0] Cloudinary is missing:", missing);
+      setError(`Cloudinary is missing its ${missing}. Please check the environment variables.`);
       setIsUploading(false);
       return;
     }
@@ -569,8 +571,9 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
             try {
               const body = JSON.parse(xhr.responseText);
               if (body?.error?.message) message = body.error.message;
+              console.log("[v0] Cloudinary upload error response:", body);
             } catch {
-              /* keep default message */
+              console.log("[v0] Cloudinary upload error (raw):", xhr.responseText);
             }
             reject(new Error(message));
           }
@@ -601,6 +604,7 @@ function UploadModal({ onClose, onUploaded, nextOrder, password }: UploadModalPr
       });
       onClose();
     } catch (err) {
+      console.log("[v0] Video upload failed:", err);
       setError(err instanceof Error ? err.message : "An unexpected error occurred.");
     } finally {
       setIsUploading(false);
