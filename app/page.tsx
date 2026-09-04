@@ -75,7 +75,6 @@ export default function Home() {
       <CosmicElements />
       <Navbar />
       <Hero photos={heroPhotos} />
-      <About />
       {/* HIDDEN - uncomment to show */}
       {/* <div className="hidden"><Portfolio /></div> */}
       <Photography
@@ -92,6 +91,7 @@ export default function Home() {
       {/* HIDDEN - uncomment to show */}
       {/* <div className="hidden"><Blog /></div> */}
       <Contact />
+      <About />
       <Footer />
     </main>
   )

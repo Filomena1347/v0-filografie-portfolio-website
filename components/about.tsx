@@ -6,7 +6,7 @@ export function About() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           {/* Image area with floating elements */}
-          <div className="relative">
+          <div className="relative w-full max-w-xs mx-auto lg:mx-0">
             {/* Main portrait card */}
             <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-gradient-to-br from-[#12121c] to-[#1a1a2e] relative">
               <img 
