@@ -4,33 +4,32 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* WeTransfer-inspired dark navy palette */
-  --background: #0a0a14;
-  --foreground: #ffffff;
+  /* Kindred-inspired warm editorial palette */
+  --background: #f5f2ee;
+  --foreground: #1a1a1a;
   --card: #ffffff;
-  --card-foreground: #0a0a14;
+  --card-foreground: #1a1a1a;
   --popover: #ffffff;
-  --popover-foreground: #0a0a14;
-  --primary: #5046e5;
+  --popover-foreground: #1a1a1a;
+  --primary: #c4704f;
   --primary-foreground: #ffffff;
-  --secondary: #12121c;
-  --secondary-foreground: #ffffff;
-  --muted: #16162a;
-  --muted-foreground: #8b8b9e;
-  --accent: #ff7849;
+  --secondary: #efe9e2;
+  --secondary-foreground: #1a1a1a;
+  --muted: #ece6de;
+  --muted-foreground: #8a8175;
+  --accent: #c4704f;
   --accent-foreground: #ffffff;
-  --destructive: #ef4444;
+  --destructive: #b3452f;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: #16162a;
-  --ring: #5046e5;
-  --radius: 1rem;
+  --border: rgba(26, 26, 26, 0.1);
+  --input: #ffffff;
+  --ring: #c4704f;
+  --radius: 0.625rem;
 }
 
 @theme inline {
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
-  --font-mono: 'Geist Mono', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -50,10 +49,10 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 @layer base {
@@ -63,193 +62,87 @@
   body {
     @apply bg-background text-foreground;
   }
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-/* Editorial heading - bold italic serif like GT Super */
-.heading-editorial {
+/* Editorial serif heading */
+.font-serif {
   font-family: var(--font-serif);
-  font-weight: 700;
-  font-style: italic;
-  letter-spacing: -0.02em;
-  line-height: 1;
 }
 
-/* Clean body text - light sans */
 .body-text {
   font-family: var(--font-sans);
   font-weight: 300;
   line-height: 1.7;
-  letter-spacing: 0.01em;
 }
 
-/* Label text */
 .label-text {
   font-family: var(--font-sans);
   font-weight: 400;
   font-size: 0.75rem;
-  letter-spacing: 0.05em;
-}
-
-/* White card with subtle shadow */
-.card-white {
-  background: #ffffff;
-  border-radius: 1.25rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-/* Dark card variant */
-.card-dark {
-  background: rgba(18, 18, 30, 0.6);
-  border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-/* Floating image card */
-.floating-card {
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-}
-
-/* File type badge */
-.file-badge {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 0.65rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 0.4rem;
-  text-transform: lowercase;
-}
-
-/* Blue button */
-.btn-blue {
-  background: #5046e5;
-  color: white;
-  border-radius: 0.75rem;
-  padding: 1rem 2rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn-blue:hover {
-  background: #4338ca;
-  transform: translateY(-1px);
-}
-
-/* Outline button */
-.btn-outline {
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50px;
-  padding: 1rem 2rem;
-  color: white;
-  font-weight: 400;
-  transition: all 0.2s ease;
-}
-
-.btn-outline:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Pastel accents */
-.accent-pink { background: #fde8e8; color: #e87272; }
-.accent-blue { background: #e8f0fd; color: #5046e5; }
-.accent-orange { background: #fef0e8; color: #ff7849; }
-.accent-green { background: #e8fdf0; color: #22c55e; }
-
-/* Smooth scroll */
-html {
-  scroll-behavior: smooth;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 /* Subtle scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #0a0a14;
+  background: var(--background);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(80, 70, 229, 0.3);
-  border-radius: 3px;
+  background: rgba(196, 112, 79, 0.35);
+  border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(80, 70, 229, 0.5);
+  background: rgba(196, 112, 79, 0.55);
 }
 
-/* Selection */
 ::selection {
-  background: rgba(80, 70, 229, 0.3);
-  color: #ffffff;
+  background: rgba(196, 112, 79, 0.25);
+  color: #1a1a1a;
 }
 
-/* Floating animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(2deg); }
+/* Staggered fade-in for galleries */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes float-reverse {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(10px) rotate(-2deg); }
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out both;
 }
 
-@keyframes levitate {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
-@keyframes levitate-slow {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.2); }
-}
-
-@keyframes twinkle-slow {
-  0%, 100% { opacity: 0.15; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.1); }
-}
-
-@keyframes pulse-soft {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-float-reverse {
-  animation: float-reverse 7s ease-in-out infinite;
-}
-
-.animate-float-slow {
-  animation: float 10s ease-in-out infinite;
-}
-
-.animate-levitate {
-  animation: levitate 5s ease-in-out infinite;
-}
-
-.animate-levitate-slow {
-  animation: levitate-slow 6s ease-in-out infinite;
-}
-
-.animate-twinkle {
-  animation: twinkle 3s ease-in-out infinite;
-}
-
-.animate-twinkle-slow {
-  animation: twinkle-slow 4s ease-in-out infinite;
-}
-
-.animate-pulse-soft {
-  animation: pulse-soft 4s ease-in-out infinite;
+.animate-gentle-float {
+  animation: gentle-float 6s ease-in-out infinite;
 }

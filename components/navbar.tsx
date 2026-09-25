@@ -1,145 +1,93 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import { ChevronDown, Menu, X } from "lucide-react"
-
-const navItems = [
-  { label: "Work", href: "#work" },
-  { 
-    label: "Photography", 
-    href: "#photography",
-    dropdown: [
-      { label: "Corporate Events", href: "#corporate" },
-      { label: "Weddings", href: "#weddings" },
-      { label: "Fashion", href: "#fashion" },
-    ]
-  },
-  { label: "Video", href: "#video" },
-  { label: "Digital", href: "#digital" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Journal", href: "#blog" },
-  { label: "Contact", href: "#contact" },
-]
+import { useLanguage } from "@/context/language-context"
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { t, lang, toggle } = useLanguage()
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
+  const links = [
+    { href: "#photography", label: t.nav_photography },
+    { href: "#video", label: t.nav_video },
+    { href: "#content", label: t.nav_content },
+    { href: "#contact", label: t.nav_contact },
+  ]
+
   return (
-    <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "py-4 bg-[#0a0a14]/95 backdrop-blur-sm" : "py-6"
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
+        scrolled ? "bg-background/90 backdrop-blur-sm border-b border-border" : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
-        <Link 
-          href="/" 
-          className="font-serif text-2xl font-bold italic text-white"
-        >
+      <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 h-20">
+        <a href="#top" className="font-serif italic text-2xl text-foreground">
           Filoména
-        </Link>
+        </a>
 
-        {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-10">
-          {navItems.map((item) => (
-            <div 
-              key={item.label}
-              className="relative"
-              onMouseEnter={() => item.dropdown && setOpenDropdown(item.label)}
-              onMouseLeave={() => setOpenDropdown(null)}
+        <div className="hidden md:flex items-center gap-10">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="text-sm tracking-wide text-foreground/70 hover:text-primary transition-colors"
             >
-              <Link
-                href={item.href}
-                className="flex items-center gap-1 text-sm text-white/70 hover:text-white transition-colors duration-200"
-              >
-                {item.label}
-                {item.dropdown && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
-              </Link>
-              
-              {item.dropdown && openDropdown === item.label && (
-                <div className="absolute top-full left-0 mt-4 py-3 min-w-[180px] bg-white rounded-xl shadow-xl">
-                  {item.dropdown.map((subItem) => (
-                    <Link
-                      key={subItem.label}
-                      href={subItem.href}
-                      className="block px-5 py-2.5 text-sm text-gray-700 hover:text-[#5046e5] hover:bg-gray-50 transition-all duration-200"
-                    >
-                      {subItem.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+              {l.label}
+            </a>
           ))}
         </div>
 
-        {/* CTA Button */}
-        <a 
-          href="#contact"
-          className="hidden lg:block btn-blue text-sm"
-        >
-          Get in touch
-        </a>
+        <div className="flex items-center gap-5">
+          <button
+            onClick={toggle}
+            aria-label="Toggle language"
+            className="text-xs tracking-widest text-foreground/60 hover:text-primary transition-colors"
+          >
+            <span className={lang === "cs" ? "text-primary font-medium" : ""}>CZ</span>
+            <span className="mx-1 text-foreground/30">/</span>
+            <span className={lang === "en" ? "text-primary font-medium" : ""}>EN</span>
+          </button>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden p-2 text-white/70 hover:text-white transition-colors"
-          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
+          <a
+            href="#contact"
+            className="hidden sm:inline-flex items-center rounded-full bg-primary text-primary-foreground text-sm px-5 py-2 hover:opacity-90 transition-opacity"
+          >
+            {t.nav_cta}
+          </a>
 
-      {/* Mobile Navigation */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-[#0a0a14] border-t border-white/10 py-6">
-          <div className="max-w-7xl mx-auto px-6 flex flex-col gap-4">
-            {navItems.map((item) => (
-              <div key={item.label}>
-                <Link
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-base text-white/70 hover:text-white transition-colors py-2 block"
-                >
-                  {item.label}
-                </Link>
-                {item.dropdown && (
-                  <div className="ml-4 mt-2 flex flex-col gap-2">
-                    {item.dropdown.map((subItem) => (
-                      <Link
-                        key={subItem.label}
-                        href={subItem.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-sm text-white/50 hover:text-white transition-colors py-1"
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-            <a 
-              href="#contact"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="btn-blue text-sm text-center mt-4"
+          <button
+            className="md:hidden flex flex-col gap-1.5"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Menu"
+          >
+            <span className="w-6 h-px bg-foreground" />
+            <span className="w-6 h-px bg-foreground" />
+          </button>
+        </div>
+      </nav>
+
+      {menuOpen && (
+        <div className="md:hidden bg-background border-b border-border px-6 py-4 flex flex-col gap-4">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              onClick={() => setMenuOpen(false)}
+              className="text-sm tracking-wide text-foreground/80"
             >
-              Get in touch
+              {l.label}
             </a>
-          </div>
+          ))}
         </div>
       )}
-    </nav>
+    </header>
   )
 }

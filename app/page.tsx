@@ -1,29 +1,46 @@
 import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
-import { About } from "@/components/about"
-import { Portfolio } from "@/components/portfolio"
+import { ThreePillars } from "@/components/three-pillars"
 import { Photography } from "@/components/photography"
 import { Video } from "@/components/video"
-import { DigitalCreative } from "@/components/digital-creative"
-import { Pricing } from "@/components/pricing"
-import { Blog } from "@/components/blog"
+import { Content } from "@/components/content"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
-import { CosmicElements } from "@/components/cosmic-elements"
+import { sql, ensureSchema } from "@/lib/db"
+import type { MediaItem, MediaSection } from "@/lib/media"
 
-export default function Home() {
+export const dynamic = "force-dynamic"
+
+async function getSection(section: MediaSection): Promise<MediaItem[]> {
+  try {
+    await ensureSchema()
+    const rows = await sql`
+      SELECT * FROM media_items
+      WHERE published = true AND section = ${section}
+      ORDER BY sort_order ASC, created_at DESC
+    `
+    return rows as unknown as MediaItem[]
+  } catch (error) {
+    console.log("[v0] getSection error:", (error as Error).message)
+    return []
+  }
+}
+
+export default async function HomePage() {
+  const [photos, videos, content] = await Promise.all([
+    getSection("photography"),
+    getSection("video"),
+    getSection("content"),
+  ])
+
   return (
-    <main className="min-h-screen bg-[#0a0a0f] relative">
-      <CosmicElements />
+    <main className="min-h-screen">
       <Navbar />
       <Hero />
-      <About />
-      <Portfolio />
-      <Photography />
-      <Video />
-      <DigitalCreative />
-      <Pricing />
-      <Blog />
+      <ThreePillars />
+      <Photography items={photos} />
+      <Video items={videos} />
+      <Content items={content} />
       <Contact />
       <Footer />
     </main>
