@@ -11,11 +11,30 @@ type Dict = {
   nav_contact: string
   nav_cta: string
 
+  hero_label: string
   hero_title: string
   hero_tag_photo: string
   hero_tag_video: string
   hero_tag_content: string
   hero_scroll: string
+
+  hero_filter_all: string
+  hero_filter_photo: string
+  hero_filter_video: string
+  hero_filter_gastro: string
+  hero_filter_events: string
+  hero_filter_ugc: string
+
+  hero_card_events_cat: string
+  hero_card_events_desc: string
+  hero_card_gastro_cat: string
+  hero_card_gastro_desc: string
+  hero_card_video_cat: string
+  hero_card_video_desc: string
+  hero_card_ugc_cat: string
+  hero_card_ugc_desc: string
+  hero_card_portraits_cat: string
+  hero_card_portraits_desc: string
 
   pillars_label: string
   pillar_photo_title: string
@@ -67,11 +86,30 @@ const translations: Record<Lang, Dict> = {
     nav_contact: "Kontakt",
     nav_cta: "Spojme se",
 
+    hero_label: "Tvorba od Filomény",
     hero_title: "Vizuální vyprávění příběhů.",
     hero_tag_photo: "Foto",
     hero_tag_video: "Video",
     hero_tag_content: "Obsah",
     hero_scroll: "Posunout dolů",
+
+    hero_filter_all: "Vše",
+    hero_filter_photo: "Fotografie",
+    hero_filter_video: "Video",
+    hero_filter_gastro: "Gastro",
+    hero_filter_events: "Eventy",
+    hero_filter_ugc: "UGC",
+
+    hero_card_events_cat: "Eventy",
+    hero_card_events_desc: "Svatby & firemní akce",
+    hero_card_gastro_cat: "Gastro",
+    hero_card_gastro_desc: "Food styling & restaurace",
+    hero_card_video_cat: "Video",
+    hero_card_video_desc: "Reels & brandový obsah",
+    hero_card_ugc_cat: "UGC",
+    hero_card_ugc_desc: "Autentický obsah pro značky",
+    hero_card_portraits_cat: "Fotografie",
+    hero_card_portraits_desc: "Portréty & lifestyle",
 
     pillars_label: "Co tvořím",
     pillar_photo_title: "Fotografie",
@@ -121,11 +159,30 @@ const translations: Record<Lang, Dict> = {
     nav_contact: "Contact",
     nav_cta: "Get in touch",
 
+    hero_label: "Creative by Filoména",
     hero_title: "Visual storytelling.",
     hero_tag_photo: "Photo",
     hero_tag_video: "Video",
     hero_tag_content: "Content",
     hero_scroll: "Scroll down",
+
+    hero_filter_all: "All",
+    hero_filter_photo: "Photography",
+    hero_filter_video: "Video",
+    hero_filter_gastro: "Gastro",
+    hero_filter_events: "Events",
+    hero_filter_ugc: "UGC",
+
+    hero_card_events_cat: "Events",
+    hero_card_events_desc: "Weddings & corporate events",
+    hero_card_gastro_cat: "Gastro",
+    hero_card_gastro_desc: "Food styling & restaurants",
+    hero_card_video_cat: "Video",
+    hero_card_video_desc: "Reels & brand content",
+    hero_card_ugc_cat: "UGC",
+    hero_card_ugc_desc: "Authentic content for brands",
+    hero_card_portraits_cat: "Photography",
+    hero_card_portraits_desc: "Portraits & lifestyle",
 
     pillars_label: "What I create",
     pillar_photo_title: "Photography",
