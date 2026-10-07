@@ -16,9 +16,8 @@ export function Navbar() {
   }, [])
 
   const links = [
-    { href: "#photography", label: t.nav_photography },
-    { href: "#video", label: t.nav_video },
-    { href: "#content", label: t.nav_content },
+    { href: "#work", label: t.nav_work },
+    { href: "#about", label: t.nav_about },
     { href: "#contact", label: t.nav_contact },
   ]
 

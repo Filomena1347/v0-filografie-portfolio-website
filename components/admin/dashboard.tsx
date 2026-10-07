@@ -10,6 +10,7 @@ const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
   { key: "photography", label: "Photography", accept: "image/*" },
   { key: "video", label: "Video", accept: "video/*" },
   { key: "content", label: "Content", accept: "image/*,video/*" },
+  { key: "about", label: "About photo", accept: "image/*" },
 ]
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME

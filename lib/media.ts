@@ -1,5 +1,5 @@
 export type MediaType = "photo" | "video"
-export type MediaSection = "photography" | "video" | "content"
+export type MediaSection = "photography" | "video" | "content" | "about"
 
 export type MediaItem = {
   id: string
@@ -17,4 +17,4 @@ export type MediaItem = {
   created_at: string
 }
 
-export const PHOTO_CATEGORIES = ["Events", "Gastro", "Portraits"] as const
+export const PHOTO_CATEGORIES = ["Events", "Gastro", "Weddings", "Portraits"] as const

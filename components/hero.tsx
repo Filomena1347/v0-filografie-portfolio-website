@@ -5,7 +5,7 @@ import { useMemo, useRef, useState } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
 
-type FilterKey = "all" | "photo" | "video" | "gastro" | "events" | "ugc"
+type FilterKey = "all" | "video" | "events" | "gastro" | "weddings" | "ugc" | "graphics"
 
 export function Hero() {
   const { t } = useLanguage()
@@ -14,29 +14,16 @@ export function Hero() {
 
   const filters: { key: FilterKey; label: string }[] = [
     { key: "all", label: t.hero_filter_all },
-    { key: "photo", label: t.hero_filter_photo },
     { key: "video", label: t.hero_filter_video },
-    { key: "gastro", label: t.hero_filter_gastro },
     { key: "events", label: t.hero_filter_events },
+    { key: "gastro", label: t.hero_filter_gastro },
+    { key: "weddings", label: t.hero_filter_weddings },
     { key: "ugc", label: t.hero_filter_ugc },
+    { key: "graphics", label: t.hero_filter_graphics },
   ]
 
   const cards = useMemo(
     () => [
-      {
-        id: "events",
-        image: "/images/pillar-photography.png",
-        category: t.hero_card_events_cat,
-        desc: t.hero_card_events_desc,
-        filters: ["photo", "events"] as FilterKey[],
-      },
-      {
-        id: "gastro",
-        image: "/images/hero.png",
-        category: t.hero_card_gastro_cat,
-        desc: t.hero_card_gastro_desc,
-        filters: ["photo", "gastro"] as FilterKey[],
-      },
       {
         id: "video",
         image: "/images/pillar-video.png",
@@ -45,18 +32,39 @@ export function Hero() {
         filters: ["video"] as FilterKey[],
       },
       {
+        id: "events",
+        image: "/images/pillar-photography.png",
+        category: t.hero_card_events_cat,
+        desc: t.hero_card_events_desc,
+        filters: ["events"] as FilterKey[],
+      },
+      {
+        id: "gastro",
+        image: "/images/hero.png",
+        category: t.hero_card_gastro_cat,
+        desc: t.hero_card_gastro_desc,
+        filters: ["gastro"] as FilterKey[],
+      },
+      {
+        id: "weddings",
+        image: "/images/card-weddings.png",
+        category: t.hero_card_weddings_cat,
+        desc: t.hero_card_weddings_desc,
+        filters: ["weddings"] as FilterKey[],
+      },
+      {
         id: "ugc",
         image: "/images/pillar-content.png",
         category: t.hero_card_ugc_cat,
         desc: t.hero_card_ugc_desc,
-        filters: ["video", "ugc"] as FilterKey[],
+        filters: ["ugc"] as FilterKey[],
       },
       {
-        id: "portraits",
-        image: "/images/pillar-photography.png",
-        category: t.hero_card_portraits_cat,
-        desc: t.hero_card_portraits_desc,
-        filters: ["photo"] as FilterKey[],
+        id: "graphics",
+        image: "/images/card-graphics.png",
+        category: t.hero_card_graphics_cat,
+        desc: t.hero_card_graphics_desc,
+        filters: ["graphics"] as FilterKey[],
       },
     ],
     [t],
@@ -79,6 +87,8 @@ export function Hero() {
         <h1 className="mt-2 font-serif text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-balance text-foreground max-w-3xl">
           {t.hero_title}
         </h1>
+
+        <div id="work" className="scroll-mt-24" />
 
         {/* Filter pills */}
         <div className="mt-8 flex flex-wrap items-center gap-2.5">

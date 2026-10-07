@@ -4,6 +4,7 @@ import { ThreePillars } from "@/components/three-pillars"
 import { Photography } from "@/components/photography"
 import { Video } from "@/components/video"
 import { Content } from "@/components/content"
+import { About } from "@/components/about"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 import { sql, ensureSchema } from "@/lib/db"
@@ -27,10 +28,11 @@ async function getSection(section: MediaSection): Promise<MediaItem[]> {
 }
 
 export default async function HomePage() {
-  const [photos, videos, content] = await Promise.all([
+  const [photos, videos, content, about] = await Promise.all([
     getSection("photography"),
     getSection("video"),
     getSection("content"),
+    getSection("about"),
   ])
 
   return (
@@ -41,6 +43,7 @@ export default async function HomePage() {
       <Photography items={photos} />
       <Video items={videos} />
       <Content items={content} />
+      <About photo={about[0] ?? null} />
       <Contact />
       <Footer />
     </main>
