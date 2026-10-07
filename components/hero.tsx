@@ -92,8 +92,8 @@ export function Hero() {
                 aria-pressed={isActive}
                 className={`rounded-full px-5 py-2 text-sm tracking-wide transition-colors ${
                   isActive
-                    ? "bg-foreground text-background"
-                    : "border border-foreground/20 text-foreground/80 hover:border-foreground/40"
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-card text-foreground/80 hover:border-primary/60"
                 }`}
               >
                 {f.label}
@@ -113,7 +113,7 @@ export function Hero() {
                 key={card.id}
                 className="snap-start shrink-0 w-[78%] sm:w-[46%] lg:w-[31%]"
               >
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-[0_10px_30px_-12px_rgba(0,0,0,0.35)]">
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)]">
                   <Image
                     src={card.image || "/placeholder.svg"}
                     alt={`${card.category} — ${card.desc}`}

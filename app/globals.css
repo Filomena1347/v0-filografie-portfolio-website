@@ -4,26 +4,26 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Kindred-inspired warm editorial palette */
-  --background: #f5f2ee;
-  --foreground: #1a1a1a;
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
-  --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  --primary: #c4704f;
+  /* Dark aurora palette */
+  --background: #0a0a0f;
+  --foreground: #f5f5f7;
+  --card: #111118;
+  --card-foreground: #f5f5f7;
+  --popover: #111118;
+  --popover-foreground: #f5f5f7;
+  --primary: #7b2fbe;
   --primary-foreground: #ffffff;
-  --secondary: #efe9e2;
-  --secondary-foreground: #1a1a1a;
-  --muted: #ece6de;
-  --muted-foreground: #8a8175;
-  --accent: #c4704f;
-  --accent-foreground: #ffffff;
-  --destructive: #b3452f;
+  --secondary: #111118;
+  --secondary-foreground: #f5f5f7;
+  --muted: #111118;
+  --muted-foreground: #a1a1aa;
+  --accent: #2ec4b6;
+  --accent-foreground: #0a0a0f;
+  --destructive: #e5484d;
   --destructive-foreground: #ffffff;
-  --border: rgba(26, 26, 26, 0.1);
-  --input: #ffffff;
-  --ring: #c4704f;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #111118;
+  --ring: #7b2fbe;
   --radius: 0.625rem;
 }
 
@@ -95,16 +95,16 @@
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(196, 112, 79, 0.35);
+  background: rgba(123, 47, 190, 0.45);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(196, 112, 79, 0.55);
+  background: rgba(123, 47, 190, 0.7);
 }
 
 ::selection {
-  background: rgba(196, 112, 79, 0.25);
-  color: #1a1a1a;
+  background: rgba(46, 196, 182, 0.35);
+  color: #ffffff;
 }
 
 /* Staggered fade-in for galleries */
