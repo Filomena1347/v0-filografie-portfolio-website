@@ -18,6 +18,9 @@ type Dict = {
   about_title: string
   about_bio: string
   about_photo_placeholder: string
+  gallery_empty: string
+  gallery_close: string
+  gallery_items: string
 
   nav_photography: string
   nav_video: string
@@ -108,6 +111,9 @@ const translations: Record<Lang, Dict> = {
     about_bio:
       "Sem doplníš svůj příběh — kdo jsi, jak ses k tvorbě dostala a co tě na práci se značkami a lidmi baví. Text můžeš upravit kdykoliv.",
     about_photo_placeholder: "Fotka bude brzy doplněna",
+    gallery_empty: "V této kategorii zatím nejsou žádné práce. Brzy přibudou.",
+    gallery_close: "Zavřít galerii",
+    gallery_items: "položek",
 
     nav_photography: "Fotografie",
     nav_video: "Video",
@@ -196,6 +202,9 @@ const translations: Record<Lang, Dict> = {
     about_bio:
       "Your story goes here — who you are, how you got into creating, and what you love about working with brands and people. You can edit this text anytime.",
     about_photo_placeholder: "Photo coming soon",
+    gallery_empty: "No work in this category yet. Coming soon.",
+    gallery_close: "Close gallery",
+    gallery_items: "items",
 
     nav_photography: "Photography",
     nav_video: "Video",

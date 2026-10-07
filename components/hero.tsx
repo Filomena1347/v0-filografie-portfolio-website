@@ -1,16 +1,25 @@
 "use client"
 
 import Image from "next/image"
-import { useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
+import { CategoryGallery } from "@/components/category-gallery"
+import type { CategoryKey, MediaItem } from "@/lib/media"
 
-type FilterKey = "all" | "video" | "events" | "gastro" | "weddings" | "ugc" | "graphics"
+type FilterKey = "all" | CategoryKey
 
-export function Hero() {
+type HeroProps = {
+  covers?: Partial<Record<CategoryKey, string>>
+  galleries?: Partial<Record<CategoryKey, MediaItem[]>>
+}
+
+export function Hero({ covers = {}, galleries = {} }: HeroProps) {
   const { t } = useLanguage()
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState<FilterKey>("all")
+  const [openId, setOpenId] = useState<CategoryKey | null>(null)
+  const closeGallery = useCallback(() => setOpenId(null), [])
 
   const filters: { key: FilterKey; label: string }[] = [
     { key: "all", label: t.hero_filter_all },
@@ -70,7 +79,14 @@ export function Hero() {
     [t],
   )
 
-  const visibleCards = active === "all" ? cards : cards.filter((c) => c.filters.includes(active))
+  const resolvedCards = cards.map((c) => ({
+    ...c,
+    id: c.id as CategoryKey,
+    image: covers[c.id as CategoryKey] ?? c.image,
+  }))
+  const visibleCards =
+    active === "all" ? resolvedCards : resolvedCards.filter((c) => c.filters.includes(active))
+  const openCard = openId ? resolvedCards.find((c) => c.id === openId) : null
 
   const scrollBy = (dir: 1 | -1) => {
     const el = scrollerRef.current
@@ -123,19 +139,26 @@ export function Hero() {
                 key={card.id}
                 className="snap-start shrink-0 w-[78%] sm:w-[46%] lg:w-[31%]"
               >
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)]">
-                  <Image
-                    src={card.image || "/placeholder.svg"}
-                    alt={`${card.category} — ${card.desc}`}
-                    fill
-                    sizes="(max-width: 640px) 78vw, (max-width: 1024px) 46vw, 31vw"
-                    className="object-cover transition-transform duration-500 hover:scale-[1.03]"
-                  />
-                </div>
-                <div className="mt-3">
-                  <h3 className="font-serif text-xl text-foreground">{card.category}</h3>
-                  <p className="text-sm text-foreground/60">{card.desc}</p>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpenId(card.id)}
+                  aria-haspopup="dialog"
+                  className="group block w-full text-left focus-visible:outline-none"
+                >
+                  <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)] transition-colors group-hover:border-primary/60 group-focus-visible:ring-2 group-focus-visible:ring-primary">
+                    <Image
+                      src={card.image || "/placeholder.svg"}
+                      alt={`${card.category} — ${card.desc}`}
+                      fill
+                      sizes="(max-width: 640px) 78vw, (max-width: 1024px) 46vw, 31vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <h3 className="font-serif text-xl text-foreground">{card.category}</h3>
+                    <p className="text-sm text-foreground/60">{card.desc}</p>
+                  </div>
+                </button>
               </article>
             ))}
           </div>
@@ -161,6 +184,15 @@ export function Hero() {
           </div>
         </div>
       </div>
+
+      {openCard && (
+        <CategoryGallery
+          title={openCard.category}
+          description={openCard.desc}
+          items={galleries[openCard.id] ?? []}
+          onClose={closeGallery}
+        />
+      )}
     </section>
   )
 }

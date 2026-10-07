@@ -8,7 +8,8 @@ import { About } from "@/components/about"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 import { sql, ensureSchema } from "@/lib/db"
-import type { MediaItem, MediaSection } from "@/lib/media"
+import { CATEGORY_KEYS, groupGalleries } from "@/lib/media"
+import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
 
 export const dynamic = "force-dynamic"
 
@@ -28,17 +29,26 @@ async function getSection(section: MediaSection): Promise<MediaItem[]> {
 }
 
 export default async function HomePage() {
-  const [photos, videos, content, about] = await Promise.all([
+  const [photos, videos, content, about, covers, gallery] = await Promise.all([
     getSection("photography"),
     getSection("video"),
     getSection("content"),
     getSection("about"),
+    getSection("cover"),
+    getSection("gallery"),
   ])
+
+  const coverMap: Partial<Record<CategoryKey, string>> = {}
+  for (const c of covers) {
+    const key = c.category as CategoryKey
+    if (CATEGORY_KEYS.includes(key) && !coverMap[key]) coverMap[key] = c.url
+  }
+  const galleries = groupGalleries([...gallery, ...photos, ...videos, ...content])
 
   return (
     <main className="min-h-screen">
       <Navbar />
-      <Hero />
+      <Hero covers={coverMap} galleries={galleries} />
       <ThreePillars />
       <Photography items={photos} />
       <Video items={videos} />
