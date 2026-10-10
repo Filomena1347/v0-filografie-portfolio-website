@@ -9,6 +9,7 @@ import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 import { sql, ensureSchema } from "@/lib/db"
 import { CATEGORY_KEYS, groupGalleries } from "@/lib/media"
+import { SEED_GALLERIES } from "@/lib/seed-gallery"
 import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
 
 export const dynamic = "force-dynamic"
@@ -44,6 +45,9 @@ export default async function HomePage() {
     if (CATEGORY_KEYS.includes(key) && !coverMap[key]) coverMap[key] = c.url
   }
   const galleries = groupGalleries([...gallery, ...photos, ...videos, ...content])
+  for (const key of CATEGORY_KEYS) {
+    galleries[key] = [...galleries[key], ...(SEED_GALLERIES[key] ?? [])]
+  }
 
   return (
     <main className="min-h-screen">
