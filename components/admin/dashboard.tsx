@@ -3,21 +3,28 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Trash2, ImagePlus, GripVertical, Upload, LogOut } from "lucide-react"
-import type { MediaItem, MediaSection } from "@/lib/media"
-import { PHOTO_CATEGORIES } from "@/lib/media"
+import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
+import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES } from "@/lib/media"
 
 const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
+  { key: "cover", label: "Category covers", accept: "image/*" },
+  { key: "gallery", label: "Category galleries", accept: "image/*,video/*" },
+  { key: "about", label: "About photo", accept: "image/*" },
   { key: "photography", label: "Photography", accept: "image/*" },
   { key: "video", label: "Video", accept: "video/*" },
   { key: "content", label: "Content", accept: "image/*,video/*" },
 ]
+
+const CATEGORY_SECTIONS: MediaSection[] = ["cover", "gallery"]
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
 
 export function AdminDashboard() {
   const router = useRouter()
-  const [section, setSection] = useState<MediaSection>("photography")
+  const [section, setSection] = useState<MediaSection>("cover")
+  const [category, setCategory] = useState<CategoryKey>("video")
+  const usesCategory = CATEGORY_SECTIONS.includes(section)
   const [items, setItems] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
@@ -28,10 +35,12 @@ export function AdminDashboard() {
   const editingThumbId = useRef<string | null>(null)
   const dragId = useRef<string | null>(null)
 
-  const load = useCallback(async (s: MediaSection) => {
+  const load = useCallback(async (s: MediaSection, cat: CategoryKey | null) => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/admin/media?section=${s}`, { cache: "no-store" })
+      const params = new URLSearchParams({ section: s })
+      if (cat) params.set("category", cat)
+      const res = await fetch(`/api/admin/media?${params}`, { cache: "no-store" })
       if (res.status === 401) {
         router.push("/admin/login")
         return
@@ -46,8 +55,8 @@ export function AdminDashboard() {
   }, [router])
 
   useEffect(() => {
-    load(section)
-  }, [section, load])
+    load(section, usesCategory ? category : null)
+  }, [section, category, usesCategory, load])
 
   async function uploadToCloudinary(file: File): Promise<{
     public_id: string
@@ -109,7 +118,11 @@ export function AdminDashboard() {
           body: JSON.stringify({
             type,
             section,
-            category: section === "photography" ? PHOTO_CATEGORIES[0] : null,
+            category: usesCategory
+              ? category
+              : section === "photography"
+                ? PHOTO_CATEGORIES[0]
+                : null,
             public_id: uploaded.public_id,
             url: uploaded.url,
             thumbnail_url,
@@ -225,7 +238,7 @@ export function AdminDashboard() {
       </header>
 
       {/* Section tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-4">
         {SECTIONS.map((s) => (
           <button
             key={s.key}
@@ -240,6 +253,33 @@ export function AdminDashboard() {
           </button>
         ))}
       </div>
+
+      {usesCategory && (
+        <div className="mb-6 flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Category">
+            <span className="text-xs uppercase tracking-widest text-foreground/50 mr-1">Category</span>
+            {CATEGORY_KEYS.map((key) => (
+              <button
+                key={key}
+                onClick={() => setCategory(key)}
+                aria-pressed={category === key}
+                className={`rounded-full px-3 py-1 text-xs transition-colors ${
+                  category === key
+                    ? "bg-accent text-accent-foreground"
+                    : "border border-border text-foreground/70 hover:text-primary"
+                }`}
+              >
+                {CATEGORY_LABELS[key]}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-foreground/50">
+            {section === "cover"
+              ? "The first published image is used as the card cover on the homepage."
+              : "Photos and videos shown when a visitor opens this category. Drag to reorder."}
+          </p>
+        </div>
+      )}
 
       {/* Upload */}
       <div className="mb-8">
@@ -314,7 +354,9 @@ export function AdminDashboard() {
                       ))}
                     </select>
                   ) : (
-                    <span className="text-xs text-foreground/50 capitalize">{item.type}</span>
+                    <span className="text-xs text-foreground/50 capitalize">
+                      {usesCategory ? `${CATEGORY_LABELS[category]} · ${item.type}` : item.type}
+                    </span>
                   )}
                   <span
                     className={`text-xs rounded-full px-2 py-0.5 ${

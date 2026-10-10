@@ -11,10 +11,14 @@ export async function GET(request: Request) {
   await ensureSchema()
   const { searchParams } = new URL(request.url)
   const section = searchParams.get("section")
+  const category = searchParams.get("category")
 
-  const rows = section
-    ? await sql`SELECT * FROM media_items WHERE section = ${section} ORDER BY sort_order ASC, created_at DESC`
-    : await sql`SELECT * FROM media_items ORDER BY sort_order ASC, created_at DESC`
+  const rows =
+    section && category
+      ? await sql`SELECT * FROM media_items WHERE section = ${section} AND category = ${category} ORDER BY sort_order ASC, created_at DESC`
+      : section
+        ? await sql`SELECT * FROM media_items WHERE section = ${section} ORDER BY sort_order ASC, created_at DESC`
+        : await sql`SELECT * FROM media_items ORDER BY sort_order ASC, created_at DESC`
 
   return NextResponse.json({ items: rows })
 }
@@ -33,7 +37,8 @@ export async function POST(request: Request) {
   }
 
   const [{ max }] = await sql`
-    SELECT COALESCE(MAX(sort_order), -1) AS max FROM media_items WHERE section = ${section}
+    SELECT COALESCE(MAX(sort_order), -1) AS max FROM media_items
+    WHERE section = ${section} AND category IS NOT DISTINCT FROM ${category ?? null}
   `
   const nextOrder = (max as number) + 1
 

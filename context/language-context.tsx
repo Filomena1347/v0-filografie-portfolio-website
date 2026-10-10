@@ -5,6 +5,23 @@ import { createContext, useContext, useState, useCallback, type ReactNode } from
 export type Lang = "cs" | "en"
 
 type Dict = {
+  nav_work: string
+  nav_about: string
+  hero_filter_weddings: string
+  hero_filter_graphics: string
+  hero_card_weddings_cat: string
+  hero_card_weddings_desc: string
+  hero_card_graphics_cat: string
+  hero_card_graphics_desc: string
+  photo_cat_weddings: string
+  about_label: string
+  about_title: string
+  about_bio: string
+  about_photo_placeholder: string
+  gallery_empty: string
+  gallery_close: string
+  gallery_items: string
+
   nav_photography: string
   nav_video: string
   nav_content: string
@@ -80,6 +97,24 @@ type Dict = {
 
 const translations: Record<Lang, Dict> = {
   cs: {
+    nav_work: "Práce",
+    nav_about: "O mně",
+    hero_filter_weddings: "Svatby",
+    hero_filter_graphics: "Grafika",
+    hero_card_weddings_cat: "Svatby",
+    hero_card_weddings_desc: "Svatební den od příprav po první tanec",
+    hero_card_graphics_cat: "Grafika",
+    hero_card_graphics_desc: "Vizuální identita & příspěvky",
+    photo_cat_weddings: "Svatby",
+    about_label: "O mně",
+    about_title: "Ahoj, jsem Filoména.",
+    about_bio:
+      "Sem doplníš svůj příběh — kdo jsi, jak ses k tvorbě dostala a co tě na práci se značkami a lidmi baví. Text můžeš upravit kdykoliv.",
+    about_photo_placeholder: "Fotka bude brzy doplněna",
+    gallery_empty: "V této kategorii zatím nejsou žádné práce. Brzy přibudou.",
+    gallery_close: "Zavřít ↑",
+    gallery_items: "položek",
+
     nav_photography: "Fotografie",
     nav_video: "Video",
     nav_content: "Obsah",
@@ -101,7 +136,7 @@ const translations: Record<Lang, Dict> = {
     hero_filter_ugc: "UGC",
 
     hero_card_events_cat: "Eventy",
-    hero_card_events_desc: "Svatby & firemní akce",
+    hero_card_events_desc: "Firemní akce & oslavy",
     hero_card_gastro_cat: "Gastro",
     hero_card_gastro_desc: "Food styling & restaurace",
     hero_card_video_cat: "Video",
@@ -153,6 +188,24 @@ const translations: Record<Lang, Dict> = {
     footer_rights: "Všechna práva vyhrazena.",
   },
   en: {
+    nav_work: "Work",
+    nav_about: "About",
+    hero_filter_weddings: "Weddings",
+    hero_filter_graphics: "Graphics",
+    hero_card_weddings_cat: "Weddings",
+    hero_card_weddings_desc: "From getting ready to the first dance",
+    hero_card_graphics_cat: "Graphics",
+    hero_card_graphics_desc: "Visual identity & social posts",
+    photo_cat_weddings: "Weddings",
+    about_label: "About",
+    about_title: "Hi, I'm Filoména.",
+    about_bio:
+      "Your story goes here — who you are, how you got into creating, and what you love about working with brands and people. You can edit this text anytime.",
+    about_photo_placeholder: "Photo coming soon",
+    gallery_empty: "No work in this category yet. Coming soon.",
+    gallery_close: "Close ↑",
+    gallery_items: "items",
+
     nav_photography: "Photography",
     nav_video: "Video",
     nav_content: "Content",
@@ -174,7 +227,7 @@ const translations: Record<Lang, Dict> = {
     hero_filter_ugc: "UGC",
 
     hero_card_events_cat: "Events",
-    hero_card_events_desc: "Weddings & corporate events",
+    hero_card_events_desc: "Corporate events & celebrations",
     hero_card_gastro_cat: "Gastro",
     hero_card_gastro_desc: "Food styling & restaurants",
     hero_card_video_cat: "Video",

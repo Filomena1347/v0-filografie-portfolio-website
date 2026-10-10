@@ -16,21 +16,23 @@ export function Navbar() {
   }, [])
 
   const links = [
-    { href: "#photography", label: t.nav_photography },
-    { href: "#video", label: t.nav_video },
-    { href: "#content", label: t.nav_content },
+    { href: "#work", label: t.nav_work },
+    { href: "#about", label: t.nav_about },
     { href: "#contact", label: t.nav_contact },
   ]
 
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
-        scrolled ? "bg-background/90 backdrop-blur-sm border-b border-border" : "bg-transparent"
+        scrolled ? "bg-background/90 backdrop-blur-sm border-b border-border" : "bg-background"
       }`}
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 h-20">
-        <a href="#top" className="font-serif italic text-2xl text-foreground">
-          Filoména
+        <a href="#top" className="flex flex-col leading-none">
+          <span className="font-serif italic text-2xl text-foreground">Filoména</span>
+          <span className="mt-1 font-sans text-[11px] font-light tracking-wide text-muted-foreground">
+            content creator
+          </span>
         </a>
 
         <div className="hidden md:flex items-center gap-10">
