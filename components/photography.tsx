@@ -15,7 +15,6 @@ export function Photography({ items }: { items: MediaItem[] }) {
     { key: "all", label: t.photo_view_all === "View all" ? "All" : "Vše" },
     { key: "Events", label: t.photo_cat_events },
     { key: "Gastro", label: t.photo_cat_gastro },
-    { key: "Weddings", label: t.photo_cat_weddings },
     { key: "Portraits", label: t.photo_cat_portraits },
   ]
 

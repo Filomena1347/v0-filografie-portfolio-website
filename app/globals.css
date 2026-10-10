@@ -4,26 +4,26 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Dark aurora palette */
-  --background: #0a0a0f;
-  --foreground: #f5f5f7;
-  --card: #111118;
-  --card-foreground: #f5f5f7;
-  --popover: #111118;
-  --popover-foreground: #f5f5f7;
-  --primary: #7b2fbe;
+  /* Kindred-inspired warm editorial palette */
+  --background: #f5f2ee;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #c4704f;
   --primary-foreground: #ffffff;
-  --secondary: #111118;
-  --secondary-foreground: #f5f5f7;
-  --muted: #111118;
-  --muted-foreground: #a1a1aa;
-  --accent: #2ec4b6;
-  --accent-foreground: #0a0a0f;
-  --destructive: #e5484d;
+  --secondary: #efe9e2;
+  --secondary-foreground: #1a1a1a;
+  --muted: #ece6de;
+  --muted-foreground: #8a8175;
+  --accent: #c4704f;
+  --accent-foreground: #ffffff;
+  --destructive: #b3452f;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: #111118;
-  --ring: #7b2fbe;
+  --border: rgba(26, 26, 26, 0.1);
+  --input: #ffffff;
+  --ring: #c4704f;
   --radius: 0.625rem;
 }
 
@@ -95,16 +95,16 @@
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(123, 47, 190, 0.45);
+  background: rgba(196, 112, 79, 0.35);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(123, 47, 190, 0.7);
+  background: rgba(196, 112, 79, 0.55);
 }
 
 ::selection {
-  background: rgba(46, 196, 182, 0.35);
-  color: #ffffff;
+  background: rgba(196, 112, 79, 0.25);
+  color: #1a1a1a;
 }
 
 /* Staggered fade-in for galleries */
