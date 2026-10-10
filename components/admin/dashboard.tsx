@@ -2,7 +2,18 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Trash2, ImagePlus, GripVertical, Upload, LogOut } from "lucide-react"
+import {
+  Eye,
+  EyeOff,
+  Trash2,
+  ImagePlus,
+  GripVertical,
+  Upload,
+  LogOut,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUp,
+} from "lucide-react"
 import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
 import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES } from "@/lib/media"
 
@@ -206,14 +217,30 @@ export function AdminDashboard() {
     })
   }
 
-  async function onDrop() {
-    dragId.current = null
-    const ids = items.map((i) => i.id)
-    await fetch("/api/admin/media/reorder", {
+  async function saveOrder(list: MediaItem[]) {
+    const res = await fetch("/api/admin/media/reorder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids }),
+      body: JSON.stringify({ ids: list.map((i) => i.id) }),
     })
+    if (!res.ok) setError("Saving order failed")
+  }
+
+  async function onDrop() {
+    dragId.current = null
+    await saveOrder(items)
+  }
+
+  function moveItem(id: string, to: "up" | "down" | "top" | "bottom") {
+    const idx = items.findIndex((i) => i.id === id)
+    if (idx === -1) return
+    const next = [...items]
+    const [moved] = next.splice(idx, 1)
+    const target =
+      to === "top" ? 0 : to === "bottom" ? next.length : to === "up" ? Math.max(0, idx - 1) : Math.min(next.length, idx + 1)
+    next.splice(target, 0, moved)
+    setItems(next)
+    saveOrder(next)
   }
 
   async function signOut() {
@@ -318,7 +345,7 @@ export function AdminDashboard() {
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {items.map((item) => (
+          {items.map((item, index) => (
             <li
               key={item.id}
               draggable
@@ -371,6 +398,33 @@ export function AdminDashboard() {
               </div>
 
               <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={() => moveItem(item.id, "top")}
+                  disabled={index === 0}
+                  title="Move to top"
+                  aria-label="Move to top"
+                  className="p-2 rounded hover:bg-muted text-foreground/60 hover:text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                >
+                  <ChevronsUp className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => moveItem(item.id, "up")}
+                  disabled={index === 0}
+                  title="Move up"
+                  aria-label="Move up"
+                  className="p-2 rounded hover:bg-muted text-foreground/60 hover:text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => moveItem(item.id, "down")}
+                  disabled={index === items.length - 1}
+                  title="Move down"
+                  aria-label="Move down"
+                  className="p-2 rounded hover:bg-muted text-foreground/60 hover:text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </button>
                 {item.type === "video" && (
                   <button
                     onClick={() => {
