@@ -10,6 +10,7 @@ import {
   GripVertical,
   Upload,
   LogOut,
+  Check,
   ChevronUp,
   ChevronDown,
   ChevronsUp,
@@ -34,6 +35,8 @@ const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
 
 export function AdminDashboard() {
   const router = useRouter()
+  const pendingSaves = useRef(new Set<Promise<unknown>>())
+  const [exiting, setExiting] = useState(false)
   const [section, setSection] = useState<MediaSection>("cover")
   const [category, setCategory] = useState<CategoryKey>("video")
   const usesCategory = CATEGORY_SECTIONS.includes(section)
@@ -254,7 +257,17 @@ export function AdminDashboard() {
     })
   }
 
-  async function saveOrder(list: MediaItem[]) {
+  function trackSave<T>(promise: Promise<T>) {
+    pendingSaves.current.add(promise)
+    promise.finally(() => pendingSaves.current.delete(promise))
+    return promise
+  }
+
+  function saveOrder(list: MediaItem[]) {
+    return trackSave(persistOrder(list))
+  }
+
+  async function persistOrder(list: MediaItem[]) {
     try {
       const res = await fetch("/api/admin/media/reorder", {
         method: "POST",
@@ -299,6 +312,14 @@ export function AdminDashboard() {
     saveOrder(next)
   }
 
+  async function saveAndExit() {
+    setExiting(true)
+    if (dragId.current) finishDrag()
+    await Promise.allSettled([...pendingSaves.current])
+    router.push("/")
+    router.refresh()
+  }
+
   async function signOut() {
     await fetch("/api/admin/logout", { method: "POST" })
     router.push("/admin/login")
@@ -312,12 +333,23 @@ export function AdminDashboard() {
           <p className="font-serif italic text-3xl text-foreground">Filoména</p>
           <p className="text-sm text-foreground/50">Content manager</p>
         </div>
-        <button
-          onClick={signOut}
-          className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors"
-        >
-          <LogOut className="w-4 h-4" /> Sign out
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={saveAndExit}
+            disabled={exiting || uploading}
+            title={uploading ? "Wait for the upload to finish" : "Uložit a odejít"}
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            <Check className="w-4 h-4" /> {exiting ? "Saving…" : "Save & Exit"}
+          </button>
+          <button
+            onClick={signOut}
+            className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors"
+          >
+            <LogOut className="w-4 h-4" /> Sign out
+          </button>
+        </div>
       </header>
 
       {/* Section tabs */}
