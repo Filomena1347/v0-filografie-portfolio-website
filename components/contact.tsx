@@ -28,8 +28,8 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="bg-secondary/40 py-20 md:py-28 scroll-mt-20">
-      <div className="max-w-2xl mx-auto px-6 text-center">
+    <section id="contact" className="bg-secondary/40 py-12 sm:py-20 md:py-28 scroll-mt-20">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
         <p className="text-sm tracking-[0.2em] uppercase text-primary mb-3">{t.contact_label}</p>
         <h2 className="font-serif text-4xl md:text-6xl text-foreground">{t.contact_title}</h2>
         <p className="mt-4 text-foreground/60 leading-relaxed">{t.contact_desc}</p>
