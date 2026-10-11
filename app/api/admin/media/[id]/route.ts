@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { sql, ensureSchema } from "@/lib/db"
 import { isAuthed } from "@/lib/auth"
+import { revalidatePublicMedia } from "@/lib/revalidate"
 import { cloudinary } from "@/lib/cloudinary"
 
 export const dynamic = "force-dynamic"
@@ -34,6 +35,7 @@ export async function PATCH(
     RETURNING *
   `
 
+  revalidatePublicMedia()
   return NextResponse.json({ item: row })
 }
 
@@ -62,5 +64,6 @@ export async function DELETE(
   }
 
   await sql`DELETE FROM media_items WHERE id = ${id}`
+  revalidatePublicMedia()
   return NextResponse.json({ ok: true })
 }
