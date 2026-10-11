@@ -1,207 +1,202 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { Volume2, VolumeX, Play } from "lucide-react"
-import { useLanguage } from "@/contexts/language-context"
+import Image from "next/image"
+import { useMemo, useRef, useState } from "react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
+import { InlineGallery } from "@/components/inline-gallery"
+import { AdminLoginDot } from "@/components/admin-login-dialog"
+import { CATEGORY_KEYS } from "@/lib/media"
+import type { CategoryKey, MediaItem } from "@/lib/media"
 
-import type { GalleryImage } from "@/lib/cloudinary"
+type FilterKey = "all" | CategoryKey
 
-const videoReels = [
-  { id: 1, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1/Frapp%C3%A9_Matcha_Maracuja_rc9ti6.mp4", title: "Matcha Frappé", category: "Food" },
-  { id: 2, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1780151832/merge_DD2D2C17-0A98-4350-9B96-9379B6570DB9_qvniqt.mp4", title: "Behind the Scenes", category: "BTS" },
-  { id: 3, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1780153470/How_to_get_to_the_Prague_Old_Town_Tower_50_cheaper_If_you_re_heading_to_Prague_save_this_Re_gcyqm2.mp4", title: "Prague Travel", category: "Travel" },
-  { id: 4, src: "https://res.cloudinary.com/duntvai9w/video/upload/v1780151825/Starbucks_video_copy_jdqqld.mp4", title: "Starbucks Story", category: "Commercial" },
-]
-
-interface HeroProps {
-  photos: GalleryImage[]
+type HeroProps = {
+  covers?: Partial<Record<CategoryKey, string>>
+  galleries?: Partial<Record<CategoryKey, MediaItem[]>>
 }
 
-export function Hero({ photos }: HeroProps) {
+export function Hero({ covers = {}, galleries = {} }: HeroProps) {
   const { t } = useLanguage()
-  const [activeVideo, setActiveVideo] = useState(0)
-  const [isMuted, setIsMuted] = useState(true)
-  const [isPlaying, setIsPlaying] = useState(true)
-  const [hoveredImage, setHoveredImage] = useState<number | null>(null)
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const galleryRef = useRef<HTMLDivElement>(null)
+  const cardsRef = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState<FilterKey>("all")
+  const [open, setOpen] = useState(false)
 
-  // Map GalleryImage to the shape used in JSX below
-  const galleryImages = photos.map((p) => ({ src: p.url, alt: p.category ?? "Photography" }))
+  const filters: { key: FilterKey; label: string }[] = [
+    { key: "all", label: t.hero_filter_all },
+    { key: "events", label: t.hero_filter_events },
+    { key: "gastro", label: t.hero_filter_gastro },
+    { key: "weddings", label: t.hero_filter_weddings },
+    { key: "video", label: t.hero_filter_video },
+    { key: "ugc", label: t.hero_filter_ugc },
+    { key: "graphics", label: t.hero_filter_graphics },
+  ]
 
-  useEffect(() => {
-    videoRefs.current.forEach((video, index) => {
-      if (video) {
-        video.muted = isMuted
-        if (index === activeVideo) {
-          if (isPlaying) {
-            video.play().catch(() => {})
-          } else {
-            video.pause()
-          }
-        } else {
-          video.pause()
-          video.currentTime = 0
-        }
-      }
-    })
-  }, [activeVideo, isMuted, isPlaying])
+  const cards = useMemo(
+    () =>
+      [
+        { id: "events", image: "/images/cover-eventy.png", category: t.hero_card_events_cat, desc: t.hero_card_events_desc },
+        { id: "gastro", image: "/images/cover-gastro.png", category: t.hero_card_gastro_cat, desc: t.hero_card_gastro_desc },
+        { id: "weddings", image: "/images/cover-svatby.png", category: t.hero_card_weddings_cat, desc: t.hero_card_weddings_desc },
+        { id: "video", image: "/images/pillar-video.png", category: t.hero_card_video_cat, desc: t.hero_card_video_desc },
+        { id: "ugc", image: "/images/pillar-content.png", category: t.hero_card_ugc_cat, desc: t.hero_card_ugc_desc },
+        { id: "graphics", image: "/images/card-graphics.png", category: t.hero_card_graphics_cat, desc: t.hero_card_graphics_desc },
+      ].map((c) => ({
+        ...c,
+        id: c.id as CategoryKey,
+        image: covers[c.id as CategoryKey] ?? c.image,
+      })),
+    [t, covers],
+  )
 
-  const handleScroll = () => {
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const scrollTop = container.scrollTop
-      const itemHeight = container.clientHeight
-      const newIndex = Math.round(scrollTop / itemHeight)
-      if (newIndex !== activeVideo && newIndex >= 0 && newIndex < videoReels.length) {
-        setActiveVideo(newIndex)
-      }
-    }
+  const galleryItems = useMemo(
+    () =>
+      active === "all"
+        ? CATEGORY_KEYS.flatMap((k) => galleries[k] ?? [])
+        : (galleries[active] ?? []),
+    [active, galleries],
+  )
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = scrollerRef.current
+    if (!el) return
+    const amount = Math.min(el.clientWidth * 0.8, 520)
+    el.scrollBy({ left: dir * amount, behavior: "smooth" })
   }
 
-  const toggleMute = () => setIsMuted(!isMuted)
-  const togglePlay = () => setIsPlaying(!isPlaying)
+  const openGallery = (key: FilterKey) => {
+    setActive(key)
+    setOpen(true)
+    requestAnimationFrame(() =>
+      galleryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    )
+  }
+
+  const closeGallery = () => {
+    setOpen(false)
+    cardsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+  }
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#0a0a14]">
-      {/* Main content */}
-      <div className="relative z-20 max-w-[1600px] mx-auto px-6 lg:px-12 pt-24 pb-12">
-        {/* Header text - removed Filography label */}
-        <div className="mb-10 lg:mb-14 pt-4">
-          <h1 className="font-serif text-5xl md:text-7xl text-white leading-none mb-4">
-            {t.hero.headingLine1}<br />
-            <span className="text-indigo-400">{t.hero.headingLine2}</span>
-          </h1>
-          <p className="body-text text-white/50 text-sm max-w-lg">
-            {t.hero.subtitle}
-          </p>
+    <section id="top" className="relative pt-28 md:pt-32 pb-16 md:pb-24 bg-background">
+      <div className="max-w-7xl mx-auto w-full px-6">
+        {/* Label + heading */}
+        <p className="font-serif text-lg md:text-xl text-foreground/60">{t.hero_label}</p>
+        <h1 className="mt-2 font-serif text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-balance text-foreground max-w-3xl">
+          {t.hero_title.endsWith(".") ? (
+            <>
+              {t.hero_title.slice(0, -1)}
+              <AdminLoginDot />
+            </>
+          ) : (
+            t.hero_title
+          )}
+        </h1>
+
+        {/* Filter pills */}
+        <div id="work" className="mt-8 flex flex-wrap items-center gap-2.5 scroll-mt-24">
+          {filters.map((f) => {
+            const isActive = open && active === f.key
+            return (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => openGallery(f.key)}
+                aria-pressed={isActive}
+                aria-controls="work-gallery"
+                className={`rounded-full px-5 py-2 text-sm tracking-wide transition-colors ${
+                  isActive || (!open && f.key === "all")
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-card text-foreground/80 hover:border-primary/60"
+                }`}
+              >
+                {f.label}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Two-part layout */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Left side - Dynamic Masonry Photo Gallery */}
-          <div className="flex-1 lg:flex-[2] relative">
-            {/* Masonry Grid - CSS columns, natural aspect ratios, zero gap */}
-            <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-0">
-              {galleryImages.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative overflow-hidden group cursor-pointer bg-[#0a0a0f] break-inside-avoid"
-                  onMouseEnter={() => setHoveredImage(index + 1)}
-                  onMouseLeave={() => setHoveredImage(null)}
-                >
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className={`w-full h-auto object-contain bg-[#0a0a0f] transition-all duration-700 ${hoveredImage === index + 1 ? 'scale-105 brightness-110' : 'scale-100'}`}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-              ))}
-            </div>
+        {/* Card row */}
+        <div ref={cardsRef} className="relative mt-10">
+          <div
+            ref={scrollerRef}
+            className="flex gap-5 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {cards.map((card) => {
+              const isActive = open && active === card.id
+              return (
+                <article key={card.id} className="snap-start shrink-0 w-[78%] sm:w-[46%] lg:w-[31%]">
+                  <button
+                    type="button"
+                    onClick={() => openGallery(card.id)}
+                    aria-controls="work-gallery"
+                    aria-pressed={isActive}
+                    className="group block w-full text-left focus-visible:outline-none"
+                  >
+                    <div
+                      className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border bg-card shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)] transition-colors group-hover:border-primary/60 group-focus-visible:ring-2 group-focus-visible:ring-primary ${
+                        isActive ? "border-primary" : "border-border"
+                      }`}
+                    >
+                      <Image
+                        src={card.image || "/placeholder.svg"}
+                        alt={`${card.category} — ${card.desc}`}
+                        fill
+                        sizes="(max-width: 640px) 78vw, (max-width: 1024px) 46vw, 31vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    </div>
+                    <div className="mt-3">
+                      <h3 className="font-serif text-xl text-foreground">{card.category}</h3>
+                      <p className="text-sm text-foreground/60">{card.desc}</p>
+                    </div>
+                  </button>
+                </article>
+              )
+            })}
+          </div>
 
-            {/* View all button */}
-            <div className="mt-3 flex justify-start">
+          {/* Arrow navigation */}
+          <div className="mt-4 flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => scrollBy(-1)}
+              aria-label="Previous"
+              className="grid h-11 w-11 place-items-center rounded-full border border-foreground/20 text-foreground transition-colors hover:bg-foreground hover:text-background"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollBy(1)}
+              aria-label="Next"
+              className="grid h-11 w-11 place-items-center rounded-full border border-foreground/20 text-foreground transition-colors hover:bg-foreground hover:text-background"
+            >
+              <ArrowRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="work-gallery" ref={galleryRef} aria-live="polite" className="mt-12 w-full scroll-mt-20">
+        {open && (
+          <>
+            <InlineGallery items={galleryItems} emptyLabel={t.gallery_empty} animationKey={active} />
+            <div className="mt-10 flex justify-center px-6">
               <button
-                onClick={() => {
-                  document.getElementById("photography")?.scrollIntoView({ behavior: "smooth" })
-                }}
-                className="text-sm text-white/50 hover:text-white transition-colors duration-200 flex items-center gap-1.5"
+                type="button"
+                onClick={closeGallery}
+                className="rounded-full border border-border bg-card px-7 py-2.5 text-sm tracking-wide text-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
               >
-                {t.hero.viewAllPhotos}
-                <span aria-hidden="true">→</span>
+                {t.gallery_close}
               </button>
             </div>
-          </div>
-
-          {/* Right side - Vertical Video Reel (TikTok style) */}
-          <div className="flex-1 lg:flex-[0.5] flex justify-center lg:justify-end mt-6 lg:mt-0">
-            <div className="relative w-full max-w-[210px] lg:max-w-[260px]">
-              <div className="relative bg-[#1a1a2e] rounded-[2.5rem] p-2 shadow-2xl">
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
-                
-                <div
-                  ref={scrollContainerRef}
-                  onScroll={handleScroll}
-                  className="relative h-[430px] lg:h-[380px] overflow-y-scroll snap-y snap-mandatory rounded-[2rem] bg-black scrollbar-hide"
-                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                >
-                  {videoReels.map((video, index) => (
-                    <div key={video.id} className="h-full w-full snap-start snap-always relative flex-shrink-0">
-                      <video
-                        ref={(el) => { videoRefs.current[index] = el }}
-                        src={video.src}
-                        className="w-full h-full object-cover"
-                        loop
-                        muted={isMuted}
-                        playsInline
-                        autoPlay={index === 0}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none" />
-                      <div className="absolute bottom-6 left-4 right-4 z-20">
-                        <span className="text-xs font-medium text-white/60 bg-white/10 px-2 py-1 rounded-full">
-                          {video.category}
-                        </span>
-                        <h3 className="text-white font-medium text-sm mt-2">{video.title}</h3>
-                      </div>
-                      <div className="absolute top-12 left-4 z-20">
-                        <span className="text-xs text-white/50">{index + 1}/{videoReels.length}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="absolute bottom-20 right-4 z-30 flex flex-col gap-3">
-                  <button
-                    onClick={toggleMute}
-                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors"
-                  >
-                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                  </button>
-                  <button
-                    onClick={togglePlay}
-                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors"
-                  >
-                    {isPlaying ? (
-                      <div className="flex gap-0.5">
-                        <div className="w-1 h-3 bg-white rounded-full" />
-                        <div className="w-1 h-3 bg-white rounded-full" />
-                      </div>
-                    ) : (
-                      <Play className="w-4 h-4 fill-white" />
-                    )}
-                  </button>
-                </div>
-
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2">
-                  {videoReels.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                        index === activeVideo ? "bg-white h-4" : "bg-white/30"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-              <p className="text-center text-white/30 text-xs mt-3 label-text">{t.hero.scrollExplore}</p>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
-
-      {/* Bottom label - vertical */}
-      <div className="absolute bottom-8 right-8 hidden lg:block">
-        <p className="label-text text-white/30 tracking-wider" style={{ writingMode: "vertical-rl" }}>
-          {t.hero.scrollExploreVertical}
-        </p>
-      </div>
-
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </section>
   )
 }
