@@ -46,23 +46,39 @@ export function AdminDashboard() {
   const thumbInputRef = useRef<HTMLInputElement>(null)
   const editingThumbId = useRef<string | null>(null)
   const dragId = useRef<string | null>(null)
+  const lastOverId = useRef<string | null>(null)
+  const itemsRef = useRef<MediaItem[]>([])
+  const loadSeq = useRef(0)
+
+  function updateItems(next: MediaItem[] | ((prev: MediaItem[]) => MediaItem[])) {
+    const value = typeof next === "function" ? next(itemsRef.current) : next
+    itemsRef.current = value
+    setItems(value)
+  }
 
   const load = useCallback(async (s: MediaSection, cat: CategoryKey | null) => {
+    const seq = ++loadSeq.current
     setLoading(true)
+    setError("")
+    itemsRef.current = []
+    setItems([])
     try {
       const params = new URLSearchParams({ section: s })
       if (cat) params.set("category", cat)
       const res = await fetch(`/api/admin/media?${params}`, { cache: "no-store" })
+      if (seq !== loadSeq.current) return
       if (res.status === 401) {
         router.push("/admin/login")
         return
       }
       const data = await res.json()
-      setItems(data.items ?? [])
+      if (seq !== loadSeq.current) return
+      itemsRef.current = data.items ?? []
+      setItems(itemsRef.current)
     } catch {
-      setError("Failed to load media")
+      if (seq === loadSeq.current) setError("Failed to load media")
     } finally {
-      setLoading(false)
+      if (seq === loadSeq.current) setLoading(false)
     }
   }, [router])
 
@@ -77,11 +93,24 @@ export function AdminDashboard() {
     height?: number
     resourceType: string
   }> {
+    let cloudName = CLOUD_NAME
+    let uploadPreset = UPLOAD_PRESET
+    try {
+      const cfg = await fetch("/api/admin/upload-config", { cache: "no-store" })
+      if (cfg.ok) {
+        const data = await cfg.json()
+        cloudName = data.cloudName || cloudName
+        uploadPreset = data.uploadPreset || uploadPreset
+      }
+    } catch {}
+    if (!cloudName) throw new Error("Cloudinary cloud name is not configured")
+    if (!uploadPreset) throw new Error("Cloudinary upload preset is not configured (NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET)")
+
     const isVideo = file.type.startsWith("video/")
-    const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${isVideo ? "video" : "image"}/upload`
+    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/${isVideo ? "video" : "image"}/upload`
     const form = new FormData()
     form.append("file", file)
-    form.append("upload_preset", UPLOAD_PRESET as string)
+    form.append("upload_preset", uploadPreset)
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
@@ -100,7 +129,11 @@ export function AdminDashboard() {
             resourceType: r.resource_type,
           })
         } else {
-          reject(new Error("Cloudinary upload failed"))
+          let detail = `HTTP ${xhr.status}`
+          try {
+            detail = JSON.parse(xhr.responseText)?.error?.message || detail
+          } catch {}
+          reject(new Error(`Cloudinary upload failed: ${detail} (cloud "${cloudName}", preset "${uploadPreset}")`))
         }
       }
       xhr.onerror = () => reject(new Error("Network error"))
@@ -144,7 +177,7 @@ export function AdminDashboard() {
         })
         if (!res.ok) throw new Error("Failed to save media")
         const { item } = await res.json()
-        setItems((prev) => [...prev, item])
+        updateItems((prev) => [...prev, item])
       }
     } catch (err) {
       setError((err as Error).message)
@@ -186,7 +219,7 @@ export function AdminDashboard() {
       return
     }
     const { item } = await res.json()
-    setItems((prev) => prev.map((i) => (i.id === id ? item : i)))
+    updateItems((prev) => prev.map((i) => (i.id === id ? item : i)))
   }
 
   async function deleteItem(id: string) {
@@ -196,18 +229,21 @@ export function AdminDashboard() {
       setError("Delete failed")
       return
     }
-    setItems((prev) => prev.filter((i) => i.id !== id))
+    updateItems((prev) => prev.filter((i) => i.id !== id))
   }
 
   function onDragStart(id: string) {
     dragId.current = id
+    lastOverId.current = null
   }
 
   function onDragOver(e: React.DragEvent, overId: string) {
     e.preventDefault()
     const from = dragId.current
-    if (!from || from === overId) return
-    setItems((prev) => {
+    // Only move once per new target; otherwise the shifted tile under the cursor swaps back and forth.
+    if (!from || from === overId || lastOverId.current === overId) return
+    lastOverId.current = overId
+    updateItems((prev) => {
       const fromIdx = prev.findIndex((i) => i.id === from)
       const overIdx = prev.findIndex((i) => i.id === overId)
       if (fromIdx === -1 || overIdx === -1) return prev
@@ -219,23 +255,36 @@ export function AdminDashboard() {
   }
 
   async function saveOrder(list: MediaItem[]) {
-    const res = await fetch("/api/admin/media/reorder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids: list.map((i) => i.id) }),
-    })
-    if (!res.ok) setError("Saving order failed")
+    try {
+      const res = await fetch("/api/admin/media/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: list.map((i) => i.id) }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError(`Saving order failed: ${data.error ?? `HTTP ${res.status}`}`)
+        return
+      }
+      updateItems((prev) => prev.map((item, index) => ({ ...item, sort_order: index })))
+    } catch (err) {
+      setError(`Saving order failed: ${(err as Error).message}`)
+    }
   }
 
-  async function onDrop() {
+  function finishDrag() {
+    if (!dragId.current) return
     dragId.current = null
-    await saveOrder(items)
+    lastOverId.current = null
+    saveOrder(itemsRef.current)
+  }
+
+  function onDrop() {
+    finishDrag()
   }
 
   function onDragEnd() {
-    if (!dragId.current) return
-    dragId.current = null
-    saveOrder(items)
+    finishDrag()
   }
 
   function moveItem(id: string, to: "up" | "down" | "top" | "bottom") {
@@ -246,7 +295,7 @@ export function AdminDashboard() {
     const target =
       to === "top" ? 0 : to === "bottom" ? next.length : to === "up" ? Math.max(0, idx - 1) : Math.min(next.length, idx + 1)
     next.splice(target, 0, moved)
-    setItems(next)
+    updateItems(next)
     saveOrder(next)
   }
 
