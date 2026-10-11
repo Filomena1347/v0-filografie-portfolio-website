@@ -8,7 +8,7 @@ export function About({ photo }: { photo: MediaItem | null }) {
   const { t } = useLanguage()
 
   return (
-    <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-28 scroll-mt-20">
+    <section id="about" className="max-w-7xl mx-auto px-6 py-20 md:py-28 scroll-mt-20">
       <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-16">
         <div className="w-full md:w-5/12">
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-card">
