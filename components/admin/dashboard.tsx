@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
 import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES } from "@/lib/media"
+import { GalleryGrid } from "@/components/admin/gallery-grid"
 
 const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
   { key: "cover", label: "Category covers", accept: "image/*" },
@@ -231,6 +232,12 @@ export function AdminDashboard() {
     await saveOrder(items)
   }
 
+  function onDragEnd() {
+    if (!dragId.current) return
+    dragId.current = null
+    saveOrder(items)
+  }
+
   function moveItem(id: string, to: "up" | "down" | "top" | "bottom") {
     const idx = items.findIndex((i) => i.id === id)
     if (idx === -1) return
@@ -309,7 +316,13 @@ export function AdminDashboard() {
       )}
 
       {/* Upload */}
-      <div className="mb-8">
+      <div
+        className={
+          section === "gallery"
+            ? "sticky top-0 z-10 -mx-2 mb-4 bg-background/90 px-2 py-3 backdrop-blur-sm"
+            : "mb-8"
+        }
+      >
         <input
           ref={fileInputRef}
           type="file"
@@ -328,9 +341,11 @@ export function AdminDashboard() {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-2.5 text-sm hover:opacity-90 transition-opacity disabled:opacity-60"
+          className={`inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-60 ${
+            section === "gallery" ? "px-4 py-1.5 text-xs" : "px-6 py-2.5 text-sm"
+          }`}
         >
-          <Upload className="w-4 h-4" />
+          <Upload className={section === "gallery" ? "w-3.5 h-3.5" : "w-4 h-4"} />
           {uploading ? `Uploading… ${progress}%` : "Upload media"}
         </button>
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
@@ -343,6 +358,20 @@ export function AdminDashboard() {
         <p className="text-foreground/50 py-10 text-center border border-dashed border-border rounded-lg">
           No media yet. Upload your first item.
         </p>
+      ) : section === "gallery" ? (
+        <GalleryGrid
+          items={items}
+          onDragStart={onDragStart}
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+          onDragEnd={onDragEnd}
+          onTogglePublished={(item) => patchItem(item.id, { published: !item.published })}
+          onEditThumbnail={(id) => {
+            editingThumbId.current = id
+            thumbInputRef.current?.click()
+          }}
+          onDelete={deleteItem}
+        />
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((item, index) => (
