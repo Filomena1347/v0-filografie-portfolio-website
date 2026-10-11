@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog"
 
 export function AdminLoginDot() {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -32,8 +31,7 @@ export function AdminLoginDot() {
         setLoading(false)
         return
       }
-      router.push("/admin")
-      router.refresh()
+      window.location.assign("/admin")
     } catch {
       setError("Něco se pokazilo")
       setLoading(false)
