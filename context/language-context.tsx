@@ -111,7 +111,7 @@ const translations: Record<Lang, Dict> = {
     about_bio:
       "Sem doplníš svůj příběh — kdo jsi, jak ses k tvorbě dostala a co tě na práci se značkami a lidmi baví. Text můžeš upravit kdykoliv.",
     about_photo_placeholder: "Fotka bude brzy doplněna",
-    gallery_empty: "V této kategorii zatím nejsou žádné práce. Brzy přibudou.",
+    gallery_empty: "Zatím žádná média",
     gallery_close: "Zavřít ↑",
     gallery_items: "položek",
 
@@ -202,7 +202,7 @@ const translations: Record<Lang, Dict> = {
     about_bio:
       "Your story goes here — who you are, how you got into creating, and what you love about working with brands and people. You can edit this text anytime.",
     about_photo_placeholder: "Photo coming soon",
-    gallery_empty: "No work in this category yet. Coming soon.",
+    gallery_empty: "No media yet",
     gallery_close: "Close ↑",
     gallery_items: "items",
 
