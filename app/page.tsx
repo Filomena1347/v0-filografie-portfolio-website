@@ -50,13 +50,18 @@ export default async function HomePage() {
     <main className="min-h-screen">
       <Navbar />
       <Hero covers={coverMap} galleries={galleries} />
-      <ThreePillars />
-      <Photography items={photos} />
-      <Video items={videos} />
-      <Content items={content} />
+      {/* Temporarily hidden — remove the "hidden" wrapper to restore */}
+      <div className="hidden" aria-hidden="true">
+        <ThreePillars />
+        <Photography items={photos} />
+        <Video items={videos} />
+        <Content items={content} />
+      </div>
       <About photo={about[0] ?? null} />
       <Contact />
-      <Footer />
+      <div className="hidden" aria-hidden="true">
+        <Footer />
+      </div>
       <LiveRefresh />
     </main>
   )
