@@ -5,6 +5,7 @@ import { useMemo, useRef, useState } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
 import { InlineGallery } from "@/components/inline-gallery"
+import { AdminLoginDot } from "@/components/admin-login-dialog"
 import { CATEGORY_KEYS } from "@/lib/media"
 import type { CategoryKey, MediaItem } from "@/lib/media"
 
@@ -84,7 +85,14 @@ export function Hero({ covers = {}, galleries = {} }: HeroProps) {
         {/* Label + heading */}
         <p className="font-serif text-lg md:text-xl text-foreground/60">{t.hero_label}</p>
         <h1 className="mt-2 font-serif text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-balance text-foreground max-w-3xl">
-          {t.hero_title}
+          {t.hero_title.endsWith(".") ? (
+            <>
+              {t.hero_title.slice(0, -1)}
+              <AdminLoginDot />
+            </>
+          ) : (
+            t.hero_title
+          )}
         </h1>
 
         {/* Filter pills */}
