@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { sql, ensureSchema } from "@/lib/db"
 import { isAuthed } from "@/lib/auth"
+import { revalidatePublicMedia } from "@/lib/revalidate"
 
 export const dynamic = "force-dynamic"
 
@@ -21,5 +22,6 @@ export async function POST(request: Request) {
     }
   })
 
+  revalidatePublicMedia()
   return NextResponse.json({ ok: true })
 }

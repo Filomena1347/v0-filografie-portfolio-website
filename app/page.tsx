@@ -7,6 +7,7 @@ import { Content } from "@/components/content"
 import { About } from "@/components/about"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
+import { LiveRefresh } from "@/components/live-refresh"
 import { sql, ensureSchema } from "@/lib/db"
 import { CATEGORY_KEYS, groupGalleries } from "@/lib/media"
 import { SEED_GALLERIES } from "@/lib/seed-gallery"
@@ -60,6 +61,7 @@ export default async function HomePage() {
       <About photo={about[0] ?? null} />
       <Contact />
       <Footer />
+      <LiveRefresh />
     </main>
   )
 }
