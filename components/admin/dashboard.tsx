@@ -30,9 +30,9 @@ const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
 
 const CATEGORY_SECTIONS: MediaSection[] = ["cover", "gallery"]
 
-// `||` instead of `??` so an empty-string env value also falls back.
-const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "duntvai9w"
-const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "videos"
+const CLOUD_NAME = "duntvai9w"
+const UPLOAD_PRESET = "videos"
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`
 
 export function AdminDashboard() {
   const router = useRouter()
@@ -97,28 +97,13 @@ export function AdminDashboard() {
     height?: number
     resourceType: string
   }> {
-    let cloudName = CLOUD_NAME
-    let uploadPreset = UPLOAD_PRESET
-    try {
-      const cfg = await fetch("/api/admin/upload-config", { cache: "no-store" })
-      if (cfg.ok) {
-        const data = await cfg.json()
-        cloudName = data.cloudName || cloudName
-        uploadPreset = data.uploadPreset || uploadPreset
-      }
-    } catch {}
-    if (!cloudName) throw new Error("Cloudinary cloud name is not configured")
-    if (!uploadPreset) throw new Error("Cloudinary upload preset is not configured (NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET)")
-
-    const isVideo = file.type.startsWith("video/")
-    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/${isVideo ? "video" : "image"}/upload`
     const form = new FormData()
     form.append("file", file)
-    form.append("upload_preset", uploadPreset)
+    form.append("upload_preset", UPLOAD_PRESET)
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
-      xhr.open("POST", endpoint)
+      xhr.open("POST", CLOUDINARY_UPLOAD_URL)
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100))
       }
@@ -137,7 +122,7 @@ export function AdminDashboard() {
           try {
             detail = JSON.parse(xhr.responseText)?.error?.message || detail
           } catch {}
-          reject(new Error(`Cloudinary upload failed: ${detail} (cloud "${cloudName}", preset "${uploadPreset}")`))
+          reject(new Error(`Cloudinary upload failed: ${detail} (cloud "${CLOUD_NAME}", preset "${UPLOAD_PRESET}")`))
         }
       }
       xhr.onerror = () => reject(new Error("Network error"))
