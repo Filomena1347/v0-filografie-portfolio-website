@@ -66,9 +66,12 @@ export async function POST(request: Request) {
     `
     const nextOrder = Number(max) + 1
 
+    // The table's CHECK constraint only allows 'foto' or 'video' for media_type.
+    const mediaType = String(type).toLowerCase() === "video" ? "video" : "foto"
+
     const [row] = await sql`
-      INSERT INTO media_items (type, section, category, title, public_id, url, thumbnail_url, width, height, sort_order)
-      VALUES (${type!}, ${section!}, ${category ?? null}, ${title ?? null}, ${public_id!}, ${url!}, ${thumbnail_url ?? null}, ${width != null ? Math.round(Number(width)) : null}, ${height != null ? Math.round(Number(height)) : null}, ${nextOrder})
+      INSERT INTO media_items (media_type, type, section, category, title, public_id, cloudinary_public_id, url, thumbnail_url, width, height, sort_order)
+      VALUES (${mediaType}, ${type!}, ${section!}, ${category ?? null}, ${title ?? null}, ${public_id!}, ${public_id!}, ${url!}, ${thumbnail_url ?? null}, ${width != null ? Math.round(Number(width)) : null}, ${height != null ? Math.round(Number(height)) : null}, ${nextOrder})
       RETURNING *
     `
 
