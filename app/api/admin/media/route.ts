@@ -28,27 +28,64 @@ export async function POST(request: Request) {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  await ensureSchema()
-
-  const body = await request.json()
-  const { type, section, category, title, public_id, url, thumbnail_url, width, height } = body
-
-  if (!type || !section || !public_id || !url) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+  let body: Record<string, unknown>
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+  }
+  const { type, section, category, title, public_id, url, thumbnail_url, width, height } = body as {
+    type?: string
+    section?: string
+    category?: string | null
+    title?: string | null
+    public_id?: string
+    url?: string
+    thumbnail_url?: string | null
+    width?: number | null
+    height?: number | null
   }
 
-  const [{ max }] = await sql`
-    SELECT COALESCE(MAX(sort_order), -1) AS max FROM media_items
-    WHERE section = ${section} AND category IS NOT DISTINCT FROM ${category ?? null}
-  `
-  const nextOrder = (max as number) + 1
+  const missing = Object.entries({ type, section, public_id, url })
+    .filter(([, v]) => !v)
+    .map(([k]) => k)
+  if (missing.length > 0) {
+    console.error("[media] Missing required fields:", missing, body)
+    return NextResponse.json(
+      { error: `Missing required fields: ${missing.join(", ")}` },
+      { status: 400 },
+    )
+  }
 
-  const [row] = await sql`
-    INSERT INTO media_items (type, section, category, title, public_id, url, thumbnail_url, width, height, sort_order)
-    VALUES (${type}, ${section}, ${category ?? null}, ${title ?? null}, ${public_id}, ${url}, ${thumbnail_url ?? null}, ${width ?? null}, ${height ?? null}, ${nextOrder})
-    RETURNING *
-  `
+  try {
+    await ensureSchema()
 
-  revalidatePublicMedia()
-  return NextResponse.json({ item: row })
+    const [{ max }] = await sql`
+      SELECT COALESCE(MAX(sort_order), -1)::int AS max FROM media_items
+      WHERE section = ${section!} AND category IS NOT DISTINCT FROM ${category ?? null}
+    `
+    const nextOrder = Number(max) + 1
+
+    const [row] = await sql`
+      INSERT INTO media_items (type, section, category, title, public_id, url, thumbnail_url, width, height, sort_order)
+      VALUES (${type!}, ${section!}, ${category ?? null}, ${title ?? null}, ${public_id!}, ${url!}, ${thumbnail_url ?? null}, ${width != null ? Math.round(Number(width)) : null}, ${height != null ? Math.round(Number(height)) : null}, ${nextOrder})
+      RETURNING *
+    `
+
+    revalidatePublicMedia()
+    return NextResponse.json({ item: row })
+  } catch (err) {
+    const e = err as { message?: string; code?: string; detail?: string; hint?: string }
+    console.error("[media] Database insert failed:", {
+      message: e.message,
+      code: e.code,
+      detail: e.detail,
+      hint: e.hint,
+      payload: { type, section, category, public_id, url },
+    })
+    const parts = [e.message ?? "Unknown database error"]
+    if (e.code) parts.push(`code ${e.code}`)
+    if (e.detail) parts.push(e.detail)
+    return NextResponse.json({ error: `Database error: ${parts.join(" | ")}` }, { status: 500 })
+  }
 }
