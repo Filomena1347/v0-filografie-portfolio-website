@@ -30,8 +30,9 @@ const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
 
 const CATEGORY_SECTIONS: MediaSection[] = ["cover", "gallery"]
 
-const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+// `||` instead of `??` so an empty-string env value also falls back.
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "duntvai9w"
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "videos"
 
 export function AdminDashboard() {
   const router = useRouter()
