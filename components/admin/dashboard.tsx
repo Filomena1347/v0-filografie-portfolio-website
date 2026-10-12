@@ -164,7 +164,13 @@ export function AdminDashboard() {
             height: uploaded.height,
           }),
         })
-        if (!res.ok) throw new Error("Failed to save media")
+        if (!res.ok) {
+          let detail = `HTTP ${res.status}`
+          try {
+            detail = (await res.json())?.error || detail
+          } catch {}
+          throw new Error(`Failed to save media: ${detail}`)
+        }
         const { item } = await res.json()
         updateItems((prev) => [...prev, item])
       }
