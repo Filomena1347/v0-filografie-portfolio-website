@@ -4,9 +4,16 @@ const globalForSql = globalThis as unknown as {
   sql?: ReturnType<typeof postgres>
 }
 
+const connectionString = process.env.POSTGRES_PRISMA_URL
+
+// Without a URL, postgres.js silently falls back to 127.0.0.1:5432 (ECONNREFUSED on Vercel).
+if (!connectionString) {
+  throw new Error("POSTGRES_PRISMA_URL is not set")
+}
+
 export const sql =
   globalForSql.sql ??
-  postgres(process.env.POSTGRES_URL!, {
+  postgres(connectionString, {
     ssl: "require",
     prepare: false,
   })
