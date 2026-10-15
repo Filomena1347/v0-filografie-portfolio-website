@@ -44,6 +44,8 @@ export function ensureSchema() {
       `
       // Backfill column for pre-existing tables
       await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS thumbnail_url text`
+      await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS media_type text`
+      await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS cloudinary_public_id text`
     })().catch((err) => {
       // reset so a later request can retry schema creation
       schemaReady = null
