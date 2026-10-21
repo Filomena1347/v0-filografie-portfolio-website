@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { sql, ensureSchema } from "@/lib/db"
 import { isAuthed } from "@/lib/auth"
 import { revalidatePublicMedia } from "@/lib/revalidate"
+import { flattenAll, groupGalleries } from "@/lib/media"
+import type { MediaItem } from "@/lib/media"
 
 export const dynamic = "force-dynamic"
 
@@ -13,6 +15,15 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const section = searchParams.get("section")
   const category = searchParams.get("category")
+
+  if (searchParams.get("view") === "all") {
+    const published = await sql`
+      SELECT * FROM media_items
+      WHERE published = true AND section IN ('gallery', 'photography', 'video', 'content')
+      ORDER BY array_position(ARRAY['gallery', 'photography', 'video', 'content'], section), sort_order ASC, created_at DESC
+    `
+    return NextResponse.json({ items: flattenAll(groupGalleries(published as unknown as MediaItem[])) })
+  }
 
   const rows =
     section && category
