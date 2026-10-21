@@ -19,6 +19,7 @@ import {
 import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
 import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES } from "@/lib/media"
 import { GalleryGrid } from "@/components/admin/gallery-grid"
+import { BulkActionBar } from "@/components/admin/bulk-action-bar"
 
 const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
   { key: "cover", label: "Category covers", accept: "image/*" },
@@ -56,6 +57,8 @@ export function AdminDashboard() {
   const [progress, setProgress] = useState(0)
   const [batch, setBatch] = useState({ current: 0, total: 0 })
   const [error, setError] = useState("")
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkBusy, setBulkBusy] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const folderInputRef = useRef<HTMLInputElement>(null)
   const thumbInputRef = useRef<HTMLInputElement>(null)
@@ -75,6 +78,7 @@ export function AdminDashboard() {
     const seq = ++loadSeq.current
     setLoading(true)
     setError("")
+    setSelectedIds(new Set())
     itemsRef.current = []
     setItems([])
     try {
@@ -258,6 +262,78 @@ export function AdminDashboard() {
       return
     }
     updateItems((prev) => prev.filter((i) => i.id !== id))
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const allSelected = items.length > 0 && selectedIds.size === items.length
+
+  function toggleSelectAll() {
+    setSelectedIds(allSelected ? new Set() : new Set(items.map((i) => i.id)))
+  }
+
+  async function runBulk(body: { action: "delete" | "move"; ids: string[]; category?: string }) {
+    setBulkBusy(true)
+    setError("")
+    try {
+      const res = await fetch("/api/admin/media/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.status === 401) {
+        router.push("/admin/login")
+        return null
+      }
+      if (!res.ok) {
+        setError(data.error ?? `Bulk action failed (HTTP ${res.status})`)
+        return null
+      }
+      return data
+    } catch (err) {
+      setError((err as Error).message)
+      return null
+    } finally {
+      setBulkBusy(false)
+    }
+  }
+
+  async function bulkDelete() {
+    const ids = items.filter((i) => selectedIds.has(i.id)).map((i) => i.id)
+    const data = await runBulk({ action: "delete", ids })
+    if (!data) return
+    const deleted = new Set<string>(data.deleted)
+    updateItems((prev) => prev.filter((i) => !deleted.has(i.id)))
+    setSelectedIds(new Set())
+  }
+
+  async function bulkMove(target: CategoryKey) {
+    const ids = items.filter((i) => selectedIds.has(i.id)).map((i) => i.id)
+    const data = await runBulk({ action: "move", ids, category: target })
+    if (!data) return
+    const moved = new Set<string>(data.moved.map((m: { id: string }) => m.id))
+    updateItems((prev) =>
+      isAllView
+        ? prev.map((i) => (moved.has(i.id) ? { ...i, category: target } : i))
+        : prev.filter((i) => !moved.has(i.id)),
+    )
+    setSelectedIds(new Set())
+    if (data.skipped > 0) {
+      setError(`${data.skipped} vybraných položek nepatří do kategorie galerie a zůstaly beze změny.`)
+    }
   }
 
   function onDragStart(id: string) {
@@ -513,7 +589,22 @@ export function AdminDashboard() {
           No media yet. Upload your first item.
         </p>
       ) : section === "gallery" ? (
+        <>
+        <div className="mb-3 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={toggleSelectAll}
+            className="rounded-full border border-border px-4 py-1.5 text-xs text-foreground/70 transition-colors hover:text-primary"
+          >
+            {allSelected ? "Zrušit výběr" : "Vybrat vše"}
+          </button>
+          {selectedIds.size > 0 && (
+            <span className="text-xs text-foreground/50">Vybráno: {selectedIds.size}</span>
+          )}
+        </div>
         <GalleryGrid
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
           items={items}
           onDragStart={onDragStart}
           onDragOver={onDragOver}
@@ -526,6 +617,7 @@ export function AdminDashboard() {
           }}
           onDelete={deleteItem}
         />
+        </>
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((item, index) => (
@@ -638,6 +730,20 @@ export function AdminDashboard() {
             </li>
           ))}
         </ul>
+      )}
+
+      {section === "gallery" && selectedIds.size >= 2 && (
+        <>
+          <div className="h-28" aria-hidden="true" />
+          <BulkActionBar
+            count={selectedIds.size}
+            busy={bulkBusy}
+            currentCategory={category}
+            onDelete={bulkDelete}
+            onMove={bulkMove}
+            onClear={() => setSelectedIds(new Set())}
+          />
+        </>
       )}
     </div>
   )
