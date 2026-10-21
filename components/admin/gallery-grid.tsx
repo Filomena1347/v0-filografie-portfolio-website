@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Eye, EyeOff, GripVertical, ImagePlus, X } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 import type { MediaItem } from "@/lib/media"
 
 type GalleryGridProps = {
@@ -13,6 +14,8 @@ type GalleryGridProps = {
   onTogglePublished: (item: MediaItem) => void
   onEditThumbnail: (id: string) => void
   onDelete: (id: string) => void
+  selectedIds: Set<string>
+  onToggleSelect: (id: string) => void
 }
 
 const overlayButton =
@@ -27,6 +30,8 @@ export function GalleryGrid({
   onTogglePublished,
   onEditThumbnail,
   onDelete,
+  selectedIds,
+  onToggleSelect,
 }: GalleryGridProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null)
 
@@ -81,7 +86,18 @@ export function GalleryGrid({
             </span>
           )}
 
-          <div className="absolute inset-0 flex items-start justify-between p-2 opacity-0 ring-2 ring-inset ring-primary transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          {selectedIds.has(item.id) && (
+            <span className="pointer-events-none absolute inset-0 bg-primary/10 ring-4 ring-inset ring-primary" />
+          )}
+
+          <Checkbox
+            checked={selectedIds.has(item.id)}
+            onCheckedChange={() => onToggleSelect(item.id)}
+            aria-label={`Vybrat ${item.title ?? item.public_id}`}
+            className="absolute left-2 top-2 z-10 h-6 w-6 border-2 border-primary bg-background/90 backdrop-blur-sm data-[state=checked]:bg-primary"
+          />
+
+          <div className="absolute inset-0 flex items-start justify-between p-2 pl-11 opacity-0 ring-2 ring-inset ring-primary transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
             <span
               className={`${overlayButton} cursor-grab active:cursor-grabbing`}
               aria-hidden="true"
