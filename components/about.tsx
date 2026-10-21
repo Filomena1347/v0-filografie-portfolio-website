@@ -1,6 +1,5 @@
 "use client"
 
-import { User } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
 import type { MediaItem } from "@/lib/media"
 
@@ -12,28 +11,23 @@ export function About({ photo }: { photo: MediaItem | null }) {
       <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-16">
         <div className="w-full md:w-5/12">
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-card">
-            {photo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={photo.url || "/placeholder.svg"}
-                alt={photo.title ?? "Filoména"}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-foreground/40">
-                <User className="h-10 w-10" aria-hidden="true" />
-                <span className="text-sm">{t.about_photo_placeholder}</span>
-              </div>
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photo?.url || "/images/filomena.jpg"}
+              alt={photo?.title ?? "Filoména"}
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
 
         <div className="w-full md:w-7/12">
           <p className="text-sm tracking-[0.2em] uppercase text-primary mb-3">{t.about_label}</p>
-          <h2 className="font-serif text-4xl md:text-6xl text-foreground text-balance">{t.about_title}</h2>
-          <p className="mt-6 max-w-xl text-base md:text-lg leading-relaxed text-foreground/70 text-pretty">
-            {t.about_bio}
-          </p>
+          <h2 className="font-serif text-3xl md:text-5xl text-foreground text-balance">{t.about_title}</h2>
+          <div className="mt-6 flex max-w-xl flex-col gap-4 text-base md:text-lg leading-relaxed text-foreground/70 text-pretty">
+            {t.about_bio.split("\n\n").map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
         </div>
       </div>
     </section>

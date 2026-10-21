@@ -19,7 +19,13 @@ const inter = Inter({
   display: 'swap',
 })
 
-const siteUrl = 'https://filografie.vercel.app'
+const siteUrl = 'https://filography.com'
+const ogImage = {
+  url: 'https://filography.com/og-image.jpg',
+  width: 750,
+  height: 750,
+  alt: 'Filoména',
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -41,22 +47,25 @@ export const metadata: Metadata = {
     'Filografie',
   ],
   authors: [{ name: 'Filoména' }],
+  alternates: {
+    canonical: '/',
+    languages: { cs: '/', en: '/en' },
+  },
   openGraph: {
     type: 'website',
     locale: 'cs_CZ',
     alternateLocale: 'en_US',
-    title: 'Filografie | Filoména — Vizuální vyprávění příběhů',
-    description:
-      'Event a gastro fotografie, video reels a brandový obsah, správa sociálních sítí a UGC.',
+    title: 'Filoména | Fotografka & Content Creator',
+    description: 'Fotografka, kameramanka a content creator 📸🎬',
     url: siteUrl,
     siteName: 'Filografie',
-    images: [{ url: '/images/hero.png', width: 1200, height: 800, alt: 'Filografie' }],
+    images: [ogImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Filografie | Filoména',
-    description: 'Vizuální vyprávění příběhů — foto, video, obsah.',
-    images: ['/images/hero.png'],
+    title: 'Filoména | Fotografka & Content Creator',
+    description: 'Fotografka, kameramanka a content creator 📸🎬',
+    images: [ogImage.url],
   },
   robots: { index: true, follow: true },
   generator: 'v0.app',

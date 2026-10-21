@@ -107,9 +107,9 @@ const translations: Record<Lang, Dict> = {
     hero_card_graphics_desc: "Vizuální identita & příspěvky",
     photo_cat_weddings: "Svatby",
     about_label: "O mně",
-    about_title: "Ahoj, jsem Filoména.",
+    about_title: "Zdravím! Jsem Filoména — ten človíček za foťákem 😊",
     about_bio:
-      "Sem doplníš svůj příběh — kdo jsi, jak ses k tvorbě dostala a co tě na práci se značkami a lidmi baví. Text můžeš upravit kdykoliv.",
+      "Věnuju se fotografii, videu, grafice a sociálním sítím. Fotím vše od svateb a koncertů přes konference až po portréty. Specializuju se na reportážní fotografii — takže hotový materiál dostanete ještě ten samý den, připravený rovnou ke sdílení.\n\nJsem takový chodící šnek — nikdy bez batohu plného foťáku, notebooku a všeho potřebného. A protože miluju cestování, klidně za vámi dorazím kamkoliv po světě 🌍",
     about_photo_placeholder: "Fotka bude brzy doplněna",
     gallery_empty: "Zatím žádná média",
     gallery_close: "Zavřít ↑",
@@ -198,9 +198,9 @@ const translations: Record<Lang, Dict> = {
     hero_card_graphics_desc: "Visual identity & social posts",
     photo_cat_weddings: "Weddings",
     about_label: "About",
-    about_title: "Hi, I'm Filoména.",
+    about_title: "Hi, I’m Filoména — the person behind the camera 😊",
     about_bio:
-      "Your story goes here — who you are, how you got into creating, and what you love about working with brands and people. You can edit this text anytime.",
+      "I work in photography, video, graphic design and social media. I shoot everything from weddings and concerts to conferences and portraits. My specialty is reportage photography — which means you get polished, ready-to-post content the very same day.\n\nI’m basically a walking snail — never without my backpack packed with a camera, laptop and everything I need. And since I love to travel, I’m happy to come to you wherever you are in the world 🌍",
     about_photo_placeholder: "Photo coming soon",
     gallery_empty: "No media yet",
     gallery_close: "Close ↑",
@@ -289,8 +289,14 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null)
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("cs")
+export function LanguageProvider({
+  children,
+  initialLang = "cs",
+}: {
+  children: ReactNode
+  initialLang?: Lang
+}) {
+  const [lang, setLang] = useState<Lang>(initialLang)
   const toggle = useCallback(() => setLang((l) => (l === "cs" ? "en" : "cs")), [])
   return (
     <LanguageContext.Provider value={{ lang, setLang, toggle, t: translations[lang] }}>
