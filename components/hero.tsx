@@ -11,6 +11,9 @@ import type { CategoryKey, MediaItem } from "@/lib/media"
 
 type FilterKey = "all" | CategoryKey
 
+// Temporarily hidden from the public site; remove a key here to restore it.
+const HIDDEN_CATEGORIES: CategoryKey[] = ["ugc", "graphics"]
+
 type HeroProps = {
   covers?: Partial<Record<CategoryKey, string>>
   galleries?: Partial<Record<CategoryKey, MediaItem[]>>
@@ -24,15 +27,17 @@ export function Hero({ covers = {}, galleries = {} }: HeroProps) {
   const [active, setActive] = useState<FilterKey>("all")
   const [open, setOpen] = useState(false)
 
-  const filters: { key: FilterKey; label: string }[] = [
-    { key: "all", label: t.hero_filter_all },
-    { key: "events", label: t.hero_filter_events },
-    { key: "gastro", label: t.hero_filter_gastro },
-    { key: "weddings", label: t.hero_filter_weddings },
-    { key: "video", label: t.hero_filter_video },
-    { key: "ugc", label: t.hero_filter_ugc },
-    { key: "graphics", label: t.hero_filter_graphics },
-  ]
+  const filters = (
+    [
+      { key: "all", label: t.hero_filter_all },
+      { key: "events", label: t.hero_filter_events },
+      { key: "gastro", label: t.hero_filter_gastro },
+      { key: "weddings", label: t.hero_filter_weddings },
+      { key: "video", label: t.hero_filter_video },
+      { key: "ugc", label: t.hero_filter_ugc },
+      { key: "graphics", label: t.hero_filter_graphics },
+    ] as { key: FilterKey; label: string }[]
+  ).filter((f) => f.key === "all" || !HIDDEN_CATEGORIES.includes(f.key as CategoryKey))
 
   const cards = useMemo(
     () =>
@@ -43,18 +48,20 @@ export function Hero({ covers = {}, galleries = {} }: HeroProps) {
         { id: "video", image: "/images/pillar-video.png", category: t.hero_card_video_cat, desc: t.hero_card_video_desc },
         { id: "ugc", image: "/images/pillar-content.png", category: t.hero_card_ugc_cat, desc: t.hero_card_ugc_desc },
         { id: "graphics", image: "/images/card-graphics.png", category: t.hero_card_graphics_cat, desc: t.hero_card_graphics_desc },
-      ].map((c) => ({
-        ...c,
-        id: c.id as CategoryKey,
-        image: covers[c.id as CategoryKey] ?? c.image,
-      })),
+      ]
+        .filter((c) => !HIDDEN_CATEGORIES.includes(c.id as CategoryKey))
+        .map((c) => ({
+          ...c,
+          id: c.id as CategoryKey,
+          image: covers[c.id as CategoryKey] ?? c.image,
+        })),
     [t, covers],
   )
 
   const galleryItems = useMemo(
     () =>
       active === "all"
-        ? CATEGORY_KEYS.flatMap((k) => galleries[k] ?? [])
+        ? CATEGORY_KEYS.filter((k) => !HIDDEN_CATEGORIES.includes(k)).flatMap((k) => galleries[k] ?? [])
         : (galleries[active] ?? []),
     [active, galleries],
   )
