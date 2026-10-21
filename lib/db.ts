@@ -47,6 +47,7 @@ export function ensureSchema() {
       await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS thumbnail_url text`
       await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS media_type text`
       await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS cloudinary_public_id text`
+      await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS all_sort_order integer`
     })().catch((err) => {
       // reset so a later request can retry schema creation
       schemaReady = null

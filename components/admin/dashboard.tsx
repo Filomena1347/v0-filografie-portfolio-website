@@ -14,6 +14,7 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUp,
+  FolderUp,
 } from "lucide-react"
 import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
 import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES } from "@/lib/media"
@@ -30,6 +31,12 @@ const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
 
 const CATEGORY_SECTIONS: MediaSection[] = ["cover", "gallery"]
 
+const VIDEO_EXTENSIONS = /\.(mp4|mov|m4v|webm|avi|mkv)$/i
+
+function isVideoFile(file: File) {
+  return file.type.startsWith("video/") || VIDEO_EXTENSIONS.test(file.name)
+}
+
 const CLOUD_NAME = "duntvai9w"
 const UPLOAD_PRESET = "videos"
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`
@@ -39,14 +46,18 @@ export function AdminDashboard() {
   const pendingSaves = useRef(new Set<Promise<unknown>>())
   const [exiting, setExiting] = useState(false)
   const [section, setSection] = useState<MediaSection>("cover")
-  const [category, setCategory] = useState<CategoryKey>("video")
+  const [category, setCategory] = useState<CategoryKey | "all">("video")
   const usesCategory = CATEGORY_SECTIONS.includes(section)
+  const isAllView = section === "gallery" && category === "all"
+  const canUploadFolder = section === "video" || (section === "gallery" && category === "video")
   const [items, setItems] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [batch, setBatch] = useState({ current: 0, total: 0 })
   const [error, setError] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const folderInputRef = useRef<HTMLInputElement>(null)
   const thumbInputRef = useRef<HTMLInputElement>(null)
   const editingThumbId = useRef<string | null>(null)
   const dragId = useRef<string | null>(null)
@@ -60,15 +71,20 @@ export function AdminDashboard() {
     setItems(value)
   }
 
-  const load = useCallback(async (s: MediaSection, cat: CategoryKey | null) => {
+  const load = useCallback(async (s: MediaSection, cat: CategoryKey | "all" | null) => {
     const seq = ++loadSeq.current
     setLoading(true)
     setError("")
     itemsRef.current = []
     setItems([])
     try {
-      const params = new URLSearchParams({ section: s })
-      if (cat) params.set("category", cat)
+      const params = new URLSearchParams()
+      if (s === "gallery" && cat === "all") {
+        params.set("view", "all")
+      } else {
+        params.set("section", s)
+        if (cat) params.set("category", cat)
+      }
       const res = await fetch(`/api/admin/media?${params}`, { cache: "no-store" })
       if (seq !== loadSeq.current) return
       if (res.status === 401) {
@@ -131,13 +147,28 @@ export function AdminDashboard() {
   }
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? [])
+    await uploadFiles(Array.from(e.target.files ?? []))
+  }
+
+  async function handleFolderUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const all = Array.from(e.target.files ?? [])
+    const videos = all.filter(isVideoFile)
+    if (all.length > 0 && videos.length === 0) {
+      setError("No video files found in the selected folder")
+      if (folderInputRef.current) folderInputRef.current.value = ""
+      return
+    }
+    await uploadFiles(videos)
+  }
+
+  async function uploadFiles(files: File[]) {
     if (files.length === 0) return
     setError("")
     setUploading(true)
 
     try {
-      for (const file of files) {
+      for (const [index, file] of files.entries()) {
+        setBatch({ current: index + 1, total: files.length })
         setProgress(0)
         const uploaded = await uploadToCloudinary(file)
         const type = uploaded.resourceType === "video" ? "video" : "photo"
@@ -179,7 +210,9 @@ export function AdminDashboard() {
     } finally {
       setUploading(false)
       setProgress(0)
+      setBatch({ current: 0, total: 0 })
       if (fileInputRef.current) fileInputRef.current.value = ""
+      if (folderInputRef.current) folderInputRef.current.value = ""
     }
   }
 
@@ -264,14 +297,18 @@ export function AdminDashboard() {
       const res = await fetch("/api/admin/media/reorder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: list.map((i) => i.id) }),
+        body: JSON.stringify({ ids: list.map((i) => i.id), scope: isAllView ? "all" : "category" }),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         setError(`Saving order failed: ${data.error ?? `HTTP ${res.status}`}`)
         return
       }
-      updateItems((prev) => prev.map((item, index) => ({ ...item, sort_order: index })))
+      updateItems((prev) =>
+        prev.map((item, index) =>
+          isAllView ? { ...item, all_sort_order: index } : { ...item, sort_order: index },
+        ),
+      )
     } catch (err) {
       setError(`Saving order failed: ${(err as Error).message}`)
     }
@@ -349,7 +386,10 @@ export function AdminDashboard() {
         {SECTIONS.map((s) => (
           <button
             key={s.key}
-            onClick={() => setSection(s.key)}
+            onClick={() => {
+              setSection(s.key)
+              if (s.key !== "gallery" && category === "all") setCategory("video")
+            }}
             className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
               section === s.key
                 ? "bg-primary text-primary-foreground"
@@ -365,6 +405,19 @@ export function AdminDashboard() {
         <div className="mb-6 flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Category">
             <span className="text-xs uppercase tracking-widest text-foreground/50 mr-1">Category</span>
+            {section === "gallery" && (
+              <button
+                onClick={() => setCategory("all")}
+                aria-pressed={category === "all"}
+                className={`rounded-full px-3 py-1 text-xs transition-colors ${
+                  category === "all"
+                    ? "bg-accent text-accent-foreground"
+                    : "border border-border text-foreground/70 hover:text-primary"
+                }`}
+              >
+                Vše
+              </button>
+            )}
             {CATEGORY_KEYS.map((key) => (
               <button
                 key={key}
@@ -383,7 +436,9 @@ export function AdminDashboard() {
           <p className="text-xs text-foreground/50">
             {section === "cover"
               ? "The first published image is used as the card cover on the homepage."
-              : "Photos and videos shown when a visitor opens this category. Drag to reorder."}
+              : isAllView
+                ? "Order of everything in the Vše tab. Drag to reorder — this does not change the order inside the other categories."
+                : "Photos and videos shown when a visitor opens this category. Drag to reorder."}
           </p>
         </div>
       )}
@@ -411,16 +466,42 @@ export function AdminDashboard() {
           onChange={handleThumbnailUpload}
           className="hidden"
         />
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className={`inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-60 ${
-            section === "gallery" ? "px-4 py-1.5 text-xs" : "px-6 py-2.5 text-sm"
-          }`}
-        >
-          <Upload className={section === "gallery" ? "w-3.5 h-3.5" : "w-4 h-4"} />
-          {uploading ? `Uploading… ${progress}%` : "Upload media"}
-        </button>
+        <input
+          ref={folderInputRef}
+          type="file"
+          multiple
+          onChange={handleFolderUpload}
+          className="hidden"
+          {...({ webkitdirectory: "", directory: "" } as Record<string, string>)}
+        />
+        {!isAllView && (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className={`inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-60 ${
+                section === "gallery" ? "px-4 py-1.5 text-xs" : "px-6 py-2.5 text-sm"
+              }`}
+            >
+              <Upload className={section === "gallery" ? "w-3.5 h-3.5" : "w-4 h-4"} />
+              {uploading
+                ? `Uploading${batch.total > 1 ? ` ${batch.current}/${batch.total}` : ""}… ${progress}%`
+                : "Upload media"}
+            </button>
+            {canUploadFolder && (
+              <button
+                onClick={() => folderInputRef.current?.click()}
+                disabled={uploading}
+                className={`inline-flex items-center gap-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60 ${
+                  section === "gallery" ? "px-4 py-1.5 text-xs" : "px-6 py-2.5 text-sm"
+                }`}
+              >
+                <FolderUp className={section === "gallery" ? "w-3.5 h-3.5" : "w-4 h-4"} />
+                Upload video folder
+              </button>
+            )}
+          </div>
+        )}
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
       </div>
 
@@ -484,7 +565,7 @@ export function AdminDashboard() {
                     </select>
                   ) : (
                     <span className="text-xs text-foreground/50 capitalize">
-                      {usesCategory ? `${CATEGORY_LABELS[category]} · ${item.type}` : item.type}
+                      {usesCategory && category !== "all" ? `${CATEGORY_LABELS[category]} · ${item.type}` : item.type}
                     </span>
                   )}
                   <span

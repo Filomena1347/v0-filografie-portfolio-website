@@ -6,13 +6,10 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
 import { InlineGallery } from "@/components/inline-gallery"
 import { AdminLoginDot } from "@/components/admin-login-dialog"
-import { CATEGORY_KEYS } from "@/lib/media"
+import { HIDDEN_CATEGORIES, flattenAll } from "@/lib/media"
 import type { CategoryKey, MediaItem } from "@/lib/media"
 
 type FilterKey = "all" | CategoryKey
-
-// Temporarily hidden from the public site; remove a key here to restore it.
-const HIDDEN_CATEGORIES: CategoryKey[] = ["ugc", "graphics"]
 
 type HeroProps = {
   covers?: Partial<Record<CategoryKey, string>>
@@ -25,7 +22,7 @@ export function Hero({ covers = {}, galleries = {} }: HeroProps) {
   const galleryRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState<FilterKey>("all")
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
 
   const filters = (
     [
@@ -59,10 +56,7 @@ export function Hero({ covers = {}, galleries = {} }: HeroProps) {
   )
 
   const galleryItems = useMemo(
-    () =>
-      active === "all"
-        ? CATEGORY_KEYS.filter((k) => !HIDDEN_CATEGORIES.includes(k)).flatMap((k) => galleries[k] ?? [])
-        : (galleries[active] ?? []),
+    () => (active === "all" ? flattenAll(galleries) : (galleries[active] ?? [])),
     [active, galleries],
   )
 
