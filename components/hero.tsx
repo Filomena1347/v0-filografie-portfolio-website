@@ -7,18 +7,23 @@ import { useLanguage } from "@/context/language-context"
 import { InlineGallery } from "@/components/inline-gallery"
 import { AdminLoginDot } from "@/components/admin-login-dialog"
 import { RotatingHeadline } from "@/components/rotating-headline"
+import { HeroSlideDashes, HeroSlideImages, useHeroSlideIndex } from "@/components/hero-slideshow"
 import { HIDDEN_CATEGORIES, flattenAll } from "@/lib/media"
 import type { CategoryKey, MediaItem } from "@/lib/media"
+import type { HeroSlide } from "@/lib/hero-slides"
 
 type FilterKey = "all" | CategoryKey
 
 type HeroProps = {
   covers?: Partial<Record<CategoryKey, string>>
   galleries?: Partial<Record<CategoryKey, MediaItem[]>>
+  slides?: HeroSlide[]
 }
 
-export function Hero({ covers = {}, galleries = {} }: HeroProps) {
+export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
   const { t, lang } = useLanguage()
+  const hasSlides = slides.length > 0
+  const slideIndex = useHeroSlideIndex(slides.length)
   const scrollerRef = useRef<HTMLDivElement>(null)
   const galleryRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
@@ -82,15 +87,52 @@ export function Hero({ covers = {}, galleries = {} }: HeroProps) {
   }
 
   return (
-    <section id="top" className="relative pt-28 md:pt-32 pb-16 md:pb-24 bg-background">
+    <section
+      id="top"
+      className={`relative ${hasSlides ? "pt-20" : "pt-28"} md:pt-32 pb-16 md:pb-24 bg-background`}
+    >
       <div className="max-w-7xl mx-auto w-full px-6">
-        {/* Label + heading */}
-        <RotatingHeadline
-          lang={lang}
-          eyebrowClassName="font-serif text-lg md:text-xl text-foreground/60"
-          headingClassName="mt-2 font-serif text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-balance text-foreground max-w-3xl"
-          trailing={<AdminLoginDot />}
-        />
+        {/* Mobile photo hero: slides sit behind the headline band; on desktop only the headline shows */}
+        <div
+          className={
+            hasSlides
+              ? "relative -mx-6 flex h-[64svh] min-h-[380px] flex-col justify-end overflow-hidden md:mx-0 md:block md:h-auto md:min-h-0 md:overflow-visible"
+              : undefined
+          }
+        >
+          {hasSlides && (
+            <div className="absolute inset-0 md:hidden">
+              <HeroSlideImages slides={slides} index={slideIndex} lang={lang} />
+            </div>
+          )}
+          <div
+            className={
+              hasSlides
+                ? "relative bg-background/70 px-6 py-5 backdrop-blur-sm md:bg-transparent md:p-0 md:backdrop-blur-none"
+                : undefined
+            }
+          >
+            <RotatingHeadline
+              lang={lang}
+              eyebrowClassName={
+                hasSlides
+                  ? "font-serif text-sm text-foreground/70 md:text-xl md:text-foreground/60"
+                  : "font-serif text-lg md:text-xl text-foreground/60"
+              }
+              headingClassName={
+                hasSlides
+                  ? "mt-1.5 font-serif text-[1.75rem] min-[400px]:text-3xl leading-[1.1] text-balance text-foreground max-w-3xl md:mt-2 md:text-7xl md:leading-[0.95]"
+                  : "mt-2 font-serif text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-balance text-foreground max-w-3xl"
+              }
+              trailing={<AdminLoginDot />}
+            />
+            {hasSlides && (
+              <div className="md:hidden">
+                <HeroSlideDashes count={slides.length} index={slideIndex} />
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Filter pills */}
         <div id="work" className="mt-8 flex flex-wrap items-center gap-2.5 scroll-mt-24">
