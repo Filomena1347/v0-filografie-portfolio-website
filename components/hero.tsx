@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
 import { InlineGallery } from "@/components/inline-gallery"
 import { AdminLoginDot } from "@/components/admin-login-dialog"
+import { RotatingHeadline } from "@/components/rotating-headline"
 import { HIDDEN_CATEGORIES, flattenAll } from "@/lib/media"
 import type { CategoryKey, MediaItem } from "@/lib/media"
 
@@ -17,7 +18,7 @@ type HeroProps = {
 }
 
 export function Hero({ covers = {}, galleries = {} }: HeroProps) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const scrollerRef = useRef<HTMLDivElement>(null)
   const galleryRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
@@ -84,17 +85,12 @@ export function Hero({ covers = {}, galleries = {} }: HeroProps) {
     <section id="top" className="relative pt-28 md:pt-32 pb-16 md:pb-24 bg-background">
       <div className="max-w-7xl mx-auto w-full px-6">
         {/* Label + heading */}
-        <p className="font-serif text-lg md:text-xl text-foreground/60">{t.hero_label}</p>
-        <h1 className="mt-2 font-serif text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-balance text-foreground max-w-3xl">
-          {t.hero_title.endsWith(".") ? (
-            <>
-              {t.hero_title.slice(0, -1)}
-              <AdminLoginDot />
-            </>
-          ) : (
-            t.hero_title
-          )}
-        </h1>
+        <RotatingHeadline
+          lang={lang}
+          eyebrowClassName="font-serif text-lg md:text-xl text-foreground/60"
+          headingClassName="mt-2 font-serif text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-balance text-foreground max-w-3xl"
+          trailing={<AdminLoginDot />}
+        />
 
         {/* Filter pills */}
         <div id="work" className="mt-8 flex flex-wrap items-center gap-2.5 scroll-mt-24">
