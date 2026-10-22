@@ -43,6 +43,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, deleted: rows.map((r) => r.id as string) })
   }
 
+  if (body.action === "hide_from_all") {
+    const rows = await sql`UPDATE media_items SET show_in_vse = false WHERE id IN ${sql(ids)} RETURNING id`
+    revalidatePublicMedia()
+    return NextResponse.json({ ok: true, updated: rows.map((r) => r.id as string) })
+  }
+
   if (body.action === "move") {
     const category = body.category
     if (!category || !(CATEGORY_KEYS as readonly string[]).includes(category)) {

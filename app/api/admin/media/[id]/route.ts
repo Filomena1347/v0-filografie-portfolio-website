@@ -27,10 +27,11 @@ export async function PATCH(
   const category = body.category ?? current.category
   const title = body.title ?? current.title
   const thumbnail_url = body.thumbnail_url ?? current.thumbnail_url
+  const show_in_vse = typeof body.show_in_vse === "boolean" ? body.show_in_vse : current.show_in_vse
 
   const [row] = await sql`
     UPDATE media_items
-    SET published = ${published}, category = ${category}, title = ${title}, thumbnail_url = ${thumbnail_url}
+    SET published = ${published}, category = ${category}, title = ${title}, thumbnail_url = ${thumbnail_url}, show_in_vse = ${show_in_vse}
     WHERE id = ${id}
     RETURNING *
   `

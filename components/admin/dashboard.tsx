@@ -280,6 +280,24 @@ export function AdminDashboard() {
     })
   }
 
+  async function removeFromAll(id: string) {
+    const res = await fetch(`/api/admin/media/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ show_in_vse: false }),
+    })
+    if (!res.ok) {
+      setError("Odebrání ze sekce Vše se nepodařilo")
+      return
+    }
+    updateItems((prev) => prev.filter((i) => i.id !== id))
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+  }
+
   function toggleSelect(id: string) {
     setSelectedIds((prev) => {
       const next = new Set(prev)
@@ -295,7 +313,7 @@ export function AdminDashboard() {
     setSelectedIds(allSelected ? new Set() : new Set(items.map((i) => i.id)))
   }
 
-  async function runBulk(body: { action: "delete" | "move"; ids: string[]; category?: string }) {
+  async function runBulk(body: { action: "delete" | "move" | "hide_from_all"; ids: string[]; category?: string }) {
     setBulkBusy(true)
     setError("")
     try {
@@ -324,9 +342,9 @@ export function AdminDashboard() {
 
   async function bulkDelete() {
     const ids = items.filter((i) => selectedIds.has(i.id)).map((i) => i.id)
-    const data = await runBulk({ action: "delete", ids })
+    const data = await runBulk({ action: isAllView ? "hide_from_all" : "delete", ids })
     if (!data) return
-    const deleted = new Set<string>(data.deleted)
+    const deleted = new Set<string>(isAllView ? data.updated : data.deleted)
     updateItems((prev) => prev.filter((i) => !deleted.has(i.id)))
     setSelectedIds(new Set())
   }
@@ -551,7 +569,7 @@ export function AdminDashboard() {
             {section === "cover"
               ? "The first published image is used as the card cover on the homepage."
               : isAllView
-                ? "Order of everything in the Vše tab. Drag to reorder — this does not change the order inside the other categories."
+                ? "Order of everything in the Vše tab. Drag to reorder — this does not change the order inside the other categories. Odebrání (X) fotku jen skryje ze sekce Vše, zůstane v kategorii."
                 : "Photos and videos shown when a visitor opens this category. Drag to reorder."}
           </p>
         </div>
@@ -669,7 +687,9 @@ export function AdminDashboard() {
             editingThumbId.current = id
             thumbInputRef.current?.click()
           }}
-          onDelete={deleteItem}
+          onDelete={isAllView ? removeFromAll : deleteItem}
+          isAllView={isAllView}
+          onToggleShowInVse={(item) => patchItem(item.id, { show_in_vse: item.show_in_vse === false })}
         />
         </>
       ) : (
