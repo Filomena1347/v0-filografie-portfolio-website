@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, EyeOff, GripVertical, ImagePlus, X } from "lucide-react"
+import { ChevronsUp, Eye, EyeOff, GripVertical, ImagePlus, X } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
+import { PositionInput } from "@/components/admin/position-input"
 import type { MediaItem } from "@/lib/media"
 
 type GalleryGridProps = {
@@ -16,6 +17,8 @@ type GalleryGridProps = {
   onDelete: (id: string) => void
   selectedIds: Set<string>
   onToggleSelect: (id: string) => void
+  onMoveToStart: (id: string) => void
+  onMoveToPosition: (id: string, position: number) => void
 }
 
 const overlayButton =
@@ -32,12 +35,14 @@ export function GalleryGrid({
   onDelete,
   selectedIds,
   onToggleSelect,
+  onMoveToStart,
+  onMoveToPosition,
 }: GalleryGridProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null)
 
   return (
     <div className="columns-2 gap-0 md:columns-4">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <div
           key={item.id}
           draggable
@@ -137,6 +142,24 @@ export function GalleryGrid({
                 <X className="h-4 w-4" />
               </button>
             </div>
+          </div>
+
+          <div className="absolute bottom-2 right-2 flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+            <button
+              type="button"
+              onClick={() => onMoveToStart(item.id)}
+              disabled={index === 0}
+              title="Přesunout na začátek"
+              aria-label="Přesunout na začátek"
+              className={`${overlayButton} hover:text-primary disabled:pointer-events-none disabled:opacity-40`}
+            >
+              <ChevronsUp className="h-4 w-4" />
+            </button>
+            <PositionInput
+              position={index + 1}
+              total={items.length}
+              onCommit={(position) => onMoveToPosition(item.id, position)}
+            />
           </div>
         </div>
       ))}
