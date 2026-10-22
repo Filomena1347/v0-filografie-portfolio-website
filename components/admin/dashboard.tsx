@@ -21,6 +21,7 @@ import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES } from "@/lib/media"
 import { GalleryGrid } from "@/components/admin/gallery-grid"
 import { BulkActionBar } from "@/components/admin/bulk-action-bar"
 import { PositionInput } from "@/components/admin/position-input"
+import { HeroSlidesManager } from "@/components/admin/hero-slides-manager"
 
 const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
   { key: "cover", label: "Category covers", accept: "image/*" },
@@ -48,6 +49,7 @@ export function AdminDashboard() {
   const pendingSaves = useRef(new Set<Promise<unknown>>())
   const [exiting, setExiting] = useState(false)
   const [section, setSection] = useState<MediaSection>("cover")
+  const [heroOpen, setHeroOpen] = useState(false)
   const [category, setCategory] = useState<CategoryKey | "all">("video")
   const usesCategory = CATEGORY_SECTIONS.includes(section)
   const isAllView = section === "gallery" && category === "all"
@@ -519,11 +521,12 @@ export function AdminDashboard() {
           <button
             key={s.key}
             onClick={() => {
+              setHeroOpen(false)
               setSection(s.key)
               if (s.key !== "gallery" && category === "all") setCategory("video")
             }}
             className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-              section === s.key
+              !heroOpen && section === s.key
                 ? "bg-primary text-primary-foreground"
                 : "border border-border text-foreground/70 hover:text-primary"
             }`}
@@ -531,9 +534,20 @@ export function AdminDashboard() {
             {s.label}
           </button>
         ))}
+        <button
+          onClick={() => setHeroOpen(true)}
+          aria-pressed={heroOpen}
+          className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
+            heroOpen
+              ? "bg-primary text-primary-foreground"
+              : "border border-border text-foreground/70 hover:text-primary"
+          }`}
+        >
+          Hero fotky
+        </button>
       </div>
 
-      {usesCategory && (
+      {!heroOpen && usesCategory && (
         <div className="mb-6 flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Category">
             <span className="text-xs uppercase tracking-widest text-foreground/50 mr-1">Category</span>
@@ -577,6 +591,7 @@ export function AdminDashboard() {
 
       {/* Upload */}
       <div
+        hidden={heroOpen}
         className={
           section === "gallery"
             ? "sticky top-0 z-10 -mx-2 mb-4 bg-background/90 px-2 py-3 backdrop-blur-sm"
@@ -652,7 +667,9 @@ export function AdminDashboard() {
       </div>
 
       {/* List */}
-      {loading ? (
+      {heroOpen ? (
+        <HeroSlidesManager />
+      ) : loading ? (
         <p className="text-foreground/50 py-10 text-center">Loading…</p>
       ) : items.length === 0 ? (
         <p className="text-foreground/50 py-10 text-center border border-dashed border-border rounded-lg">
@@ -812,7 +829,7 @@ export function AdminDashboard() {
         </ul>
       )}
 
-      {section === "gallery" && selectedIds.size >= 2 && (
+      {!heroOpen && section === "gallery" && selectedIds.size >= 2 && (
         <>
           <div className="h-28" aria-hidden="true" />
           <BulkActionBar
