@@ -35,7 +35,7 @@ export function RotatingHeadline({
   lang,
   eyebrowClassName,
   headingClassName,
-  rotatingClassName = "text-primary",
+  rotatingClassName = "text-violet-400",
   trailing,
 }: RotatingHeadlineProps) {
   const { eyebrow, before, words, after } = COPY[lang]
