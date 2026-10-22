@@ -20,6 +20,7 @@ import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
 import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES } from "@/lib/media"
 import { GalleryGrid } from "@/components/admin/gallery-grid"
 import { BulkActionBar } from "@/components/admin/bulk-action-bar"
+import { PositionInput } from "@/components/admin/position-input"
 
 const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
   { key: "cover", label: "Category covers", accept: "image/*" },
@@ -59,6 +60,8 @@ export function AdminDashboard() {
   const [error, setError] = useState("")
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [bulkBusy, setBulkBusy] = useState(false)
+  const [orderDirty, setOrderDirty] = useState(false)
+  const [savingOrder, setSavingOrder] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const folderInputRef = useRef<HTMLInputElement>(null)
   const thumbInputRef = useRef<HTMLInputElement>(null)
@@ -79,6 +82,7 @@ export function AdminDashboard() {
     setLoading(true)
     setError("")
     setSelectedIds(new Set())
+    setOrderDirty(false)
     itemsRef.current = []
     setItems([])
     try {
@@ -109,6 +113,13 @@ export function AdminDashboard() {
   useEffect(() => {
     load(section, usesCategory ? category : null)
   }, [section, category, usesCategory, load])
+
+  useEffect(() => {
+    if (!orderDirty) return
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault()
+    window.addEventListener("beforeunload", warn)
+    return () => window.removeEventListener("beforeunload", warn)
+  }, [orderDirty])
 
   async function uploadToCloudinary(file: File): Promise<{
     public_id: string
@@ -269,6 +280,24 @@ export function AdminDashboard() {
     })
   }
 
+  async function removeFromAll(id: string) {
+    const res = await fetch(`/api/admin/media/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ show_in_vse: false }),
+    })
+    if (!res.ok) {
+      setError("Odebrání ze sekce Vše se nepodařilo")
+      return
+    }
+    updateItems((prev) => prev.filter((i) => i.id !== id))
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+  }
+
   function toggleSelect(id: string) {
     setSelectedIds((prev) => {
       const next = new Set(prev)
@@ -284,7 +313,7 @@ export function AdminDashboard() {
     setSelectedIds(allSelected ? new Set() : new Set(items.map((i) => i.id)))
   }
 
-  async function runBulk(body: { action: "delete" | "move"; ids: string[]; category?: string }) {
+  async function runBulk(body: { action: "delete" | "move" | "hide_from_all"; ids: string[]; category?: string }) {
     setBulkBusy(true)
     setError("")
     try {
@@ -313,9 +342,9 @@ export function AdminDashboard() {
 
   async function bulkDelete() {
     const ids = items.filter((i) => selectedIds.has(i.id)).map((i) => i.id)
-    const data = await runBulk({ action: "delete", ids })
+    const data = await runBulk({ action: isAllView ? "hide_from_all" : "delete", ids })
     if (!data) return
-    const deleted = new Set<string>(data.deleted)
+    const deleted = new Set<string>(isAllView ? data.updated : data.deleted)
     updateItems((prev) => prev.filter((i) => !deleted.has(i.id)))
     setSelectedIds(new Set())
   }
@@ -347,6 +376,7 @@ export function AdminDashboard() {
     // Only move once per new target; otherwise the shifted tile under the cursor swaps back and forth.
     if (!from || from === overId || lastOverId.current === overId) return
     lastOverId.current = overId
+    setOrderDirty(true)
     updateItems((prev) => {
       const fromIdx = prev.findIndex((i) => i.id === from)
       const overIdx = prev.findIndex((i) => i.id === overId)
@@ -368,7 +398,7 @@ export function AdminDashboard() {
     return trackSave(persistOrder(list))
   }
 
-  async function persistOrder(list: MediaItem[]) {
+  async function persistOrder(list: MediaItem[]): Promise<boolean> {
     try {
       const res = await fetch("/api/admin/media/reorder", {
         method: "POST",
@@ -378,23 +408,32 @@ export function AdminDashboard() {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         setError(`Saving order failed: ${data.error ?? `HTTP ${res.status}`}`)
-        return
+        return false
       }
       updateItems((prev) =>
         prev.map((item, index) =>
           isAllView ? { ...item, all_sort_order: index } : { ...item, sort_order: index },
         ),
       )
+      return true
     } catch (err) {
       setError(`Saving order failed: ${(err as Error).message}`)
+      return false
     }
   }
 
+  async function commitOrder() {
+    setError("")
+    setSavingOrder(true)
+    const ok = await saveOrder(itemsRef.current)
+    setSavingOrder(false)
+    if (ok) setOrderDirty(false)
+    return ok
+  }
+
   function finishDrag() {
-    if (!dragId.current) return
     dragId.current = null
     lastOverId.current = null
-    saveOrder(itemsRef.current)
   }
 
   function onDrop() {
@@ -405,21 +444,38 @@ export function AdminDashboard() {
     finishDrag()
   }
 
-  function moveItem(id: string, to: "up" | "down" | "top" | "bottom") {
-    const idx = items.findIndex((i) => i.id === id)
+  function moveToPosition(id: string, position: number) {
+    const current = itemsRef.current
+    const idx = current.findIndex((i) => i.id === id)
     if (idx === -1) return
-    const next = [...items]
+    const target = Math.min(Math.max(1, position), current.length) - 1
+    if (target === idx) return
+    const next = [...current]
     const [moved] = next.splice(idx, 1)
-    const target =
-      to === "top" ? 0 : to === "bottom" ? next.length : to === "up" ? Math.max(0, idx - 1) : Math.min(next.length, idx + 1)
     next.splice(target, 0, moved)
     updateItems(next)
-    saveOrder(next)
+    setOrderDirty(true)
+  }
+
+  function moveItem(id: string, to: "up" | "down" | "top" | "bottom") {
+    const idx = itemsRef.current.findIndex((i) => i.id === id)
+    if (idx === -1) return
+    const position = idx + 1
+    const target =
+      to === "top" ? 1 : to === "bottom" ? itemsRef.current.length : to === "up" ? position - 1 : position + 1
+    moveToPosition(id, target)
   }
 
   async function saveAndExit() {
     setExiting(true)
-    if (dragId.current) finishDrag()
+    finishDrag()
+    if (orderDirty) {
+      const ok = await commitOrder()
+      if (!ok) {
+        setExiting(false)
+        return
+      }
+    }
     await Promise.allSettled([...pendingSaves.current])
     router.push("/")
     router.refresh()
@@ -513,7 +569,7 @@ export function AdminDashboard() {
             {section === "cover"
               ? "The first published image is used as the card cover on the homepage."
               : isAllView
-                ? "Order of everything in the Vše tab. Drag to reorder — this does not change the order inside the other categories."
+                ? "Order of everything in the Vše tab. Drag to reorder — this does not change the order inside the other categories. Odebrání (X) fotku jen skryje ze sekce Vše, zůstane v kategorii."
                 : "Photos and videos shown when a visitor opens this category. Drag to reorder."}
           </p>
         </div>
@@ -578,6 +634,20 @@ export function AdminDashboard() {
             )}
           </div>
         )}
+        {orderDirty && (
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={commitOrder}
+              disabled={savingOrder}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              <Check className="h-3.5 w-3.5" />
+              {savingOrder ? "Ukládám…" : "Uložit pořadí"}
+            </button>
+            <span className="text-xs text-foreground/50">Pořadí zatím není uložené.</span>
+          </div>
+        )}
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
       </div>
 
@@ -605,6 +675,8 @@ export function AdminDashboard() {
         <GalleryGrid
           selectedIds={selectedIds}
           onToggleSelect={toggleSelect}
+          onMoveToStart={(id) => moveToPosition(id, 1)}
+          onMoveToPosition={moveToPosition}
           items={items}
           onDragStart={onDragStart}
           onDragOver={onDragOver}
@@ -615,7 +687,9 @@ export function AdminDashboard() {
             editingThumbId.current = id
             thumbInputRef.current?.click()
           }}
-          onDelete={deleteItem}
+          onDelete={isAllView ? removeFromAll : deleteItem}
+          isAllView={isAllView}
+          onToggleShowInVse={(item) => patchItem(item.id, { show_in_vse: item.show_in_vse === false })}
         />
         </>
       ) : (
@@ -673,6 +747,12 @@ export function AdminDashboard() {
               </div>
 
               <div className="flex items-center gap-1 shrink-0">
+                <PositionInput
+                  position={index + 1}
+                  total={items.length}
+                  onCommit={(position) => moveToPosition(item.id, position)}
+                  className="border border-border"
+                />
                 <button
                   onClick={() => moveItem(item.id, "top")}
                   disabled={index === 0}

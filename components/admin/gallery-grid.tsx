@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, EyeOff, GripVertical, ImagePlus, X } from "lucide-react"
+import { ChevronsUp, Eye, EyeOff, GripVertical, ImagePlus, LayoutGrid, X } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
+import { PositionInput } from "@/components/admin/position-input"
 import type { MediaItem } from "@/lib/media"
 
 type GalleryGridProps = {
@@ -16,6 +17,11 @@ type GalleryGridProps = {
   onDelete: (id: string) => void
   selectedIds: Set<string>
   onToggleSelect: (id: string) => void
+  onMoveToStart: (id: string) => void
+  onMoveToPosition: (id: string, position: number) => void
+  /** In the "Vše" view the remove button only hides the item from "Vše" instead of deleting it. */
+  isAllView: boolean
+  onToggleShowInVse: (item: MediaItem) => void
 }
 
 const overlayButton =
@@ -32,12 +38,16 @@ export function GalleryGrid({
   onDelete,
   selectedIds,
   onToggleSelect,
+  onMoveToStart,
+  onMoveToPosition,
+  isAllView,
+  onToggleShowInVse,
 }: GalleryGridProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null)
 
   return (
     <div className="columns-2 gap-0 md:columns-4">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <div
           key={item.id}
           draggable
@@ -80,10 +90,17 @@ export function GalleryGrid({
             />
           )}
 
-          {!item.published && (
-            <span className="absolute bottom-2 left-2 rounded-full bg-background/85 px-2 py-0.5 text-xs text-foreground/70">
-              Hidden
-            </span>
+          {(!item.published || (!isAllView && item.show_in_vse === false)) && (
+            <div className="absolute bottom-2 left-2 flex flex-col items-start gap-1">
+              {!item.published && (
+                <span className="rounded-full bg-background/85 px-2 py-0.5 text-xs text-foreground/70">Hidden</span>
+              )}
+              {!isAllView && item.show_in_vse === false && (
+                <span className="rounded-full bg-background/85 px-2 py-0.5 text-xs text-foreground/70">
+                  Skryto ve Vše
+                </span>
+              )}
+            </div>
           )}
 
           {selectedIds.has(item.id) && (
@@ -118,6 +135,22 @@ export function GalleryGrid({
                   <ImagePlus className="h-4 w-4" />
                 </button>
               )}
+              {!isAllView && (
+                <button
+                  type="button"
+                  onClick={() => onToggleShowInVse(item)}
+                  aria-pressed={item.show_in_vse !== false}
+                  title={item.show_in_vse === false ? "Zobrazit ve Vše" : "Zobrazeno ve Vše (kliknutím skrýt)"}
+                  aria-label="Zobrazit ve Vše"
+                  className={`${overlayButton} ${
+                    item.show_in_vse === false
+                      ? "hover:text-primary"
+                      : "bg-primary text-primary-foreground hover:opacity-90"
+                  }`}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => onTogglePublished(item)}
@@ -130,13 +163,33 @@ export function GalleryGrid({
               <button
                 type="button"
                 onClick={() => onDelete(item.id)}
-                title="Delete"
-                aria-label="Delete"
-                className={`${overlayButton} hover:bg-destructive hover:text-primary-foreground`}
+                title={isAllView ? "Odebrat z Vše (fotka zůstane v kategorii)" : "Delete"}
+                aria-label={isAllView ? "Odebrat z Vše" : "Delete"}
+                className={`${overlayButton} ${
+                  isAllView ? "hover:text-primary" : "hover:bg-destructive hover:text-primary-foreground"
+                }`}
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
+          </div>
+
+          <div className="absolute bottom-2 right-2 flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+            <button
+              type="button"
+              onClick={() => onMoveToStart(item.id)}
+              disabled={index === 0}
+              title="Přesunout na začátek"
+              aria-label="Přesunout na začátek"
+              className={`${overlayButton} hover:text-primary disabled:pointer-events-none disabled:opacity-40`}
+            >
+              <ChevronsUp className="h-4 w-4" />
+            </button>
+            <PositionInput
+              position={index + 1}
+              total={items.length}
+              onCommit={(position) => onMoveToPosition(item.id, position)}
+            />
           </div>
         </div>
       ))}

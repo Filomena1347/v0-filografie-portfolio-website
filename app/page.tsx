@@ -9,6 +9,7 @@ import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 import { LiveRefresh } from "@/components/live-refresh"
 import { sql, ensureSchema } from "@/lib/db"
+import { getHeroSlides } from "@/lib/hero-slides"
 import { CATEGORY_KEYS, groupGalleries } from "@/lib/media"
 import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
 
@@ -30,13 +31,14 @@ async function getSection(section: MediaSection): Promise<MediaItem[]> {
 }
 
 export default async function HomePage() {
-  const [photos, videos, content, about, covers, gallery] = await Promise.all([
+  const [photos, videos, content, about, covers, gallery, heroSlides] = await Promise.all([
     getSection("photography"),
     getSection("video"),
     getSection("content"),
     getSection("about"),
     getSection("cover"),
     getSection("gallery"),
+    getHeroSlides(),
   ])
 
   const coverMap: Partial<Record<CategoryKey, string>> = {}
@@ -49,7 +51,7 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen">
       <Navbar />
-      <Hero covers={coverMap} galleries={galleries} />
+      <Hero covers={coverMap} galleries={galleries} slides={heroSlides} />
       {/* Temporarily hidden — remove the "hidden" wrapper to restore */}
       <div className="hidden" aria-hidden="true">
         <ThreePillars />

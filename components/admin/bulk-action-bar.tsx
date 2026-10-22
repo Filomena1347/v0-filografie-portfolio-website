@@ -35,6 +35,7 @@ export function BulkActionBar({ count, busy, currentCategory, onDelete, onMove, 
   const [target, setTarget] = useState<CategoryKey | "">("")
 
   const targets = CATEGORY_KEYS.filter((key) => key !== currentCategory)
+  const removeOnly = currentCategory === "all"
 
   return (
     <>
@@ -80,10 +81,12 @@ export function BulkActionBar({ count, busy, currentCategory, onDelete, onMove, 
           type="button"
           onClick={() => setConfirmOpen(true)}
           disabled={busy}
-          className="inline-flex items-center gap-2 rounded-full bg-destructive px-4 py-1.5 text-xs text-primary-foreground transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+          className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50 ${
+            removeOnly ? "bg-primary text-primary-foreground" : "bg-destructive text-primary-foreground"
+          }`}
         >
           <Trash2 className="h-3.5 w-3.5" />
-          Smazat vybrané
+          {removeOnly ? "Odebrat z Vše" : "Smazat vybrané"}
         </button>
 
         <button
@@ -100,9 +103,11 @@ export function BulkActionBar({ count, busy, currentCategory, onDelete, onMove, 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Smazat vybrané položky?</AlertDialogTitle>
+            <AlertDialogTitle>{removeOnly ? "Odebrat vybrané ze sekce Vše?" : "Smazat vybrané položky?"}</AlertDialogTitle>
             <AlertDialogDescription>
-              Trvale se smaže {photoCountLabel(count)} včetně souborů na Cloudinary. Tuto akci nelze vrátit zpět.
+              {removeOnly
+                ? `${photoCountLabel(count)} zmizí ze sekce Vše, ale zůstane ve své kategorii. Vrátit ji lze přepínačem „Zobrazit ve Vše“ v původní kategorii.`
+                : `Trvale se smaže ${photoCountLabel(count)} včetně souborů na Cloudinary. Tuto akci nelze vrátit zpět.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -112,9 +117,13 @@ export function BulkActionBar({ count, busy, currentCategory, onDelete, onMove, 
                 setConfirmOpen(false)
                 onDelete()
               }}
-              className="bg-destructive text-primary-foreground hover:bg-destructive/90"
+              className={
+                removeOnly
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "bg-destructive text-primary-foreground hover:bg-destructive/90"
+              }
             >
-              Smazat
+              {removeOnly ? "Odebrat" : "Smazat"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

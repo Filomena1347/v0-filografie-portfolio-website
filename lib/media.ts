@@ -15,6 +15,8 @@ export type MediaItem = {
   sort_order: number
   /** Position in the homepage "Vše" tab; independent of sort_order. Null until the owner orders it. */
   all_sort_order?: number | null
+  /** When false the item is left out of the "Vše" tab but stays in its own category. */
+  show_in_vse?: boolean
   published: boolean
   created_at: string
 }
@@ -49,6 +51,7 @@ const LEGACY_PHOTO_CATEGORY: Record<string, CategoryKey> = {
 export function flattenAll(groups: Partial<Record<CategoryKey, MediaItem[]>>): MediaItem[] {
   return CATEGORY_KEYS.filter((k) => !HIDDEN_CATEGORIES.includes(k))
     .flatMap((k) => groups[k] ?? [])
+    .filter((item) => item.show_in_vse !== false)
     .map((item, index) => ({ item, index }))
     .sort((a, b) => {
       const ao = a.item.all_sort_order

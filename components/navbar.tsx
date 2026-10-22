@@ -23,14 +23,16 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
-        scrolled ? "bg-background/90 backdrop-blur-sm border-b border-border" : "bg-background"
+      className={`absolute md:fixed top-0 inset-x-0 z-20 md:z-50 bg-transparent transition-colors duration-300 ${
+        scrolled
+          ? "md:bg-background/90 md:backdrop-blur-sm md:border-b md:border-border"
+          : "md:bg-background"
       }`}
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 h-20">
         <a href="#top" className="flex flex-col leading-none">
-          <span className="font-serif italic text-2xl text-foreground">Filoména</span>
-          <span className="mt-1 font-sans text-[11px] font-light tracking-wide text-muted-foreground">
+          <span className="font-serif italic text-2xl text-white md:text-foreground">Filoména</span>
+          <span className="hidden md:block mt-1 font-sans text-[11px] font-light tracking-wide text-muted-foreground">
             content creator
           </span>
         </a>
@@ -51,11 +53,11 @@ export function Navbar() {
           <button
             onClick={toggle}
             aria-label="Toggle language"
-            className="text-xs tracking-widest text-foreground/60 hover:text-primary transition-colors"
+            className="text-xs tracking-widest text-white/80 md:text-foreground/60 hover:text-primary transition-colors"
           >
-            <span className={lang === "cs" ? "text-primary font-medium" : ""}>CZ</span>
-            <span className="mx-1 text-foreground/30">/</span>
-            <span className={lang === "en" ? "text-primary font-medium" : ""}>EN</span>
+            <span className={lang === "cs" ? "text-white md:text-primary font-medium" : ""}>CZ</span>
+            <span className="mx-1 text-white/40 md:text-foreground/30">/</span>
+            <span className={lang === "en" ? "text-white md:text-primary font-medium" : ""}>EN</span>
           </button>
 
           <a
@@ -70,8 +72,8 @@ export function Navbar() {
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Menu"
           >
-            <span className="w-6 h-px bg-foreground" />
-            <span className="w-6 h-px bg-foreground" />
+            <span className="w-6 h-px bg-white md:bg-foreground" />
+            <span className="w-6 h-px bg-white md:bg-foreground" />
           </button>
         </div>
       </nav>
