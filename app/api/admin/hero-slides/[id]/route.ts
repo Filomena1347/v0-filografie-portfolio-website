@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache"
 import { NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import { isAuthed } from "@/lib/auth"
@@ -5,6 +6,8 @@ import { revalidatePublicMedia } from "@/lib/revalidate"
 import { toAdminHeroSlide, type HeroSlideRow } from "@/lib/hero-slides-admin"
 
 export const dynamic = "force-dynamic"
+
+const PERCENT_PAIR = /^(\d{1,3}(?:\.\d+)?)% (\d{1,3}(?:\.\d+)?)%$/
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAuthed())) {
@@ -30,18 +33,30 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const publicId = replacing ? body.public_id : current.cloudinary_public_id
     const imageUrl = replacing ? body.url : current.image_url
 
+    let objectPosition = current.object_position
+    if (body.object_position !== undefined) {
+      const match = typeof body.object_position === "string" ? body.object_position.match(PERCENT_PAIR) : null
+      if (!match || Number(match[1]) > 100 || Number(match[2]) > 100) {
+        return NextResponse.json({ error: "object_position must look like '55% 30%'" }, { status: 400 })
+      }
+      objectPosition = `${match[1]}% ${match[2]}%`
+    }
+
     const rows = (await sql`
       UPDATE hero_slides
       SET is_active = ${isActive},
           alt_cs = ${altCs},
           alt_en = ${altEn},
           cloudinary_public_id = ${publicId},
-          image_url = ${imageUrl}
+          image_url = ${imageUrl},
+          object_position = ${objectPosition}
       WHERE id = ${id}
       RETURNING id, cloudinary_public_id, image_url, sort_order, object_position, alt_cs, alt_en, is_active
     `) as unknown as HeroSlideRow[]
 
     revalidatePublicMedia()
+    revalidatePath("/")
+    revalidatePath("/en")
     return NextResponse.json({ slide: toAdminHeroSlide(rows[0]) })
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 })

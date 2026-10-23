@@ -19,9 +19,13 @@ type HeroSlideRow = {
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME
 
+export function heroSlideSrc(publicId: string, imageUrl: string) {
+  if (!CLOUD_NAME || !publicId) return imageUrl
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_800/${publicId}`
+}
+
 function slideSrc(row: HeroSlideRow) {
-  if (!CLOUD_NAME || !row.cloudinary_public_id) return row.image_url
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_800/${row.cloudinary_public_id}`
+  return heroSlideSrc(row.cloudinary_public_id, row.image_url)
 }
 
 export async function getHeroSlides(): Promise<HeroSlide[]> {

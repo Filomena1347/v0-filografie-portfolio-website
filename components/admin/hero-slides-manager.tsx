@@ -3,7 +3,8 @@
 import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import useSWR from "swr"
-import { GripVertical, ImagePlus, Replace, Trash2, Upload } from "lucide-react"
+import { Crop, GripVertical, ImagePlus, Replace, Trash2, Upload } from "lucide-react"
+import { HeroCropEditor } from "@/components/admin/hero-crop-editor"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,6 +83,7 @@ export function HeroSlidesManager() {
   const [upload, setUpload] = useState<{ target: string; percent: number } | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<AdminHeroSlide | null>(null)
   const [dragEnabledId, setDragEnabledId] = useState<string | null>(null)
+  const [cropTarget, setCropTarget] = useState<AdminHeroSlide | null>(null)
 
   const addInputRef = useRef<HTMLInputElement>(null)
   const replaceInputRef = useRef<HTMLInputElement>(null)
@@ -158,6 +160,15 @@ export function HeroSlidesManager() {
     } catch (err) {
       await mutate()
       handleFailure(err)
+    }
+  }
+
+  async function saveCrop(slide: AdminHeroSlide, objectPosition: string) {
+    try {
+      await patchSlide(slide.id, { object_position: objectPosition })
+    } catch (err) {
+      if (err instanceof UnauthorizedError) router.push("/admin/login")
+      throw err
     }
   }
 
@@ -348,6 +359,14 @@ export function HeroSlidesManager() {
                     />
                     {slide.isActive ? "Aktivní" : "Neaktivní"}
                   </label>
+                  <button
+                    type="button"
+                    onClick={() => setCropTarget(slide)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs text-foreground transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <Crop className="h-3.5 w-3.5" />
+                    Upravit výřez
+                  </button>
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
@@ -378,6 +397,8 @@ export function HeroSlidesManager() {
           })}
         </ul>
       )}
+
+      <HeroCropEditor slide={cropTarget} onClose={() => setCropTarget(null)} onSave={saveCrop} />
 
       <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
