@@ -207,12 +207,7 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
       <div id="work-gallery" ref={galleryRef} aria-live="polite" className="mt-12 w-full scroll-mt-20">
         {open && (
           <>
-            <InlineGallery
-              items={galleryItems}
-              emptyLabel={t.gallery_empty}
-              animationKey={active}
-              landscapeFullWidthOnMobile={active === "events"}
-            />
+            <InlineGallery items={galleryItems} emptyLabel={t.gallery_empty} animationKey={active} />
             <div className="mt-10 flex justify-center px-6">
               <button
                 type="button"
