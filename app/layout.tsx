@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Fraunces, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { LanguageProvider } from '@/context/language-context'
+import ClarityScript from '@/components/ClarityScript'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -79,6 +80,7 @@ export default function RootLayout({
   return (
     <html lang="cs" className={`${fraunces.variable} ${inter.variable} bg-background`}>
       <body className="font-sans antialiased bg-background text-foreground">
+        <ClarityScript />
         <LanguageProvider>{children}</LanguageProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
