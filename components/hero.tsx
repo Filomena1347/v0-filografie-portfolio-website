@@ -1,17 +1,35 @@
 "use client"
 
 import Image from "next/image"
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState, useSyncExternalStore } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
 import { InlineGallery } from "@/components/inline-gallery"
 import { HeroIntro } from "@/components/hero-intro"
 import { useHeroSlideIndex } from "@/components/hero-slideshow"
-import { HIDDEN_CATEGORIES, flattenAll } from "@/lib/media"
-import type { CategoryKey, MediaItem } from "@/lib/media"
+import { HIDDEN_CATEGORIES, flattenAll, sortForDevice } from "@/lib/media"
+import type { CategoryKey, MediaItem, OrderDevice } from "@/lib/media"
 import type { HeroSlide } from "@/lib/hero-slides"
 
 type FilterKey = "all" | CategoryKey
+
+const DESKTOP_QUERY = "(min-width: 768px)"
+
+function subscribeToBreakpoint(onChange: () => void) {
+  const query = window.matchMedia(DESKTOP_QUERY)
+  query.addEventListener("change", onChange)
+  return () => query.removeEventListener("change", onChange)
+}
+
+/** Matches Tailwind's md breakpoint; the server renders the desktop order. */
+function useOrderDevice(): OrderDevice {
+  const isDesktop = useSyncExternalStore(
+    subscribeToBreakpoint,
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+    () => true,
+  )
+  return isDesktop ? "desktop" : "mobile"
+}
 
 type HeroProps = {
   covers?: Partial<Record<CategoryKey, string>>
@@ -60,9 +78,13 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
     [t, covers],
   )
 
+  const device = useOrderDevice()
   const galleryItems = useMemo(
-    () => (active === "all" ? flattenAll(galleries) : (galleries[active] ?? [])),
-    [active, galleries],
+    () =>
+      active === "all"
+        ? flattenAll(galleries, device)
+        : sortForDevice(galleries[active] ?? [], device),
+    [active, galleries, device],
   )
 
   const scrollBy = (dir: 1 | -1) => {

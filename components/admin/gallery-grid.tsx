@@ -10,7 +10,8 @@ type GalleryGridProps = {
   items: MediaItem[]
   onDragStart: (id: string) => void
   onDragOver: (e: React.DragEvent, id: string) => void
-  onDrop: () => void
+  dropTargetId: string | null
+  onDrop: (targetId: string) => void
   onDragEnd: () => void
   onTogglePublished: (item: MediaItem) => void
   onEditThumbnail: (id: string) => void
@@ -31,6 +32,7 @@ export function GalleryGrid({
   items,
   onDragStart,
   onDragOver,
+  dropTargetId,
   onDrop,
   onDragEnd,
   onTogglePublished,
@@ -44,6 +46,7 @@ export function GalleryGrid({
   onToggleShowInVse,
 }: GalleryGridProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null)
+  const draggingIndex = draggingId ? items.findIndex((i) => i.id === draggingId) : -1
 
   return (
     <div className="columns-2 gap-0 md:columns-4">
@@ -59,7 +62,7 @@ export function GalleryGrid({
           onDragOver={(e) => onDragOver(e, item.id)}
           onDrop={(e) => {
             e.preventDefault()
-            onDrop()
+            onDrop(item.id)
           }}
           onDragEnd={() => {
             setDraggingId(null)
@@ -101,6 +104,20 @@ export function GalleryGrid({
                 </span>
               )}
             </div>
+          )}
+
+          {dropTargetId === item.id && (
+            <>
+              <span className="pointer-events-none absolute inset-0 z-20 bg-primary/10 ring-4 ring-inset ring-primary" />
+              <span
+                className={`pointer-events-none absolute inset-y-0 z-20 w-2 bg-primary ${
+                  draggingIndex !== -1 && draggingIndex < index ? "right-0" : "left-0"
+                }`}
+              />
+              <span className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-9 min-w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary px-2 text-sm font-medium text-primary-foreground">
+                {index + 1}
+              </span>
+            </>
           )}
 
           {selectedIds.has(item.id) && (

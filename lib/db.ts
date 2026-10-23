@@ -49,6 +49,11 @@ export function ensureSchema() {
       await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS cloudinary_public_id text`
       await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS all_sort_order integer`
       await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS show_in_vse boolean NOT NULL DEFAULT true`
+      // sort_order stays the desktop order; the mobile order starts as a copy of it.
+      await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS sort_order_mobile integer`
+      await sql`ALTER TABLE media_items ADD COLUMN IF NOT EXISTS all_sort_order_mobile integer`
+      await sql`UPDATE media_items SET sort_order_mobile = sort_order WHERE sort_order_mobile IS NULL`
+      await sql`UPDATE media_items SET all_sort_order_mobile = all_sort_order WHERE all_sort_order_mobile IS NULL AND all_sort_order IS NOT NULL`
     })().catch((err) => {
       // reset so a later request can retry schema creation
       schemaReady = null

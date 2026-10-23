@@ -62,16 +62,25 @@ export async function POST(request: Request) {
     const movable = new Set(rows.map((r) => r.id as string))
     const ordered = ids.filter((id) => movable.has(id))
 
-    const [{ max }] = await sql`
-      SELECT COALESCE(MAX(sort_order), -1)::int AS max FROM media_items
+    const [{ max, max_mobile }] = await sql`
+      SELECT
+        COALESCE(MAX(sort_order), -1)::int AS max,
+        COALESCE(MAX(COALESCE(sort_order_mobile, sort_order)), -1)::int AS max_mobile
+      FROM media_items
       WHERE section = 'gallery' AND category = ${category}
     `
     let next = Number(max) + 1
+    let nextMobile = Number(max_mobile) + 1
     const moved: { id: string; sort_order: number }[] = []
     for (const id of ordered) {
-      await sql`UPDATE media_items SET category = ${category}, sort_order = ${next} WHERE id = ${id}`
+      await sql`
+        UPDATE media_items
+        SET category = ${category}, sort_order = ${next}, sort_order_mobile = ${nextMobile}
+        WHERE id = ${id}
+      `
       moved.push({ id, sort_order: next })
       next += 1
+      nextMobile += 1
     }
 
     revalidatePublicMedia()

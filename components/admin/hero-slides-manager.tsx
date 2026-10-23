@@ -91,8 +91,7 @@ export function HeroSlidesManager() {
   const slidesRef = useRef<AdminHeroSlide[]>([])
   slidesRef.current = slides
   const dragId = useRef<string | null>(null)
-  const lastOverId = useRef<string | null>(null)
-  const orderChanged = useRef(false)
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null)
 
   function handleFailure(err: unknown) {
     if (err instanceof UnauthorizedError) {
@@ -196,35 +195,35 @@ export function HeroSlidesManager() {
 
   function onDragStart(e: React.DragEvent, id: string) {
     dragId.current = id
-    lastOverId.current = null
-    orderChanged.current = false
+    setDropTargetId(null)
     e.dataTransfer.effectAllowed = "move"
   }
 
+  // Dragging only highlights the target; the order changes once, on drop, so shifting cards can't cause extra moves.
   function onDragOver(e: React.DragEvent, overId: string) {
     e.preventDefault()
     const from = dragId.current
-    // Move once per new target, otherwise the shifted card under the cursor swaps back and forth.
-    if (!from || from === overId || lastOverId.current === overId) return
-    lastOverId.current = overId
-    const next = [...slidesRef.current]
-    const fromIdx = next.findIndex((s) => s.id === from)
-    const overIdx = next.findIndex((s) => s.id === overId)
-    if (fromIdx === -1 || overIdx === -1) return
-    const [moved] = next.splice(fromIdx, 1)
-    next.splice(overIdx, 0, moved)
-    orderChanged.current = true
-    slidesRef.current = next
-    mutate(next, { revalidate: false })
+    setDropTargetId(from && from !== overId ? overId : null)
   }
 
-  async function finishDrag() {
-    const changed = orderChanged.current
+  function endDrag() {
     dragId.current = null
-    lastOverId.current = null
-    orderChanged.current = false
+    setDropTargetId(null)
     setDragEnabledId(null)
-    if (!changed) return
+  }
+
+  async function onDrop(targetId: string) {
+    const from = dragId.current
+    endDrag()
+    if (!from || from === targetId) return
+    const next = [...slidesRef.current]
+    const fromIdx = next.findIndex((s) => s.id === from)
+    const toIdx = next.findIndex((s) => s.id === targetId)
+    if (fromIdx === -1 || toIdx === -1) return
+    const [moved] = next.splice(fromIdx, 1)
+    next.splice(toIdx, 0, moved)
+    slidesRef.current = next
+    mutate(next, { revalidate: false })
     setError("")
     try {
       await requestJson(`${SLIDES_URL}/reorder`, {
@@ -299,12 +298,12 @@ export function HeroSlidesManager() {
                 onDragOver={(e) => onDragOver(e, slide.id)}
                 onDrop={(e) => {
                   e.preventDefault()
-                  finishDrag()
+                  onDrop(slide.id)
                 }}
-                onDragEnd={finishDrag}
-                className={`flex flex-col gap-4 rounded-lg border border-border bg-card p-3 sm:flex-row sm:items-start ${
+                onDragEnd={endDrag}
+                className={`flex flex-col gap-4 rounded-lg border bg-card p-3 sm:flex-row sm:items-start ${
                   slide.isActive ? "" : "opacity-70"
-                }`}
+                } ${dropTargetId === slide.id ? "border-primary ring-2 ring-primary" : "border-border"}`}
               >
                 <div className="flex items-start gap-3">
                   <button
