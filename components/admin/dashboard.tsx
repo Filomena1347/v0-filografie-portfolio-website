@@ -15,8 +15,10 @@ import {
   ChevronDown,
   ChevronsUp,
   FolderUp,
+  Monitor,
+  Smartphone,
 } from "lucide-react"
-import type { CategoryKey, MediaItem, MediaSection } from "@/lib/media"
+import type { CategoryKey, MediaItem, MediaSection, OrderDevice } from "@/lib/media"
 import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES } from "@/lib/media"
 import { GalleryGrid } from "@/components/admin/gallery-grid"
 import { BulkActionBar } from "@/components/admin/bulk-action-bar"
@@ -50,6 +52,7 @@ export function AdminDashboard() {
   const [exiting, setExiting] = useState(false)
   const [section, setSection] = useState<MediaSection>("cover")
   const [heroOpen, setHeroOpen] = useState(false)
+  const [orderDevice, setOrderDevice] = useState<OrderDevice>("desktop")
   const [category, setCategory] = useState<CategoryKey | "all">("video")
   const usesCategory = CATEGORY_SECTIONS.includes(section)
   const isAllView = section === "gallery" && category === "all"
@@ -79,7 +82,7 @@ export function AdminDashboard() {
     setItems(value)
   }
 
-  const load = useCallback(async (s: MediaSection, cat: CategoryKey | "all" | null) => {
+  const load = useCallback(async (s: MediaSection, cat: CategoryKey | "all" | null, device: OrderDevice) => {
     const seq = ++loadSeq.current
     setLoading(true)
     setError("")
@@ -88,7 +91,7 @@ export function AdminDashboard() {
     itemsRef.current = []
     setItems([])
     try {
-      const params = new URLSearchParams()
+      const params = new URLSearchParams({ device })
       if (s === "gallery" && cat === "all") {
         params.set("view", "all")
       } else {
@@ -113,8 +116,8 @@ export function AdminDashboard() {
   }, [router])
 
   useEffect(() => {
-    load(section, usesCategory ? category : null)
-  }, [section, category, usesCategory, load])
+    load(section, usesCategory ? category : null, orderDevice)
+  }, [section, category, usesCategory, orderDevice, load])
 
   useEffect(() => {
     if (!orderDirty) return
@@ -395,7 +398,11 @@ export function AdminDashboard() {
       const res = await fetch("/api/admin/media/reorder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: list.map((i) => i.id), scope: isAllView ? "all" : "category" }),
+        body: JSON.stringify({
+          ids: list.map((i) => i.id),
+          scope: isAllView ? "all" : "category",
+          device: orderDevice,
+        }),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
@@ -403,9 +410,16 @@ export function AdminDashboard() {
         return false
       }
       updateItems((prev) =>
-        prev.map((item, index) =>
-          isAllView ? { ...item, all_sort_order: index } : { ...item, sort_order: index },
-        ),
+        prev.map((item, index) => {
+          if (isAllView) {
+            return orderDevice === "mobile"
+              ? { ...item, all_sort_order_mobile: index }
+              : { ...item, all_sort_order: index }
+          }
+          return orderDevice === "mobile"
+            ? { ...item, sort_order_mobile: index }
+            : { ...item, sort_order: index }
+        }),
       )
       return true
     } catch (err) {
@@ -462,6 +476,18 @@ export function AdminDashboard() {
     const target =
       to === "top" ? 1 : to === "bottom" ? itemsRef.current.length : to === "up" ? position - 1 : position + 1
     moveToPosition(id, target)
+  }
+
+  // Unsaved moves belong to the current device, so they are saved before the other order is loaded.
+  async function switchOrderDevice(next: OrderDevice) {
+    if (next === orderDevice) return
+    finishDrag()
+    if (orderDirty) {
+      const ok = await commitOrder()
+      if (!ok) return
+    }
+    await Promise.allSettled([...pendingSaves.current])
+    setOrderDevice(next)
   }
 
   async function saveAndExit() {
@@ -542,6 +568,48 @@ export function AdminDashboard() {
           Hero fotky
         </button>
       </div>
+
+      {!heroOpen && (
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <span id="order-device-label" className="text-sm text-foreground/70">
+            Upravuji pořadí pro:
+          </span>
+          <div
+            role="radiogroup"
+            aria-labelledby="order-device-label"
+            className="inline-flex rounded-full border border-border bg-card p-1"
+          >
+            {(
+              [
+                { key: "desktop", label: "Desktop", Icon: Monitor },
+                { key: "mobile", label: "Mobil", Icon: Smartphone },
+              ] as const
+            ).map(({ key, label, Icon }) => (
+              <button
+                key={key}
+                type="button"
+                role="radio"
+                aria-checked={orderDevice === key}
+                disabled={savingOrder || exiting}
+                onClick={() => switchOrderDevice(key)}
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm transition-colors disabled:opacity-60 ${
+                  orderDevice === key
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground/70 hover:text-primary"
+                }`}
+              >
+                <Icon className="h-4 w-4" aria-hidden="true" />
+                {label}
+              </button>
+            ))}
+          </div>
+          <span className="text-xs text-foreground/50">
+            {orderDevice === "mobile"
+              ? "Pořadí platí pro mobily (pod 768 px)."
+              : "Pořadí platí pro desktop a tablety (od 768 px)."}
+          </span>
+        </div>
+      )}
 
       {!heroOpen && usesCategory && (
         <div className="mb-6 flex flex-col gap-3">

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { sql, ensureSchema } from "@/lib/db"
+import { parseOrderDevice } from "@/lib/media"
 
 export const dynamic = "force-dynamic"
 
@@ -8,17 +9,19 @@ export async function GET(request: Request) {
     await ensureSchema()
     const { searchParams } = new URL(request.url)
     const section = searchParams.get("section")
+    const device = parseOrderDevice(searchParams.get("device"))
+    const orderBy = device === "mobile" ? sql`COALESCE(sort_order_mobile, sort_order)` : sql`sort_order`
 
     const rows = section
       ? await sql`
           SELECT * FROM media_items
           WHERE published = true AND section = ${section}
-          ORDER BY sort_order ASC, created_at DESC
+          ORDER BY ${orderBy} ASC, created_at DESC
         `
       : await sql`
           SELECT * FROM media_items
           WHERE published = true
-          ORDER BY sort_order ASC, created_at DESC
+          ORDER BY ${orderBy} ASC, created_at DESC
         `
 
     return NextResponse.json({ items: rows })
