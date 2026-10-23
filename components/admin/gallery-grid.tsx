@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ChevronsUp, Eye, EyeOff, GripVertical, ImagePlus, LayoutGrid, X } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { PositionInput } from "@/components/admin/position-input"
+import { JustifiedGrid, useItemRatios } from "@/components/justified-grid"
 import type { MediaItem } from "@/lib/media"
 
 type GalleryGridProps = {
@@ -47,12 +48,17 @@ export function GalleryGrid({
 }: GalleryGridProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const draggingIndex = draggingId ? items.findIndex((i) => i.id === draggingId) : -1
+  const { getRatio, reportSize } = useItemRatios()
 
   return (
-    <div className="columns-2 gap-0 md:columns-4">
-      {items.map((item, index) => (
+    <JustifiedGrid
+      items={items}
+      getKey={(item) => item.id}
+      getRatio={getRatio}
+      renderItem={(item, index, boxStyle) => (
         <div
           key={item.id}
+          style={boxStyle}
           draggable
           onDragStart={(e) => {
             e.dataTransfer.effectAllowed = "move"
@@ -68,7 +74,7 @@ export function GalleryGrid({
             setDraggingId(null)
             onDragEnd()
           }}
-          className={`group relative break-inside-avoid transition-opacity ${
+          className={`group relative min-w-0 overflow-hidden bg-muted transition-opacity ${
             draggingId === item.id ? "opacity-40" : ""
           }`}
         >
@@ -79,17 +85,19 @@ export function GalleryGrid({
               muted
               playsInline
               preload="metadata"
-              className="pointer-events-none block h-auto w-full object-contain"
+              onLoadedMetadata={(e) => reportSize(item.id, e.currentTarget.videoWidth, e.currentTarget.videoHeight)}
+              className="pointer-events-none absolute inset-0 block h-full w-full object-contain"
             />
           ) : (
-            // Uploads have unknown aspect ratios, so a plain img keeps them uncropped like the public gallery.
+            // The box already has the photo's aspect ratio, so cover matches the public gallery without cropping.
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={item.url || "/placeholder.svg"}
               alt={item.title ?? ""}
               loading="lazy"
               draggable={false}
-              className="block h-auto w-full object-contain"
+              onLoad={(e) => reportSize(item.id, e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)}
+              className="absolute inset-0 block h-full w-full object-cover"
             />
           )}
 
@@ -209,7 +217,7 @@ export function GalleryGrid({
             />
           </div>
         </div>
-      ))}
-    </div>
+      )}
+    />
   )
 }

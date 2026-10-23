@@ -297,7 +297,16 @@ export function LanguageProvider({
   initialLang?: Lang
 }) {
   const [lang, setLang] = useState<Lang>(initialLang)
-  const toggle = useCallback(() => setLang((l) => (l === "cs" ? "en" : "cs")), [])
+
+  const toggle = useCallback(() => {
+    const next: Lang = lang === "cs" ? "en" : "cs"
+    setLang(next)
+    // Only the public site has language URLs; replaceState keeps the Back button from trapping visitors.
+    const { pathname, search, hash } = window.location
+    if (/^\/(en)?\/?$/.test(pathname)) {
+      window.history.replaceState(window.history.state, "", `${next === "en" ? "/en" : "/"}${search}${hash}`)
+    }
+  }, [lang])
   return (
     <LanguageContext.Provider value={{ lang, setLang, toggle, t: translations[lang] }}>
       {children}

@@ -8,6 +8,11 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
+  // The nested /en provider sits inside the root one, so only the navbar (innermost consumer) owns <html lang>.
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
     onScroll()
