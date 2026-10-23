@@ -21,10 +21,11 @@ export async function GET(request: Request) {
   if (searchParams.get("view") === "all") {
     const published = await sql`
       SELECT * FROM media_items
-      WHERE published = true AND show_in_vse = true AND section IN ('gallery', 'photography', 'video', 'content')
+      WHERE published = true AND section IN ('gallery', 'photography', 'video', 'content')
       ORDER BY array_position(ARRAY['gallery', 'photography', 'video', 'content'], section), ${orderBy} ASC, created_at DESC
     `
-    return NextResponse.json({ items: flattenAll(groupGalleries(published as unknown as MediaItem[]), device) })
+    // Photos hidden from "Vše" stay in the admin view (at the end) so they can be restored.
+    return NextResponse.json({ items: flattenAll(groupGalleries(published as unknown as MediaItem[]), device, true) })
   }
 
   const rows =

@@ -79,10 +79,11 @@ export function sortForDevice(items: MediaItem[], device: OrderDevice): MediaIte
 export function flattenAll(
   groups: Partial<Record<CategoryKey, MediaItem[]>>,
   device: OrderDevice = "desktop",
+  includeHidden = false,
 ): MediaItem[] {
-  return CATEGORY_KEYS.filter((k) => !HIDDEN_CATEGORIES.includes(k))
+  const ordered = CATEGORY_KEYS.filter((k) => !HIDDEN_CATEGORIES.includes(k))
     .flatMap((k) => sortForDevice(groups[k] ?? [], device))
-    .filter((item) => item.show_in_vse !== false)
+    .filter((item) => includeHidden || item.show_in_vse !== false)
     .map((item, index) => ({ item, index }))
     .sort((a, b) => {
       const ao = allOrder(a.item, device)
@@ -93,6 +94,12 @@ export function flattenAll(
       return a.index - b.index
     })
     .map(({ item }) => item)
+  return includeHidden ? hiddenLast(ordered) : ordered
+}
+
+/** Stable partition: items hidden from "Vše" go after the visible ones, keeping their relative order. */
+export function hiddenLast(items: MediaItem[]): MediaItem[] {
+  return [...items.filter((i) => i.show_in_vse !== false), ...items.filter((i) => i.show_in_vse === false)]
 }
 
 /** Groups gallery items by category key, folding in items from the older section-based uploads. */
