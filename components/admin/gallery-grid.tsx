@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronsUp, Eye, EyeOff, GripVertical, ImagePlus, LayoutGrid, X } from "lucide-react"
+import { ChevronsUp, Eye, EyeOff, GripVertical, ImagePlus, LayoutGrid, Undo2, X } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { PositionInput } from "@/components/admin/position-input"
 import { JustifiedGrid, useItemRatios } from "@/components/justified-grid"
@@ -49,6 +49,8 @@ export function GalleryGrid({
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const draggingIndex = draggingId ? items.findIndex((i) => i.id === draggingId) : -1
   const { getRatio, reportSize } = useItemRatios()
+  // Only the "Vše" view dims hidden photos; in their own category they look normal.
+  const isHiddenInAll = (item: MediaItem) => isAllView && item.show_in_vse === false
 
   return (
     <JustifiedGrid
@@ -86,7 +88,9 @@ export function GalleryGrid({
               playsInline
               preload="metadata"
               onLoadedMetadata={(e) => reportSize(item.id, e.currentTarget.videoWidth, e.currentTarget.videoHeight)}
-              className="pointer-events-none absolute inset-0 block h-full w-full object-contain"
+              className={`pointer-events-none absolute inset-0 block h-full w-full object-contain ${
+                isHiddenInAll(item) ? "opacity-40" : ""
+              }`}
             />
           ) : (
             // The box already has the photo's aspect ratio, so cover matches the public gallery without cropping.
@@ -97,17 +101,21 @@ export function GalleryGrid({
               loading="lazy"
               draggable={false}
               onLoad={(e) => reportSize(item.id, e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)}
-              className="absolute inset-0 block h-full w-full object-cover"
+              className={`absolute inset-0 block h-full w-full object-cover ${
+                isHiddenInAll(item) ? "opacity-40" : ""
+              }`}
             />
           )}
 
-          {(!item.published || (!isAllView && item.show_in_vse === false)) && (
+          {isHiddenInAll(item) && <span className="pointer-events-none absolute inset-0 bg-muted-foreground/30" />}
+
+          {(!item.published || isHiddenInAll(item)) && (
             <div className="absolute bottom-2 left-2 flex flex-col items-start gap-1">
               {!item.published && (
                 <span className="rounded-full bg-background/85 px-2 py-0.5 text-xs text-foreground/70">Hidden</span>
               )}
-              {!isAllView && item.show_in_vse === false && (
-                <span className="rounded-full bg-background/85 px-2 py-0.5 text-xs text-foreground/70">
+              {isHiddenInAll(item) && (
+                <span className="rounded-full bg-foreground px-2 py-0.5 text-xs font-medium text-background">
                   Skryto ve Vše
                 </span>
               )}
@@ -185,17 +193,29 @@ export function GalleryGrid({
               >
                 {item.published ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               </button>
-              <button
-                type="button"
-                onClick={() => onDelete(item.id)}
-                title={isAllView ? "Odebrat z Vše (fotka zůstane v kategorii)" : "Delete"}
-                aria-label={isAllView ? "Odebrat z Vše" : "Delete"}
-                className={`${overlayButton} ${
-                  isAllView ? "hover:text-primary" : "hover:bg-destructive hover:text-primary-foreground"
-                }`}
-              >
-                <X className="h-4 w-4" />
-              </button>
+              {isHiddenInAll(item) ? (
+                <button
+                  type="button"
+                  onClick={() => onToggleShowInVse(item)}
+                  title="Vrátit do Vše"
+                  aria-label="Vrátit do Vše"
+                  className={`${overlayButton} bg-primary text-primary-foreground hover:opacity-90`}
+                >
+                  <Undo2 className="h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onDelete(item.id)}
+                  title={isAllView ? "Odebrat z Vše (fotka zůstane v kategorii)" : "Delete"}
+                  aria-label={isAllView ? "Odebrat z Vše" : "Delete"}
+                  className={`${overlayButton} ${
+                    isAllView ? "hover:text-primary" : "hover:bg-destructive hover:text-primary-foreground"
+                  }`}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
 
