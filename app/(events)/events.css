@@ -1,0 +1,49 @@
+@import 'tailwindcss';
+
+:root {
+  --ev-bg: #ffffff;
+  --ev-text: #111111;
+  --ev-body: #3a3a3a;
+  --ev-muted: #5e5e5e;
+  --ev-line: #e6e6e6;
+  --ev-soft: #f1f1f0;
+  --ev-accent: #e5484d;
+}
+
+@theme inline {
+  --color-ev-bg: var(--ev-bg);
+  --color-ev-text: var(--ev-text);
+  --color-ev-body: var(--ev-body);
+  --color-ev-muted: var(--ev-muted);
+  --color-ev-line: var(--ev-line);
+  --color-ev-soft: var(--ev-soft);
+  --color-ev-accent: var(--ev-accent);
+
+  --font-body: var(--font-geist), system-ui, sans-serif;
+  --font-display: var(--font-instrument), Georgia, serif;
+}
+
+html {
+  background: var(--ev-bg);
+  color: var(--ev-text);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--ev-bg);
+  color: var(--ev-text);
+  font-family: var(--font-geist), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ev-text);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
