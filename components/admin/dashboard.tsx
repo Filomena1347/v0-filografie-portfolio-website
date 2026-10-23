@@ -69,7 +69,7 @@ export function AdminDashboard() {
   const thumbInputRef = useRef<HTMLInputElement>(null)
   const editingThumbId = useRef<string | null>(null)
   const dragId = useRef<string | null>(null)
-  const lastOverId = useRef<string | null>(null)
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null)
   const itemsRef = useRef<MediaItem[]>([])
   const loadSeq = useRef(0)
 
@@ -369,25 +369,15 @@ export function AdminDashboard() {
 
   function onDragStart(id: string) {
     dragId.current = id
-    lastOverId.current = null
+    setDropTargetId(null)
   }
 
+  // Dragging only highlights the target. The list is reordered once, on drop, so tiles
+  // shifting under the cursor can never trigger extra moves.
   function onDragOver(e: React.DragEvent, overId: string) {
     e.preventDefault()
     const from = dragId.current
-    // Only move once per new target; otherwise the shifted tile under the cursor swaps back and forth.
-    if (!from || from === overId || lastOverId.current === overId) return
-    lastOverId.current = overId
-    setOrderDirty(true)
-    updateItems((prev) => {
-      const fromIdx = prev.findIndex((i) => i.id === from)
-      const overIdx = prev.findIndex((i) => i.id === overId)
-      if (fromIdx === -1 || overIdx === -1) return prev
-      const next = [...prev]
-      const [moved] = next.splice(fromIdx, 1)
-      next.splice(overIdx, 0, moved)
-      return next
-    })
+    setDropTargetId(from && from !== overId ? overId : null)
   }
 
   function trackSave<T>(promise: Promise<T>) {
@@ -435,11 +425,17 @@ export function AdminDashboard() {
 
   function finishDrag() {
     dragId.current = null
-    lastOverId.current = null
+    setDropTargetId(null)
   }
 
-  function onDrop() {
+  // Moves the dragged photo from position A to position B; everything in between shifts by exactly one.
+  function onDrop(targetId: string) {
+    const from = dragId.current
     finishDrag()
+    if (!from || from === targetId) return
+    const targetIdx = itemsRef.current.findIndex((i) => i.id === targetId)
+    if (targetIdx === -1) return
+    moveToPosition(from, targetIdx + 1)
   }
 
   function onDragEnd() {
@@ -697,6 +693,7 @@ export function AdminDashboard() {
           items={items}
           onDragStart={onDragStart}
           onDragOver={onDragOver}
+          dropTargetId={dropTargetId}
           onDrop={onDrop}
           onDragEnd={onDragEnd}
           onTogglePublished={(item) => patchItem(item.id, { published: !item.published })}
@@ -717,8 +714,14 @@ export function AdminDashboard() {
               draggable
               onDragStart={() => onDragStart(item.id)}
               onDragOver={(e) => onDragOver(e, item.id)}
-              onDrop={onDrop}
-              className="flex items-center gap-4 rounded-lg border border-border bg-card p-3"
+              onDrop={(e) => {
+                e.preventDefault()
+                onDrop(item.id)
+              }}
+              onDragEnd={onDragEnd}
+              className={`flex items-center gap-4 rounded-lg border bg-card p-3 ${
+                dropTargetId === item.id ? "border-primary ring-2 ring-primary" : "border-border"
+              }`}
             >
               <GripVertical className="w-5 h-5 text-foreground/30 cursor-grab shrink-0" />
 
