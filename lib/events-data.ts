@@ -1,6 +1,8 @@
 export type EventPhoto = {
   id: string
   src: string
+  /** Larger rendition for the lightbox. Falls back to `src`. */
+  fullSrc?: string
   width: number
   height: number
   alt: string

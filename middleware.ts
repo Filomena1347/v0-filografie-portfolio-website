@@ -14,6 +14,7 @@ const EVENTS_HOST_ALLOWED_PREFIXES = [
   '/_next/',
   '/events-assets/',
   '/api/events',
+  '/api/media/',
   '/events/opengraph-image',
   '/events/twitter-image',
 ]

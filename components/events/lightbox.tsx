@@ -70,7 +70,7 @@ export function Lightbox({ photos, index, onIndexChange, onClose }: LightboxProp
     >
       <Image
         key={photo.id}
-        src={photo.src}
+        src={photo.fullSrc ?? photo.src}
         alt={photo.alt}
         width={photo.width}
         height={photo.height}
