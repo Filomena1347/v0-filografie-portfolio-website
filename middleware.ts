@@ -29,11 +29,19 @@ function isEventsPath(pathname: string) {
   return pathname === '/events' || pathname.startsWith('/events/')
 }
 
+// Preview proxies may rewrite `host`, so the original host can arrive in
+// `x-forwarded-host`. Both are checked; unknown hosts are never blocked.
+function requestHosts(request: NextRequest) {
+  return [request.headers.get('x-forwarded-host'), request.headers.get('host')]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => value.split(',')[0].trim().split(':')[0].toLowerCase())
+}
+
 export function middleware(request: NextRequest) {
-  const host = (request.headers.get('host') ?? '').split(':')[0].toLowerCase()
+  const hosts = requestHosts(request)
   const { pathname } = request.nextUrl
 
-  if (host === EVENTS_HOST) {
+  if (hosts.includes(EVENTS_HOST)) {
     if (pathname === '/') {
       const url = request.nextUrl.clone()
       url.pathname = '/events'
@@ -47,7 +55,7 @@ export function middleware(request: NextRequest) {
     return notFound()
   }
 
-  if (PORTFOLIO_HOSTS.has(host) && isEventsPath(pathname)) {
+  if (hosts.some((host) => PORTFOLIO_HOSTS.has(host)) && isEventsPath(pathname)) {
     return notFound()
   }
 
