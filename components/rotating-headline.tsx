@@ -19,6 +19,14 @@ const COPY: Record<Lang, { eyebrow: string; before: string; words: string[]; aft
   },
 }
 
+const PRODUCTION_HOSTS = new Set([
+  "filography.cz",
+  "www.filography.cz",
+  "filography.com",
+  "www.filography.com",
+])
+const EVENTS_SITE_URL = "https://event-coverage-prague.vercel.app"
+
 const INTERVAL_MS = 2800
 const OUT = { duration: 350, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" } as const
 const IN = { duration: 500, easing: "cubic-bezier(.16,1,.3,1)", fill: "forwards" } as const
@@ -41,7 +49,14 @@ export function RotatingHeadline({
   const { eyebrow, before, words, after } = COPY[lang]
   const [index, setIndex] = useState(0)
   const [width, setWidth] = useState<number>()
+  const [eventsHref, setEventsHref] = useState("/events")
   const wordRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (PRODUCTION_HOSTS.has(window.location.hostname.toLowerCase())) {
+      setEventsHref(EVENTS_SITE_URL)
+    }
+  }, [])
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
@@ -93,8 +108,15 @@ export function RotatingHeadline({
       <p className={eyebrowClassName}>{eyebrow}</p>
       <h1 className={headingClassName}>
         <span className="sr-only">{`${before} ${words[0]} ${after}`}</span>
+        <a
+          href={eventsHref}
+          aria-label="Event coverage"
+          className="cursor-default text-inherit no-underline [-webkit-tap-highlight-color:transparent]"
+        >
+          {before.charAt(0)}
+        </a>
         <span aria-hidden="true">
-          {before}{" "}
+          {before.slice(1)}{" "}
           <span
             className="relative inline-block h-[1.15em] overflow-hidden align-bottom transition-[width] duration-500 ease-out motion-reduce:transition-none"
             style={width ? { width } : undefined}

@@ -3,7 +3,7 @@ import { Fraunces, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { LanguageProvider } from '@/context/language-context'
 import ClarityScript from '@/components/ClarityScript'
-import './globals.css'
+import '../globals.css'
 
 const fraunces = Fraunces({
   subsets: ['latin'],
