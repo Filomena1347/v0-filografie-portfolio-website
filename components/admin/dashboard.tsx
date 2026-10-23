@@ -24,6 +24,7 @@ import { GalleryGrid } from "@/components/admin/gallery-grid"
 import { BulkActionBar } from "@/components/admin/bulk-action-bar"
 import { PositionInput } from "@/components/admin/position-input"
 import { HeroSlidesManager } from "@/components/admin/hero-slides-manager"
+import { EventsManager } from "@/components/admin/events-manager"
 
 const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
   { key: "cover", label: "Category covers", accept: "image/*" },
@@ -52,6 +53,8 @@ export function AdminDashboard() {
   const [exiting, setExiting] = useState(false)
   const [section, setSection] = useState<MediaSection>("cover")
   const [heroOpen, setHeroOpen] = useState(false)
+  const [eventsOpen, setEventsOpen] = useState(false)
+  const customPanelOpen = heroOpen || eventsOpen
   const [orderDevice, setOrderDevice] = useState<OrderDevice>("desktop")
   const [category, setCategory] = useState<CategoryKey | "all">("video")
   const usesCategory = CATEGORY_SECTIONS.includes(section)
@@ -566,11 +569,12 @@ export function AdminDashboard() {
             key={s.key}
             onClick={() => {
               setHeroOpen(false)
+              setEventsOpen(false)
               setSection(s.key)
               if (s.key !== "gallery" && category === "all") setCategory("video")
             }}
             className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-              !heroOpen && section === s.key
+              !customPanelOpen && section === s.key
                 ? "bg-primary text-primary-foreground"
                 : "border border-border text-foreground/70 hover:text-primary"
             }`}
@@ -579,7 +583,10 @@ export function AdminDashboard() {
           </button>
         ))}
         <button
-          onClick={() => setHeroOpen(true)}
+          onClick={() => {
+            setEventsOpen(false)
+            setHeroOpen(true)
+          }}
           aria-pressed={heroOpen}
           className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
             heroOpen
@@ -589,9 +596,23 @@ export function AdminDashboard() {
         >
           Hero fotky
         </button>
+        <button
+          onClick={() => {
+            setHeroOpen(false)
+            setEventsOpen(true)
+          }}
+          aria-pressed={eventsOpen}
+          className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
+            eventsOpen
+              ? "bg-primary text-primary-foreground"
+              : "border border-border text-foreground/70 hover:text-primary"
+          }`}
+        >
+          Events
+        </button>
       </div>
 
-      {!heroOpen && (
+      {!customPanelOpen && (
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <span id="order-device-label" className="text-sm text-foreground/70">
             Upravuji pořadí pro:
@@ -633,7 +654,7 @@ export function AdminDashboard() {
         </div>
       )}
 
-      {!heroOpen && usesCategory && (
+      {!customPanelOpen && usesCategory && (
         <div className="mb-6 flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Category">
             <span className="text-xs uppercase tracking-widest text-foreground/50 mr-1">Category</span>
@@ -677,7 +698,7 @@ export function AdminDashboard() {
 
       {/* Upload */}
       <div
-        hidden={heroOpen}
+        hidden={customPanelOpen}
         className={
           section === "gallery"
             ? "sticky top-0 z-10 -mx-2 mb-4 bg-background/90 px-2 py-3 backdrop-blur-sm"
@@ -755,6 +776,8 @@ export function AdminDashboard() {
       {/* List */}
       {heroOpen ? (
         <HeroSlidesManager />
+      ) : eventsOpen ? (
+        <EventsManager />
       ) : loading ? (
         <p className="text-foreground/50 py-10 text-center">Loading…</p>
       ) : items.length === 0 ? (
@@ -926,7 +949,7 @@ export function AdminDashboard() {
         </ul>
       )}
 
-      {!heroOpen && section === "gallery" && selectedIds.size >= 2 && (
+      {!customPanelOpen && section === "gallery" && selectedIds.size >= 2 && (
         <>
           <div className="h-28" aria-hidden="true" />
           <BulkActionBar

@@ -49,18 +49,24 @@ export async function getEventPhotos(): Promise<EventPhoto[]> {
 export async function getEventVideos(): Promise<EventVideo[]> {
   try {
     const rows = (await sql`
-      SELECT id, width, height
+      SELECT id, width, height, poster_url
       FROM events_media
       WHERE type = 'video'
       ORDER BY sort_order ASC, created_at ASC
-    `) as unknown as EventsMediaRow[]
+    `) as unknown as (EventsMediaRow & { poster_url: string | null })[]
 
     return rows.map((row, index) => ({
       id: row.id,
       title: `Event reel ${index + 1}`,
       src: mediaPath(row.id),
       poster: {
-        src: mediaPath(row.id, { poster: 1, w: POSTER_WIDTH }),
+        // The poster route is cached for a year per URL, so a replaced poster needs a new URL.
+        // Only the random file name is used, never the Cloudinary host.
+        src: mediaPath(row.id, {
+          poster: 1,
+          w: POSTER_WIDTH,
+          ...(row.poster_url ? { v: row.poster_url.split('/').pop() ?? '' } : {}),
+        }),
         width: DEFAULT_VIDEO_SIZE.width,
         height: DEFAULT_VIDEO_SIZE.height,
       },
