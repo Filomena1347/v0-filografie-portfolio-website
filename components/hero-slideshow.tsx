@@ -58,11 +58,11 @@ export function HeroSlideImages({ slides, index, lang }: SlideImagesProps) {
 
 export function HeroSlideDashes({ count, index }: { count: number; index: number }) {
   return (
-    <div className="mt-4 flex items-center gap-1.5" aria-hidden="true">
+    <div className="mt-[14px] flex items-center gap-[5px]" aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
         <span
           key={i}
-          className={`h-0.5 w-6 rounded-full transition-colors duration-500 ${
+          className={`h-[2px] w-5 rounded-full transition-colors duration-500 ${
             i === index ? "bg-foreground" : "bg-foreground/30"
           }`}
         />

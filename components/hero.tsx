@@ -5,9 +5,8 @@ import { useMemo, useRef, useState } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
 import { InlineGallery } from "@/components/inline-gallery"
-import { AdminLoginDot } from "@/components/admin-login-dialog"
-import { RotatingHeadline } from "@/components/rotating-headline"
-import { HeroSlideDashes, HeroSlideImages, useHeroSlideIndex } from "@/components/hero-slideshow"
+import { HeroIntro } from "@/components/hero-intro"
+import { useHeroSlideIndex } from "@/components/hero-slideshow"
 import { HIDDEN_CATEGORIES, flattenAll } from "@/lib/media"
 import type { CategoryKey, MediaItem } from "@/lib/media"
 import type { HeroSlide } from "@/lib/hero-slides"
@@ -92,56 +91,12 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
       className={`relative ${hasSlides ? "pt-0" : "pt-28"} md:pt-32 pb-16 md:pb-24 bg-background`}
     >
       <div className="max-w-7xl mx-auto w-full md:px-6">
-        {/* Mobile: full-bleed photo hero from the top of the page, text band overlaid on the photo. Desktop: headline only. */}
-        <div
-          className={
-            hasSlides
-              ? "relative h-[75svh] min-h-[520px] w-full overflow-hidden md:h-auto md:min-h-0 md:overflow-visible"
-              : "px-6 md:px-0"
-          }
-        >
-          {hasSlides && (
-            <div className="absolute inset-0 md:hidden">
-              <HeroSlideImages slides={slides} index={slideIndex} lang={lang} />
-              <div
-                className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/40 to-transparent"
-                aria-hidden="true"
-              />
-            </div>
-          )}
-          <div
-            className={
-              hasSlides
-                ? "absolute inset-x-0 bottom-0 z-10 bg-black/55 px-5 pb-5 pt-5 backdrop-blur-sm md:static md:bg-transparent md:p-0 md:backdrop-blur-none"
-                : undefined
-            }
-          >
-            <RotatingHeadline
-              lang={lang}
-              eyebrowClassName={
-                hasSlides
-                  ? "font-sans text-xs text-zinc-300 md:font-serif md:text-xl md:text-foreground/60"
-                  : "font-serif text-lg md:text-xl text-foreground/60"
-              }
-              headingClassName={
-                hasSlides
-                  ? "mt-1.5 font-serif text-[1.75rem] min-[400px]:text-3xl leading-[1.1] text-balance text-foreground max-w-3xl md:mt-2 md:text-7xl md:leading-[0.95]"
-                  : "mt-2 font-serif text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-balance text-foreground max-w-3xl"
-              }
-              trailing={<AdminLoginDot />}
-            />
-            {hasSlides && (
-              <div className="md:hidden">
-                <HeroSlideDashes count={slides.length} index={slideIndex} />
-              </div>
-            )}
-          </div>
-        </div>
+        <HeroIntro slides={slides} index={slideIndex} lang={lang} />
 
         {/* Filter pills: one horizontally scrolling row on mobile, wrapping on desktop */}
         <div
           id="work"
-          className="mt-5 flex flex-nowrap items-center gap-2 overflow-x-auto px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-mt-24 md:mt-8 md:flex-wrap md:gap-2.5 md:overflow-visible md:px-0"
+          className="mt-5 flex flex-nowrap items-center gap-[7px] overflow-x-auto px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-mt-24 md:mt-8 md:flex-wrap md:gap-2.5 md:overflow-visible md:px-0"
         >
           {filters.map((f) => {
             const isActive = open && active === f.key
@@ -152,7 +107,7 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
                 onClick={() => openGallery(f.key)}
                 aria-pressed={isActive}
                 aria-controls="work-gallery"
-                className={`shrink-0 rounded-full px-4 py-1.5 text-sm tracking-wide transition-colors md:px-5 md:py-2 ${
+                className={`shrink-0 rounded-full px-[15px] py-[7px] text-[13px] tracking-wide transition-colors md:px-5 md:py-2 md:text-sm ${
                   isActive || (!open && f.key === "all")
                     ? "bg-primary text-primary-foreground"
                     : "border border-border bg-card text-foreground/80 hover:border-primary/60"

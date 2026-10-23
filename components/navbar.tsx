@@ -31,7 +31,7 @@ export function Navbar() {
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 h-20">
         <a href="#top" className="flex flex-col leading-none">
-          <span className="font-serif italic text-2xl text-white md:text-foreground">Filoména</span>
+          <span className="font-serif italic text-[26px] text-white md:text-2xl md:text-foreground">Filoména</span>
           <span className="hidden md:block mt-1 font-sans text-[11px] font-light tracking-wide text-muted-foreground">
             content creator
           </span>
@@ -53,11 +53,11 @@ export function Navbar() {
           <button
             onClick={toggle}
             aria-label="Toggle language"
-            className="text-xs tracking-widest text-white/80 md:text-foreground/60 hover:text-primary transition-colors"
+            className="text-[13px] tracking-[0.05em] text-white md:text-xs md:tracking-widest md:text-foreground/60 hover:text-primary transition-colors"
           >
-            <span className={lang === "cs" ? "text-white md:text-primary font-medium" : ""}>CZ</span>
-            <span className="mx-1 text-white/40 md:text-foreground/30">/</span>
-            <span className={lang === "en" ? "text-white md:text-primary font-medium" : ""}>EN</span>
+            <span className={lang === "cs" ? "text-[#A78BFA] md:text-primary font-medium" : ""}>CZ</span>
+            <span className="mx-1 text-white md:text-foreground/30">/</span>
+            <span className={lang === "en" ? "text-[#A78BFA] md:text-primary font-medium" : ""}>EN</span>
           </button>
 
           <a
