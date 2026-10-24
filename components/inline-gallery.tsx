@@ -8,6 +8,8 @@ type InlineGalleryProps = {
   items: MediaItem[]
   emptyLabel: string
   animationKey: string
+  /** "masonry" flows photos into columns by height; "justified" keeps the row layout used for Eventy. */
+  layout?: "masonry" | "justified"
 }
 
 function GalleryImage({
@@ -53,13 +55,70 @@ function GalleryImage({
   )
 }
 
-export function InlineGallery({ items, emptyLabel, animationKey }: InlineGalleryProps) {
+function MasonryImage({ item }: { item: MediaItem }) {
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    const img = imgRef.current
+    if (img?.complete && img.naturalWidth > 0) setLoaded(true)
+  }, [item.id])
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      ref={imgRef}
+      src={item.url || "/placeholder.svg"}
+      alt={item.title ?? ""}
+      width={item.width ?? undefined}
+      height={item.height ?? undefined}
+      loading="lazy"
+      decoding="async"
+      onLoad={() => setLoaded(true)}
+      onError={() => setLoaded(true)}
+      className={`block h-auto w-full transition-[opacity,transform,filter] duration-500 ease-out motion-reduce:transition-none group-hover:scale-[1.03] group-hover:brightness-105 motion-reduce:group-hover:scale-100 ${
+        loaded ? "opacity-100" : "opacity-0"
+      }`}
+    />
+  )
+}
+
+function MasonryGrid({ items }: { items: MediaItem[] }) {
+  return (
+    <div className="columns-2 gap-[5px] md:columns-3 lg:columns-5">
+      {items.map((item) => (
+        <figure
+          key={item.id}
+          className="group relative mb-[5px] overflow-hidden bg-muted break-inside-avoid"
+          style={item.width && item.height ? { aspectRatio: item.width / item.height } : undefined}
+        >
+          {item.type === "video" ? (
+            <video
+              src={item.url}
+              poster={item.thumbnail_url ?? undefined}
+              controls
+              playsInline
+              preload="metadata"
+              className="block h-auto w-full"
+            />
+          ) : (
+            <MasonryImage item={item} />
+          )}
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+export function InlineGallery({ items, emptyLabel, animationKey, layout = "justified" }: InlineGalleryProps) {
   const { getRatio, reportSize } = useItemRatios()
 
   return (
     <div key={animationKey} className="bg-background" style={{ animation: "fadeUp 0.6s ease both" }}>
       {items.length === 0 ? (
         <p className="py-20 text-center text-sm text-foreground/60">{emptyLabel}</p>
+      ) : layout === "masonry" ? (
+        <MasonryGrid items={items} />
       ) : (
         <JustifiedGrid
           items={items}
