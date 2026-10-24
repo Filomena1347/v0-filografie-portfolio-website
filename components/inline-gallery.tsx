@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { JustifiedGrid, useItemRatios } from "@/components/justified-grid"
 import type { MediaItem } from "@/lib/media"
 
@@ -55,6 +55,75 @@ function GalleryImage({
   )
 }
 
+// Photos touch each other like on the reference collage. Raise this to add a gap (in px).
+const MASONRY_GAP = 0
+
+function columnCountFor(viewportWidth: number) {
+  if (viewportWidth >= 1024) return 5
+  if (viewportWidth >= 768) return 3
+  return 2
+}
+
+function itemRatio(item: MediaItem) {
+  if (item.width && item.height) return item.width / item.height
+  return item.type === "video" ? 16 / 9 : 4 / 5
+}
+
+type MasonryTile = { item: MediaItem; height: number }
+
+/**
+ * Drops every item into the currently shortest column (true masonry), then trims or stretches
+ * the last tile of each column so all columns end on the same bottom edge.
+ */
+function buildMasonryColumns(items: MediaItem[], cols: number, width: number): MasonryTile[][] {
+  const columnWidth = (width - MASONRY_GAP * (cols - 1)) / cols
+  const columns = Array.from({ length: cols }, () => ({ tiles: [] as MasonryTile[], height: 0 }))
+
+  for (const item of items) {
+    const tileHeight = columnWidth / itemRatio(item)
+    let shortest = columns[0]
+    for (const column of columns) if (column.height < shortest.height) shortest = column
+    shortest.height += (shortest.tiles.length > 0 ? MASONRY_GAP : 0) + tileHeight
+    shortest.tiles.push({ item, height: tileHeight })
+  }
+
+  if (items.length >= cols * 2) {
+    const target = columns.reduce((sum, column) => sum + column.height, 0) / cols
+    for (const column of columns) {
+      const last = column.tiles[column.tiles.length - 1]
+      if (!last) continue
+      const fitted = target - (column.height - last.height)
+      if (fitted >= last.height * 0.4 && fitted <= last.height * 1.6) last.height = fitted
+    }
+  }
+
+  return columns.map((column) => column.tiles)
+}
+
+function useMasonryMetrics(ref: React.RefObject<HTMLDivElement | null>) {
+  const [metrics, setMetrics] = useState({ width: 0, cols: 5 })
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const update = () => {
+      const width = el.clientWidth
+      const cols = columnCountFor(window.innerWidth)
+      setMetrics((prev) => (prev.width === width && prev.cols === cols ? prev : { width, cols }))
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    window.addEventListener("resize", update)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("resize", update)
+    }
+  }, [ref])
+
+  return metrics
+}
+
 function MasonryImage({ item }: { item: MediaItem }) {
   const imgRef = useRef<HTMLImageElement>(null)
   const [loaded, setLoaded] = useState(false)
@@ -70,13 +139,11 @@ function MasonryImage({ item }: { item: MediaItem }) {
       ref={imgRef}
       src={item.url || "/placeholder.svg"}
       alt={item.title ?? ""}
-      width={item.width ?? undefined}
-      height={item.height ?? undefined}
       loading="lazy"
       decoding="async"
       onLoad={() => setLoaded(true)}
       onError={() => setLoaded(true)}
-      className={`block h-auto w-full transition-[opacity,transform,filter] duration-500 ease-out motion-reduce:transition-none group-hover:scale-[1.03] group-hover:brightness-105 motion-reduce:group-hover:scale-100 ${
+      className={`absolute inset-0 block h-full w-full object-cover transition-[opacity,transform,filter] duration-500 ease-out motion-reduce:transition-none group-hover:scale-[1.03] group-hover:brightness-105 motion-reduce:group-hover:scale-100 ${
         loaded ? "opacity-100" : "opacity-0"
       }`}
     />
@@ -84,12 +151,12 @@ function MasonryImage({ item }: { item: MediaItem }) {
 }
 
 function RevealFigure({
-  item,
-  index,
+  height,
+  delayIndex,
   children,
 }: {
-  item: MediaItem
-  index: number
+  height: number
+  delayIndex: number
   children: React.ReactNode
 }) {
   const ref = useRef<HTMLElement>(null)
@@ -121,13 +188,13 @@ function RevealFigure({
   return (
     <figure
       ref={ref}
-      className={`group relative mb-[5px] overflow-hidden bg-muted break-inside-avoid transition-[opacity,transform] duration-500 ease-out ${
+      className={`group relative w-full shrink-0 overflow-hidden bg-muted transition-[opacity,transform] duration-500 ease-out ${
         visible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
       }`}
       style={{
-        ...(item.width && item.height ? { aspectRatio: item.width / item.height } : null),
+        height,
         // Small column-based stagger so photos entering together still cascade.
-        transitionDelay: visible ? `${(index % 5) * 60}ms` : "0ms",
+        transitionDelay: visible ? `${delayIndex * 60}ms` : "0ms",
       }}
     >
       {children}
@@ -136,23 +203,35 @@ function RevealFigure({
 }
 
 function MasonryGrid({ items }: { items: MediaItem[] }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { width, cols } = useMasonryMetrics(containerRef)
+  const columns = width > 0 ? buildMasonryColumns(items, cols, width) : []
+
   return (
-    <div className="columns-2 gap-[5px] md:columns-3 lg:columns-5">
-      {items.map((item, index) => (
-        <RevealFigure key={item.id} item={item} index={index}>
-          {item.type === "video" ? (
-            <video
-              src={item.url}
-              poster={item.thumbnail_url ?? undefined}
-              controls
-              playsInline
-              preload="metadata"
-              className="block h-auto w-full"
-            />
-          ) : (
-            <MasonryImage item={item} />
-          )}
-        </RevealFigure>
+    <div ref={containerRef} className="flex w-full items-start" style={{ gap: MASONRY_GAP }}>
+      {columns.map((tiles, columnIndex) => (
+        <div
+          key={columnIndex}
+          className="flex min-w-0 flex-1 flex-col"
+          style={{ gap: MASONRY_GAP }}
+        >
+          {tiles.map(({ item, height }) => (
+            <RevealFigure key={item.id} height={height} delayIndex={columnIndex}>
+              {item.type === "video" ? (
+                <video
+                  src={item.url}
+                  poster={item.thumbnail_url ?? undefined}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="absolute inset-0 block h-full w-full object-cover"
+                />
+              ) : (
+                <MasonryImage item={item} />
+              )}
+            </RevealFigure>
+          ))}
+        </div>
       ))}
     </div>
   )
