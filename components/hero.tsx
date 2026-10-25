@@ -62,10 +62,10 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
   const cards = useMemo(
     () =>
       [
-        { id: "events", image: "/images/cover-eventy.png", category: t.hero_card_events_cat, desc: t.hero_card_events_desc },
         { id: "gastro", image: "/images/cover-gastro.png", category: t.hero_card_gastro_cat, desc: t.hero_card_gastro_desc },
         { id: "weddings", image: "/images/cover-svatby.png", category: t.hero_card_weddings_cat, desc: t.hero_card_weddings_desc },
         { id: "video", image: "/images/pillar-video.png", category: t.hero_card_video_cat, desc: t.hero_card_video_desc },
+        { id: "events", image: "/images/cover-eventy.png", category: t.hero_card_events_cat, desc: t.hero_card_events_desc },
         { id: "ugc", image: "/images/pillar-content.png", category: t.hero_card_ugc_cat, desc: t.hero_card_ugc_desc },
         { id: "graphics", image: "/images/card-graphics.png", category: t.hero_card_graphics_cat, desc: t.hero_card_graphics_desc },
       ]
