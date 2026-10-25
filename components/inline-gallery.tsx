@@ -56,7 +56,7 @@ function GalleryImage({
 }
 
 // Photos touch each other like on the reference collage. Raise this to add a gap (in px).
-const MASONRY_GAP = 0
+export const MASONRY_GAP = 0
 
 function columnCountFor(viewportWidth: number) {
   if (viewportWidth >= 1024) return 5
@@ -64,7 +64,7 @@ function columnCountFor(viewportWidth: number) {
   return 2
 }
 
-function itemRatio(item: MediaItem) {
+export function itemRatio(item: MediaItem) {
   if (item.width && item.height) return item.width / item.height
   return item.type === "video" ? 16 / 9 : 4 / 5
 }
@@ -75,7 +75,7 @@ type MasonryTile = { item: MediaItem; height: number }
  * Drops every item into the currently shortest column (true masonry), then trims or stretches
  * the last tile of each column so all columns end on the same bottom edge.
  */
-function buildMasonryColumns(items: MediaItem[], cols: number, width: number): MasonryTile[][] {
+export function buildMasonryColumns(items: MediaItem[], cols: number, width: number): MasonryTile[][] {
   const columnWidth = (width - MASONRY_GAP * (cols - 1)) / cols
   const columns = Array.from({ length: cols }, () => ({ tiles: [] as MasonryTile[], height: 0 }))
 

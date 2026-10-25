@@ -615,7 +615,7 @@ export function AdminDashboard() {
       {!customPanelOpen && (
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <span id="order-device-label" className="text-sm text-foreground/70">
-            Upravuji pořadí pro:
+            Náhled:
           </span>
           <div
             role="radiogroup"
@@ -648,8 +648,8 @@ export function AdminDashboard() {
           </div>
           <span className="text-xs text-foreground/50">
             {orderDevice === "mobile"
-              ? "Pořadí platí pro mobily (pod 768 px)."
-              : "Pořadí platí pro desktop a tablety (od 768 px)."}
+              ? "2 sloupce jako na mobilu. Upravuješ a ukládáš mobilní pořadí (sort_order_mobile)."
+              : "5 sloupců jako na desktopu. Upravuješ a ukládáš desktopové pořadí (sort_order)."}
           </span>
         </div>
       )}
@@ -804,6 +804,7 @@ export function AdminDashboard() {
           onMoveToStart={(id) => moveToPosition(id, 1)}
           onMoveToPosition={moveToPosition}
           items={items}
+          columns={orderDevice === "mobile" ? 2 : 5}
           onDragStart={onDragStart}
           onDragOver={onDragOver}
           dropTargetId={dropTargetId}
