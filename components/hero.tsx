@@ -59,24 +59,33 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
     ] as { key: FilterKey; label: string }[]
   ).filter((f) => f.key === "all" || !HIDDEN_CATEGORIES.includes(f.key as CategoryKey))
 
-  const cards = useMemo(
-    () =>
-      [
-        { id: "events", image: "/images/cover-eventy.png", category: t.hero_card_events_cat, desc: t.hero_card_events_desc },
-        { id: "gastro", image: "/images/cover-gastro.png", category: t.hero_card_gastro_cat, desc: t.hero_card_gastro_desc },
-        { id: "weddings", image: "/images/cover-svatby.png", category: t.hero_card_weddings_cat, desc: t.hero_card_weddings_desc },
-        { id: "video", image: "/images/pillar-video.png", category: t.hero_card_video_cat, desc: t.hero_card_video_desc },
-        { id: "ugc", image: "/images/pillar-content.png", category: t.hero_card_ugc_cat, desc: t.hero_card_ugc_desc },
-        { id: "graphics", image: "/images/card-graphics.png", category: t.hero_card_graphics_cat, desc: t.hero_card_graphics_desc },
-      ]
-        .filter((c) => !HIDDEN_CATEGORIES.includes(c.id as CategoryKey))
-        .map((c) => ({
-          ...c,
-          id: c.id as CategoryKey,
-          image: covers[c.id as CategoryKey] ?? c.image,
-        })),
-    [t, covers],
-  )
+  const cards = useMemo(() => {
+    const base = [
+      { id: "events", image: "/images/cover-eventy.png", category: t.hero_card_events_cat, desc: t.hero_card_events_desc },
+      { id: "gastro", image: "/images/cover-gastro.png", category: t.hero_card_gastro_cat, desc: t.hero_card_gastro_desc },
+      { id: "weddings", image: "/images/cover-svatby.png", category: t.hero_card_weddings_cat, desc: t.hero_card_weddings_desc },
+      { id: "video", image: "/images/pillar-video.png", category: t.hero_card_video_cat, desc: t.hero_card_video_desc },
+      { id: "ugc", image: "/images/pillar-content.png", category: t.hero_card_ugc_cat, desc: t.hero_card_ugc_desc },
+      { id: "graphics", image: "/images/card-graphics.png", category: t.hero_card_graphics_cat, desc: t.hero_card_graphics_desc },
+    ].map((c) => ({
+      ...c,
+      id: c.id as CategoryKey,
+      image: covers[c.id as CategoryKey] ?? c.image,
+    }))
+
+    // Circular shift: each card shows the image of the previous one in this order.
+    const rotation: CategoryKey[] = ["events", "gastro", "weddings", "video"]
+    const imageById = new Map(base.map((c) => [c.id, c.image]))
+    const rotatedImage = (id: CategoryKey) => {
+      const index = rotation.indexOf(id)
+      if (index === -1) return imageById.get(id)!
+      return imageById.get(rotation[(index - 1 + rotation.length) % rotation.length])!
+    }
+
+    return base
+      .filter((c) => !HIDDEN_CATEGORIES.includes(c.id))
+      .map((c) => ({ ...c, image: rotatedImage(c.id) }))
+  }, [t, covers])
 
   const device = useOrderDevice()
   const galleryItems = useMemo(
