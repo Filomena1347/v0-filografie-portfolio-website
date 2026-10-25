@@ -3,16 +3,10 @@
 import { useRef, useState } from "react"
 import { AlertCircle, Check, FolderUp, Loader2, Upload } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
-import { ACCEPT_ATTRIBUTE, collectDroppedFiles, type UploadKind } from "@/lib/events-upload"
+import { ACCEPT_ATTRIBUTE, collectDroppedFiles, type UploadJob, type UploadKind } from "@/lib/events-upload"
 import type { EventsMediaType } from "@/lib/events-admin"
 
-export type UploadJob = {
-  id: string
-  file: File
-  status: "queued" | "uploading" | "saving" | "done" | "error"
-  percent: number
-  error?: string
-}
+export type { UploadJob }
 
 type DropzoneProps = {
   type: EventsMediaType

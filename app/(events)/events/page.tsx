@@ -1,9 +1,12 @@
 import { Suspense } from 'react'
+import { EventsAdminProvider } from '@/components/events/admin-context'
+import { EditSwap } from '@/components/events/edit-swap'
 import { EventsHero } from '@/components/events/events-hero'
 import { PhotoGrid } from '@/components/events/photo-grid'
 import { ReelList } from '@/components/events/reel-list'
 import { PhotoGridSkeleton, ReelListSkeleton } from '@/components/events/skeletons'
 import { WorkHeading } from '@/components/events/work-heading'
+import { isAuthed } from '@/lib/auth'
 import { eventPhotos, eventVideos } from '@/lib/events-data'
 import { getEventPhotos, getEventVideos } from '@/lib/events-media'
 
@@ -19,26 +22,34 @@ async function Photos() {
   return <PhotoGrid photos={photos.length > 0 ? photos : eventPhotos} />
 }
 
-export default function EventsPage() {
+export default async function EventsPage() {
+  const isAdmin = await isAuthed()
+
   return (
-    <main className="mx-auto w-full max-w-[1360px] px-5 pb-24 sm:px-10 md:pb-32">
-      <EventsHero />
+    <EventsAdminProvider isAdmin={isAdmin}>
+      <main className="mx-auto w-full max-w-[1360px] px-5 pb-24 sm:px-10 md:pb-32">
+        <EventsHero />
 
-      <div className="mt-20 flex flex-wrap gap-x-10 gap-y-16 md:mt-28">
-        <section aria-labelledby="video-heading" className="min-w-0 max-w-[420px] flex-[1_1_320px]">
-          <WorkHeading id="video-heading" label="Video" index="01" />
-          <Suspense fallback={<ReelListSkeleton />}>
-            <Reels />
-          </Suspense>
-        </section>
+        <div className="mt-20 flex flex-wrap gap-x-10 gap-y-16 md:mt-28">
+          <section aria-labelledby="video-heading" className="min-w-0 max-w-[420px] flex-[1_1_320px]">
+            <WorkHeading id="video-heading" label="Video" index="01" />
+            <EditSwap type="video">
+              <Suspense fallback={<ReelListSkeleton />}>
+                <Reels />
+              </Suspense>
+            </EditSwap>
+          </section>
 
-        <section aria-labelledby="photo-heading" className="min-w-0 flex-[999_1_560px]">
-          <WorkHeading id="photo-heading" label="Photo" index="02" />
-          <Suspense fallback={<PhotoGridSkeleton />}>
-            <Photos />
-          </Suspense>
-        </section>
-      </div>
-    </main>
+          <section aria-labelledby="photo-heading" className="min-w-0 flex-[999_1_560px]">
+            <WorkHeading id="photo-heading" label="Photo" index="02" />
+            <EditSwap type="photo">
+              <Suspense fallback={<PhotoGridSkeleton />}>
+                <Photos />
+              </Suspense>
+            </EditSwap>
+          </section>
+        </div>
+      </main>
+    </EventsAdminProvider>
   )
 }
