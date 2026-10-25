@@ -291,7 +291,7 @@ const LanguageContext = createContext<LanguageContextValue | null>(null)
 
 export function LanguageProvider({
   children,
-  initialLang = "cs",
+  initialLang = "en",
 }: {
   children: ReactNode
   initialLang?: Lang
@@ -303,8 +303,8 @@ export function LanguageProvider({
     setLang(next)
     // Only the public site has language URLs; replaceState keeps the Back button from trapping visitors.
     const { pathname, search, hash } = window.location
-    if (/^\/(en)?\/?$/.test(pathname)) {
-      window.history.replaceState(window.history.state, "", `${next === "en" ? "/en" : "/"}${search}${hash}`)
+    if (/^\/(cs|en)?\/?$/.test(pathname)) {
+      window.history.replaceState(window.history.state, "", `${next === "cs" ? "/cs" : "/"}${search}${hash}`)
     }
   }, [lang])
   return (

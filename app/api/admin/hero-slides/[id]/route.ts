@@ -56,7 +56,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     revalidatePublicMedia()
     revalidatePath("/")
-    revalidatePath("/en")
+    revalidatePath("/cs")
     return NextResponse.json({ slide: toAdminHeroSlide(rows[0]) })
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 })
