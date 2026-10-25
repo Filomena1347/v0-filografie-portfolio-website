@@ -31,41 +31,41 @@ const ogImage = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Filografie | Filoména — Vizuální vyprávění příběhů',
+    default: 'Filografie | Filoména — Visual storytelling',
     template: '%s | Filografie',
   },
   description:
-    'Filoména — event a gastro fotografie, video reels a brandový obsah, správa sociálních sítí a UGC. Vizuální vyprávění příběhů.',
+    'Filoména — event and food photography, video reels and branded content, social media management and UGC. Visual storytelling.',
   keywords: [
-    'fotografie',
-    'event fotografie',
-    'gastro fotografie',
+    'photography',
+    'event photography',
+    'food photography',
     'video',
     'reels',
     'UGC',
-    'sociální sítě',
+    'social media',
     'Filoména',
     'Filografie',
   ],
   authors: [{ name: 'Filoména' }],
   alternates: {
     canonical: '/',
-    languages: { cs: '/', en: '/en' },
+    languages: { en: '/', cs: '/cs' },
   },
   openGraph: {
     type: 'website',
-    locale: 'cs_CZ',
-    alternateLocale: 'en_US',
-    title: 'Filoména | Fotografka & Content Creator',
-    description: 'Fotografka, kameramanka a content creator 📸🎬',
+    locale: 'en_US',
+    alternateLocale: 'cs_CZ',
+    title: 'Filoména | Photographer & Content Creator',
+    description: 'Photographer, videographer and content creator 📸🎬',
     url: siteUrl,
     siteName: 'Filografie',
     images: [ogImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Filoména | Fotografka & Content Creator',
-    description: 'Fotografka, kameramanka a content creator 📸🎬',
+    title: 'Filoména | Photographer & Content Creator',
+    description: 'Photographer, videographer and content creator 📸🎬',
     images: [ogImage.url],
   },
   robots: { index: true, follow: true },
@@ -78,7 +78,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="cs" className={`${fraunces.variable} ${inter.variable} bg-background`}>
+    <html lang="en" className={`${fraunces.variable} ${inter.variable} bg-background`}>
       <body className="font-sans antialiased bg-background text-foreground">
         <ClarityScript />
         <LanguageProvider>{children}</LanguageProvider>
