@@ -1,3 +1,4 @@
+import { EditDot } from './edit-dot'
 import { RotatingWord } from './rotating-word'
 
 const facts = [
@@ -10,7 +11,7 @@ export function EventsHero() {
   return (
     <header className="pt-20 md:pt-[120px]">
       <p className="flex items-center gap-3 text-[13px] uppercase leading-snug tracking-[0.12em] text-ev-muted">
-        <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-ev-accent" />
+        <EditDot />
         Photo &amp; video for trade fairs and conferences
       </p>
 

@@ -7,6 +7,14 @@ export type UploadedAsset = {
   height: number | null
 }
 
+export type UploadJob = {
+  id: string
+  file: File
+  status: "queued" | "uploading" | "saving" | "done" | "error"
+  percent: number
+  error?: string
+}
+
 export class UnauthorizedError extends Error {}
 
 const EXTENSIONS: Record<UploadKind, string[]> = {

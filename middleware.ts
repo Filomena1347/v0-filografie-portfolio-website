@@ -15,6 +15,10 @@ const EVENTS_HOST_ALLOWED_PREFIXES = [
   '/events-assets/',
   '/api/events',
   '/api/media/',
+  // Only what the inline editor needs; the portfolio admin pages stay blocked.
+  '/api/admin/login',
+  '/api/admin/logout',
+  '/api/admin/events',
   '/events/opengraph-image',
   '/events/twitter-image',
 ]
