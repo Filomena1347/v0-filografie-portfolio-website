@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useLanguage } from "@/context/language-context"
+import { WhatsAppIcon } from "@/components/brand-icons"
 
 export function Navbar() {
   const { t, lang, toggle } = useLanguage()
@@ -70,6 +71,17 @@ export function Navbar() {
             className="hidden sm:inline-flex items-center rounded-full bg-primary text-primary-foreground text-sm px-5 py-2 hover:opacity-90 transition-opacity"
           >
             {t.nav_cta}
+          </a>
+
+          <a
+            href="https://wa.me/420604889980"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t.nav_whatsapp}
+            title={t.nav_whatsapp}
+            className="hidden md:inline-flex h-9 w-9 items-center justify-center text-white hover:scale-110 transition-transform"
+          >
+            <WhatsAppIcon className="h-5 w-5" />
           </a>
 
           <button
