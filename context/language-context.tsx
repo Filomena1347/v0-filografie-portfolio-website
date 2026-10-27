@@ -90,6 +90,13 @@ type Dict = {
   contact_sending: string
   contact_success: string
   contact_error: string
+  contact_email_label: string
+  contact_phone_label: string
+  contact_instagram_label: string
+  contact_feed_label: string
+  contact_feed_title: string
+  contact_feed_placeholder: string
+  nav_whatsapp: string
 
   footer_tagline: string
   footer_rights: string
@@ -183,6 +190,13 @@ const translations: Record<Lang, Dict> = {
     contact_sending: "Odesílám…",
     contact_success: "Děkuji! Ozvu se co nejdříve.",
     contact_error: "Něco se pokazilo. Zkuste to prosím znovu.",
+  contact_email_label: "Napište e-mail",
+  contact_phone_label: "Zavolejte nebo napište na WhatsApp",
+  contact_instagram_label: "Sledujte na Instagramu",
+  contact_feed_label: "Instagram",
+  contact_feed_title: "Nejnovější příspěvky",
+  contact_feed_placeholder: "Instagram feed se zobrazí po vložení Behold feed ID.",
+  nav_whatsapp: "Napsat na WhatsApp",
 
     footer_tagline: "Vizuální vyprávění příběhů — foto, video, obsah.",
     footer_rights: "Všechna práva vyhrazena.",
@@ -274,6 +288,13 @@ const translations: Record<Lang, Dict> = {
     contact_sending: "Sending…",
     contact_success: "Thank you! I'll be in touch soon.",
     contact_error: "Something went wrong. Please try again.",
+  contact_email_label: "Send an email",
+  contact_phone_label: "Call or message on WhatsApp",
+  contact_instagram_label: "Follow on Instagram",
+  contact_feed_label: "Instagram",
+  contact_feed_title: "Latest posts",
+  contact_feed_placeholder: "The Instagram feed will appear once you add your Behold feed ID.",
+  nav_whatsapp: "Message on WhatsApp",
 
     footer_tagline: "Visual storytelling — photo, video, content.",
     footer_rights: "All rights reserved.",
