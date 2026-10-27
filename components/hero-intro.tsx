@@ -12,36 +12,20 @@ type HeroIntroProps = {
 }
 
 /**
- * Mobile: full-bleed photo hero from the top of the page with the text band overlaid on the photo.
+ * Mobile: full-width 1:1 square photo (image only) from the top of the page, with the text block and dots below it.
  * Desktop: headline only. Shared by the homepage and the admin crop-editor preview.
  */
 export function HeroIntro({ slides, index, lang }: HeroIntroProps) {
   const hasSlides = slides.length > 0
 
   return (
-    <div
-      className={
-        hasSlides
-          ? "relative h-[75svh] min-h-[520px] w-full overflow-hidden md:h-auto md:min-h-0 md:overflow-visible"
-          : "px-6 md:px-0"
-      }
-    >
+    <div className={hasSlides ? undefined : "px-6 md:px-0"}>
       {hasSlides && (
-        <div className="absolute inset-0 md:hidden">
+        <div className="relative aspect-square w-full overflow-hidden md:hidden">
           <HeroSlideImages slides={slides} index={index} lang={lang} />
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/40 to-transparent"
-            aria-hidden="true"
-          />
         </div>
       )}
-      <div
-        className={
-          hasSlides
-            ? "absolute inset-x-0 bottom-0 z-10 bg-[rgba(10,9,14,0.62)] px-5 py-[18px] backdrop-blur-[6px] md:static md:bg-transparent md:p-0 md:backdrop-blur-none"
-            : undefined
-        }
-      >
+      <div className={hasSlides ? "bg-background px-5 pb-5 pt-5 md:bg-transparent md:p-0" : undefined}>
         <RotatingHeadline
           lang={lang}
           eyebrowClassName={
