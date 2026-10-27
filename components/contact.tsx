@@ -66,7 +66,7 @@ export function Contact() {
             >
               <span className="flex shrink-0 items-center gap-2">
                 <Phone className="h-6 w-6 text-primary" aria-hidden="true" />
-                <WhatsAppIcon className="h-6 w-6 text-[#25D366]" />
+                <WhatsAppIcon className="h-6 w-6 text-white" />
               </span>
               <span className="flex min-w-0 flex-col text-left">
                 <span className="text-xs tracking-wide text-foreground/50">{t.contact_phone_label}</span>
