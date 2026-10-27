@@ -79,7 +79,7 @@ export function Navbar() {
             rel="noopener noreferrer"
             aria-label={t.nav_whatsapp}
             title={t.nav_whatsapp}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white hover:scale-110 transition-transform"
+            className="hidden md:inline-flex h-9 w-9 items-center justify-center text-white hover:scale-110 transition-transform"
           >
             <WhatsAppIcon className="h-5 w-5" />
           </a>
