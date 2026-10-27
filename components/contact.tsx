@@ -79,7 +79,7 @@ export function Contact() {
 
           <li>
             <a
-              href="https://www.instagram.com/filomena_veronika/"
+              href="https://www.instagram.com/filografka/"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex h-full items-center gap-4 rounded-lg border border-border bg-background px-5 py-4 transition-colors hover:border-primary"
@@ -90,7 +90,7 @@ export function Contact() {
               <span className="flex min-w-0 flex-col text-left">
                 <span className="text-xs tracking-wide text-foreground/50">{t.contact_instagram_label}</span>
                 <span className="truncate text-foreground group-hover:text-primary transition-colors">
-                  @filomena_veronika
+                  @filografka
                 </span>
               </span>
             </a>
