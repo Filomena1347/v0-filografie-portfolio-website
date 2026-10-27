@@ -12,7 +12,7 @@ type HeroIntroProps = {
 }
 
 /**
- * Mobile: full-width 1:1 square photo hero from the top of the page with the text band overlaid on the photo.
+ * Mobile: full-width 1:1 square photo hero from the top of the page with the text and dots overlaid on a bottom gradient.
  * Desktop: headline only. Shared by the homepage and the admin crop-editor preview.
  */
 export function HeroIntro({ slides, index, lang }: HeroIntroProps) {
@@ -38,7 +38,7 @@ export function HeroIntro({ slides, index, lang }: HeroIntroProps) {
       <div
         className={
           hasSlides
-            ? "absolute inset-x-0 bottom-0 z-10 bg-[rgba(10,9,14,0.62)] px-5 py-[18px] backdrop-blur-[6px] md:static md:bg-transparent md:p-0 md:backdrop-blur-none"
+            ? "absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/55 to-transparent px-5 pb-5 pt-24 md:static md:bg-none md:p-0"
             : undefined
         }
       >
