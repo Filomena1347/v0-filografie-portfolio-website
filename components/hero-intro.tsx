@@ -12,7 +12,7 @@ type HeroIntroProps = {
 }
 
 /**
- * Mobile: full-bleed photo hero from the top of the page with the text band overlaid on the photo.
+ * Mobile: full-width 1:1 square photo hero from the top of the page with the text band overlaid on the photo.
  * Desktop: headline only. Shared by the homepage and the admin crop-editor preview.
  */
 export function HeroIntro({ slides, index, lang }: HeroIntroProps) {
@@ -22,7 +22,7 @@ export function HeroIntro({ slides, index, lang }: HeroIntroProps) {
     <div
       className={
         hasSlides
-          ? "relative h-[75svh] min-h-[520px] w-full overflow-hidden md:h-auto md:min-h-0 md:overflow-visible"
+          ? "relative aspect-square w-full overflow-hidden md:aspect-auto md:overflow-visible"
           : "px-6 md:px-0"
       }
     >
