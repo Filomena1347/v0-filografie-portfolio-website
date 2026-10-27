@@ -816,6 +816,7 @@ export function AdminDashboard() {
             thumbInputRef.current?.click()
           }}
           onDelete={isAllView ? removeFromAll : deleteItem}
+          onToggleWide={(item) => patchItem(item.id, { is_wide: !item.is_wide })}
           isAllView={isAllView}
           onToggleShowInVse={(item) =>
             isAllView

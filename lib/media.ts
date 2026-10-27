@@ -22,6 +22,8 @@ export type MediaItem = {
   all_sort_order_mobile?: number | null
   /** When false the item is left out of the "Vše" tab but stays in its own category. */
   show_in_vse?: boolean
+  /** When true the item spans 2 columns in the tablet/desktop gallery grid. */
+  is_wide?: boolean
   published: boolean
   created_at: string
 }
