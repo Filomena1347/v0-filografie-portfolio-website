@@ -69,35 +69,48 @@ export function itemRatio(item: MediaItem) {
   return item.type === "video" ? 16 / 9 : 4 / 5
 }
 
-type MasonryTile = { item: MediaItem; height: number }
+/** Height of one implicit grid row; tiles span as many rows as their photo needs. */
+export const GRID_ROW_UNIT = 4
+
+/** Wide photos need room for two columns; on phones (2 columns) every photo stays 1 column. */
+const MIN_COLUMNS_FOR_WIDE = 3
+
+/** Portrait photos marked wide are cropped to this ratio instead of becoming very tall. */
+const WIDE_FALLBACK_RATIO = 16 / 9
+
+export type GridTile = { item: MediaItem; colSpan: number; rowSpan: number }
 
 /**
- * Drops every item into the currently shortest column (true masonry), then trims or stretches
- * the last tile of each column so all columns end on the same bottom edge.
+ * CSS Grid masonry: the grid has `cols` equal columns and tiny rows, and every tile spans the
+ * rows its aspect ratio needs. Wide photos span 2 columns and keep their natural landscape ratio.
  */
-export function buildMasonryColumns(items: MediaItem[], cols: number, width: number): MasonryTile[][] {
+export function buildGridTiles(items: MediaItem[], cols: number, width: number): GridTile[] {
   const columnWidth = (width - MASONRY_GAP * (cols - 1)) / cols
-  const columns = Array.from({ length: cols }, () => ({ tiles: [] as MasonryTile[], height: 0 }))
 
-  for (const item of items) {
-    const tileHeight = columnWidth / itemRatio(item)
-    let shortest = columns[0]
-    for (const column of columns) if (column.height < shortest.height) shortest = column
-    shortest.height += (shortest.tiles.length > 0 ? MASONRY_GAP : 0) + tileHeight
-    shortest.tiles.push({ item, height: tileHeight })
+  return items.map((item) => {
+    const colSpan = item.is_wide && cols >= MIN_COLUMNS_FOR_WIDE ? 2 : 1
+    const ratio = itemRatio(item)
+    const tileRatio = colSpan === 2 ? (ratio >= 1 ? ratio : WIDE_FALLBACK_RATIO) : ratio
+    const tileWidth = columnWidth * colSpan + MASONRY_GAP * (colSpan - 1)
+    const tileHeight = tileWidth / tileRatio
+    const rowSpan = Math.max(1, Math.round((tileHeight + MASONRY_GAP) / (GRID_ROW_UNIT + MASONRY_GAP)))
+    return { item, colSpan, rowSpan }
+  })
+}
+
+export function masonryGridStyle(cols: number): React.CSSProperties {
+  return {
+    display: "grid",
+    gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+    gridAutoRows: `${GRID_ROW_UNIT}px`,
+    // Dense packing lets later photos fill the hole a wide photo leaves behind.
+    gridAutoFlow: "dense",
+    gap: MASONRY_GAP,
   }
+}
 
-  if (items.length >= cols * 2) {
-    const target = columns.reduce((sum, column) => sum + column.height, 0) / cols
-    for (const column of columns) {
-      const last = column.tiles[column.tiles.length - 1]
-      if (!last) continue
-      const fitted = target - (column.height - last.height)
-      if (fitted >= last.height * 0.4 && fitted <= last.height * 1.6) last.height = fitted
-    }
-  }
-
-  return columns.map((column) => column.tiles)
+export function tilePlacement(tile: Pick<GridTile, "colSpan" | "rowSpan">): React.CSSProperties {
+  return { gridColumn: `span ${tile.colSpan}`, gridRow: `span ${tile.rowSpan}` }
 }
 
 function useMasonryMetrics(ref: React.RefObject<HTMLDivElement | null>) {
@@ -151,11 +164,11 @@ function MasonryImage({ item }: { item: MediaItem }) {
 }
 
 function RevealFigure({
-  height,
+  tile,
   delayIndex,
   children,
 }: {
-  height: number
+  tile: GridTile
   delayIndex: number
   children: React.ReactNode
 }) {
@@ -188,11 +201,11 @@ function RevealFigure({
   return (
     <figure
       ref={ref}
-      className={`group relative w-full shrink-0 overflow-hidden bg-muted transition-[opacity,transform] duration-500 ease-out ${
+      className={`group relative min-w-0 overflow-hidden bg-muted transition-[opacity,transform] duration-500 ease-out ${
         visible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
       }`}
       style={{
-        height,
+        ...tilePlacement(tile),
         // Small column-based stagger so photos entering together still cascade.
         transitionDelay: visible ? `${delayIndex * 60}ms` : "0ms",
       }}
@@ -205,33 +218,25 @@ function RevealFigure({
 function MasonryGrid({ items }: { items: MediaItem[] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { width, cols } = useMasonryMetrics(containerRef)
-  const columns = width > 0 ? buildMasonryColumns(items, cols, width) : []
+  const tiles = width > 0 ? buildGridTiles(items, cols, width) : []
 
   return (
-    <div ref={containerRef} className="flex w-full items-start" style={{ gap: MASONRY_GAP }}>
-      {columns.map((tiles, columnIndex) => (
-        <div
-          key={columnIndex}
-          className="flex min-w-0 flex-1 flex-col"
-          style={{ gap: MASONRY_GAP }}
-        >
-          {tiles.map(({ item, height }) => (
-            <RevealFigure key={item.id} height={height} delayIndex={columnIndex}>
-              {item.type === "video" ? (
-                <video
-                  src={item.url}
-                  poster={item.thumbnail_url ?? undefined}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="absolute inset-0 block h-full w-full object-cover"
-                />
-              ) : (
-                <MasonryImage item={item} />
-              )}
-            </RevealFigure>
-          ))}
-        </div>
+    <div ref={containerRef} className="w-full" style={masonryGridStyle(cols)}>
+      {tiles.map((tile, index) => (
+        <RevealFigure key={tile.item.id} tile={tile} delayIndex={index % cols}>
+          {tile.item.type === "video" ? (
+            <video
+              src={tile.item.url}
+              poster={tile.item.thumbnail_url ?? undefined}
+              controls
+              playsInline
+              preload="metadata"
+              className="absolute inset-0 block h-full w-full object-cover"
+            />
+          ) : (
+            <MasonryImage item={tile.item} />
+          )}
+        </RevealFigure>
       ))}
     </div>
   )
