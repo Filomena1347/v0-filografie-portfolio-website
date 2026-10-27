@@ -104,7 +104,9 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
 
   const closeGallery = () => {
     setOpen(false)
-    cardsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+    requestAnimationFrame(() =>
+      cardsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }),
+    )
   }
 
   return (
@@ -142,7 +144,7 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
         </div>
 
         {/* Card row */}
-        <div ref={cardsRef} className="relative mt-10 px-6 md:px-0">
+        <div ref={cardsRef} className={`relative mt-10 px-6 md:block md:px-0 ${open ? "hidden" : ""}`}>
           <div
             ref={scrollerRef}
             className="flex gap-5 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
@@ -204,7 +206,7 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
 
       </div>
 
-      <div id="work-gallery" ref={galleryRef} aria-live="polite" className="mt-12 w-full scroll-mt-20">
+      <div id="work-gallery" ref={galleryRef} aria-live="polite" className="mt-6 w-full scroll-mt-20 md:mt-12">
         {open && (
           <>
             <InlineGallery
