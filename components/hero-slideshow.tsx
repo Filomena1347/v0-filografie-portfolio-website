@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import { CloudImage } from "@/components/cloud-image"
 import { useEffect, useState } from "react"
 import type { HeroSlide } from "@/lib/hero-slides"
 
@@ -39,13 +39,13 @@ export function HeroSlideImages({ slides, index, lang }: SlideImagesProps) {
               isActive ? "opacity-100" : "opacity-0"
             }`}
           >
-            <Image
+            <CloudImage
               src={slide.src}
               alt={alt}
               fill
-              unoptimized
               priority={i === 0}
               sizes="100vw"
+              maxWidth={1200}
               className="object-cover"
               style={{ objectPosition: slide.objectPosition }}
             />

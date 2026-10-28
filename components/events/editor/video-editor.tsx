@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
+import { CloudImage } from "@/components/cloud-image"
 import {
   DndContext,
   KeyboardSensor,
@@ -55,7 +55,7 @@ function SortableReel({
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={`group relative aspect-[9/16] overflow-hidden rounded-[4px] bg-ev-soft ${isDragging ? 'z-10 shadow-[0_12px_40px_rgba(0,0,0,0.25)]' : ''}`}
     >
-      <Image
+      <CloudImage
         src={video.poster.src}
         alt=""
         width={video.poster.width}

@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import { CloudImage } from "@/components/cloud-image"
 import { useLanguage } from "@/context/language-context"
 
 export function ThreePillars() {
@@ -35,7 +35,7 @@ export function ThreePillars() {
         {pillars.map((p) => (
           <a key={p.href} href={p.href} className="group block">
             <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
-              <Image
+              <CloudImage
                 src={p.img || "/placeholder.svg"}
                 alt={p.title}
                 fill

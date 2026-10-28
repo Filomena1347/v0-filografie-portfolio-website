@@ -1,8 +1,13 @@
 "use client"
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { CloudImage } from "@/components/cloud-image"
 import { JustifiedGrid, useItemRatios } from "@/components/justified-grid"
 import type { MediaItem } from "@/lib/media"
+
+const GALLERY_SIZES = "(max-width: 768px) 50vw, 20vw"
+// A wide tile spans two of the five desktop columns.
+const WIDE_GALLERY_SIZES = "(max-width: 768px) 50vw, 40vw"
 
 type InlineGalleryProps = {
   items: MediaItem[]
@@ -35,19 +40,18 @@ function GalleryImage({
     <>
       {!loaded && <div className="absolute inset-0 animate-pulse bg-foreground/5" aria-hidden="true" />}
       {/* The surrounding box already has the photo's aspect ratio, so cover never crops it. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <CloudImage
         ref={imgRef}
         src={item.url || "/placeholder.svg"}
         alt={item.title ?? ""}
-        loading="lazy"
-        decoding="async"
+        fill
+        sizes={GALLERY_SIZES}
         onLoad={(e) => {
           onSize(item.id, e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)
           setLoaded(true)
         }}
         onError={() => setLoaded(true)}
-        className={`absolute inset-0 block h-full w-full object-cover transition-opacity duration-700 ease-out motion-reduce:transition-none ${
+        className={`object-cover transition-opacity duration-700 ease-out motion-reduce:transition-none ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
       />
@@ -137,7 +141,7 @@ function useMasonryMetrics(ref: React.RefObject<HTMLDivElement | null>) {
   return metrics
 }
 
-function MasonryImage({ item }: { item: MediaItem }) {
+function MasonryImage({ item, wide }: { item: MediaItem; wide: boolean }) {
   const imgRef = useRef<HTMLImageElement>(null)
   const [loaded, setLoaded] = useState(false)
 
@@ -147,16 +151,15 @@ function MasonryImage({ item }: { item: MediaItem }) {
   }, [item.id])
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    <CloudImage
       ref={imgRef}
       src={item.url || "/placeholder.svg"}
       alt={item.title ?? ""}
-      loading="lazy"
-      decoding="async"
+      fill
+      sizes={wide ? WIDE_GALLERY_SIZES : GALLERY_SIZES}
       onLoad={() => setLoaded(true)}
       onError={() => setLoaded(true)}
-      className={`absolute inset-0 block h-full w-full object-cover transition-[opacity,transform,filter] duration-500 ease-out motion-reduce:transition-none group-hover:scale-[1.03] group-hover:brightness-105 motion-reduce:group-hover:scale-100 ${
+      className={`object-cover transition-[opacity,transform,filter] duration-500 ease-out motion-reduce:transition-none group-hover:scale-[1.03] group-hover:brightness-105 motion-reduce:group-hover:scale-100 ${
         loaded ? "opacity-100" : "opacity-0"
       }`}
     />
@@ -234,7 +237,7 @@ function MasonryGrid({ items }: { items: MediaItem[] }) {
               className="absolute inset-0 block h-full w-full object-cover"
             />
           ) : (
-            <MasonryImage item={tile.item} />
+            <MasonryImage item={tile.item} wide={tile.colSpan === 2} />
           )}
         </RevealFigure>
       ))}
