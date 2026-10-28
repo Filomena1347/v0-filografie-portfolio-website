@@ -140,14 +140,14 @@ export function Navbar() {
               </button>
             </div>
 
-            <nav aria-label="Menu" className="flex flex-1 flex-col items-center justify-center gap-10 px-6">
+            <nav aria-label="Menu" className="flex flex-1 flex-col items-center justify-center gap-8 px-6">
               {links.map((l, i) => (
                 <a
                   key={l.href}
                   href={l.href}
                   onClick={() => setMenuOpen(false)}
                   style={{ transitionDelay: menuOpen ? `${150 + i * 90}ms` : "0ms" }}
-                  className={`font-serif text-5xl leading-none tracking-tight text-foreground transition-[opacity,transform,color] duration-700 ease-out hover:text-primary motion-reduce:transition-none ${
+                  className={`font-serif text-4xl leading-none tracking-tight text-foreground transition-[opacity,transform,color] duration-700 ease-out hover:text-primary motion-reduce:transition-none ${
                     menuOpen ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
                   }`}
                 >
