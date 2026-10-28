@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Fraunces, Inter } from 'next/font/google'
 import { LanguageProvider } from '@/context/language-context'
-import { CookieConsent } from '@/components/cookie-consent'
+import { AnalyticsOnInteraction } from '@/components/analytics-on-interaction'
 import { LegalFooter } from '@/components/legal-footer'
 import '../globals.css'
 
@@ -81,8 +81,8 @@ export default function RootLayout({
     <html lang="en" className={`${fraunces.variable} ${inter.variable} bg-background`}>
       <body className="font-sans antialiased bg-background text-foreground">
         <LanguageProvider>{children}</LanguageProvider>
-        <LegalFooter cookieSettings />
-        <CookieConsent />
+        <LegalFooter />
+        <AnalyticsOnInteraction />
       </body>
     </html>
   )
