@@ -3,6 +3,7 @@ import { Fraunces, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { LanguageProvider } from '@/context/language-context'
 import ClarityScript from '@/components/ClarityScript'
+import { LegalFooter } from '@/components/legal-footer'
 import '../globals.css'
 
 const fraunces = Fraunces({
@@ -82,6 +83,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground">
         <ClarityScript />
         <LanguageProvider>{children}</LanguageProvider>
+        <LegalFooter />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
