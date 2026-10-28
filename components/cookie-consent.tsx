@@ -27,8 +27,7 @@ export function CookieConsent() {
         >
           <div className="mx-auto flex max-w-3xl flex-col gap-4 rounded-xl border border-border bg-background p-4 text-foreground shadow-lg sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-5">
             <p className="text-sm leading-relaxed text-pretty">
-              Tento web používá cookies.
-              <span className="text-foreground/60"> / This site uses cookies.</span>
+              This site uses cookies.
             </p>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <button
@@ -36,14 +35,14 @@ export function CookieConsent() {
                 onClick={saveConsent}
                 className="rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               >
-                Pouze nezbytné / Essential only
+                Essential only
               </button>
               <button
                 type="button"
                 onClick={saveConsent}
                 className="rounded-full bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               >
-                Přijmout vše / Accept all
+                Accept all
               </button>
             </div>
           </div>

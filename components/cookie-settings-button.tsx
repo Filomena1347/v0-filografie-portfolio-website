@@ -9,7 +9,7 @@ export function CookieSettingsButton() {
       onClick={openCookieBanner}
       className="underline-offset-2 hover:underline focus-visible:underline"
     >
-      Cookie nastavení
+      Cookie settings
     </button>
   )
 }
