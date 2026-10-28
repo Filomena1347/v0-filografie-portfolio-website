@@ -9,6 +9,8 @@ type Dict = {
   nav_about: string
   hero_filter_weddings: string
   hero_filter_graphics: string
+  hero_filter_portraits: string
+  hero_filter_products: string
   hero_card_weddings_cat: string
   hero_card_weddings_desc: string
   hero_card_graphics_cat: string
@@ -108,6 +110,8 @@ const translations: Record<Lang, Dict> = {
     nav_about: "O mně",
     hero_filter_weddings: "Svatby",
     hero_filter_graphics: "Grafika",
+  hero_filter_portraits: "Portréty",
+  hero_filter_products: "Produktová fotografie",
     hero_card_weddings_cat: "Svatby",
     hero_card_weddings_desc: "Svatební den od příprav po první tanec",
     hero_card_graphics_cat: "Grafika",
@@ -206,6 +210,8 @@ const translations: Record<Lang, Dict> = {
     nav_about: "About",
     hero_filter_weddings: "Weddings",
     hero_filter_graphics: "Graphics",
+  hero_filter_portraits: "Portraits",
+  hero_filter_products: "Product Photography",
     hero_card_weddings_cat: "Weddings",
     hero_card_weddings_desc: "From getting ready to the first dance",
     hero_card_graphics_cat: "Graphics",
