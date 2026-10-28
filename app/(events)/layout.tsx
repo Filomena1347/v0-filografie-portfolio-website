@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Instrument_Serif } from 'next/font/google'
+import { LegalFooter } from '@/components/legal-footer'
 import './events.css'
 
 const geist = Geist({
@@ -56,7 +57,10 @@ export default function EventsRootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geist.variable} ${instrumentSerif.variable} bg-ev-bg`}>
-      <body className="bg-ev-bg font-body text-ev-text antialiased">{children}</body>
+      <body className="bg-ev-bg font-body text-ev-text antialiased">
+        {children}
+        <LegalFooter />
+      </body>
     </html>
   )
 }
