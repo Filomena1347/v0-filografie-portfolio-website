@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import { CloudImage } from "@/components/cloud-image"
 import { useMemo, useRef, useState, useSyncExternalStore } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useLanguage } from "@/context/language-context"
@@ -165,7 +165,7 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
                         isActive ? "border-primary" : "border-border"
                       }`}
                     >
-                      <Image
+                      <CloudImage
                         src={card.image || "/placeholder.svg"}
                         alt={`${card.category} — ${card.desc}`}
                         fill

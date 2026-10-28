@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
+import { CloudImage } from "@/components/cloud-image"
 import { Play } from 'lucide-react'
 import type { EventVideo } from '@/lib/events-data'
 
@@ -43,7 +43,7 @@ function Reel({ video, active, onActivate, priority }: ReelProps) {
 
       {!active && (
         <>
-          <Image
+          <CloudImage
             src={video.poster.src}
             alt=""
             width={video.poster.width}

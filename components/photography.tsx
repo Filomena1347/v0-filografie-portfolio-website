@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { CloudImage } from "@/components/cloud-image"
 import { useLanguage } from "@/context/language-context"
 import type { MediaItem } from "@/lib/media"
 
@@ -65,11 +66,12 @@ export function Photography({ items }: { items: MediaItem[] }) {
                 className="relative break-inside-avoid overflow-hidden group"
                 style={{ animation: `fadeUp 0.5s ease-out ${Math.min(idx, 8) * 0.05}s both` }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <CloudImage
                   src={item.url || "/placeholder.svg"}
                   alt={item.title ?? "Photograph"}
-                  loading="lazy"
+                  width={item.width ?? 800}
+                  height={item.height ?? 1000}
+                  sizes="(max-width: 768px) 50vw, 33vw"
                   className="w-full h-auto align-top transition-transform duration-700 group-hover:scale-[1.03]"
                 />
               </figure>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
+import { CloudImage } from "@/components/cloud-image"
 import {
   DndContext,
   DragOverlay,
@@ -60,7 +60,7 @@ function SortablePhoto({
       <div
         className={`overflow-hidden rounded-[4px] bg-ev-soft ${isOver && !isDragging ? 'outline outline-2 outline-offset-2 outline-ev-text' : ''}`}
       >
-        <Image
+        <CloudImage
           src={photo.src}
           alt={photo.alt}
           width={photo.width}
@@ -166,7 +166,7 @@ export default function PhotoEditor() {
 
         <DragOverlay>
           {activePhoto ? (
-            <Image
+            <CloudImage
               src={activePhoto.src}
               alt=""
               width={activePhoto.width}

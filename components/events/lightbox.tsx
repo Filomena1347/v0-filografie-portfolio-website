@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import Image from 'next/image'
+import { CloudImage } from "@/components/cloud-image"
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import type { EventPhoto } from '@/lib/events-data'
 
@@ -68,13 +68,14 @@ export function Lightbox({ photos, index, onIndexChange, onClose }: LightboxProp
         if (event.target === event.currentTarget) onClose()
       }}
     >
-      <Image
+      <CloudImage
         key={photo.id}
         src={photo.fullSrc ?? photo.src}
         alt={photo.alt}
         width={photo.width}
         height={photo.height}
         sizes="100vw"
+        maxWidth={1200}
         className="h-auto max-h-[calc(100dvh-160px)] w-auto max-w-[calc(100vw-40px)] rounded-[4px] bg-ev-soft object-contain md:max-w-[calc(100vw-240px)]"
       />
 

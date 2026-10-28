@@ -1,5 +1,6 @@
 "use client"
 
+import { CloudImage } from "@/components/cloud-image"
 import { useLanguage } from "@/context/language-context"
 import type { MediaItem } from "@/lib/media"
 
@@ -11,11 +12,13 @@ export function About({ photo }: { photo: MediaItem | null }) {
       <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-16">
         <div className="w-full md:w-5/12">
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-card">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <CloudImage
               src={photo?.url || "/images/filomena.jpg"}
               alt={photo?.title ?? "Filoména"}
-              className="h-full w-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 42vw"
+              maxWidth={1200}
+              className="object-cover"
             />
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import { CloudImage } from "@/components/cloud-image"
 import { useLanguage } from "@/context/language-context"
 import type { MediaItem } from "@/lib/media"
 
@@ -41,7 +41,7 @@ export function Content({ items }: { items: MediaItem[] }) {
                   preload="metadata"
                 />
               ) : (
-                <Image
+                <CloudImage
                   src={item.url || "/placeholder.svg"}
                   alt={item.title ?? "Content"}
                   fill

@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import Image from 'next/image'
+import { CloudImage } from "@/components/cloud-image"
 import type { EventPhoto } from '@/lib/events-data'
 import { Lightbox } from './lightbox'
 
@@ -38,7 +38,7 @@ export function PhotoGrid({ photos }: { photos: EventPhoto[] }) {
               aria-label={`Open photo ${index + 1} of ${photos.length}`}
               className="block w-full cursor-zoom-in overflow-hidden rounded-[4px] bg-ev-soft"
             >
-              <Image
+              <CloudImage
                 src={photo.src}
                 alt={photo.alt}
                 width={photo.width}
