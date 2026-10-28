@@ -30,11 +30,20 @@ export type MediaItem = {
 
 export const PHOTO_CATEGORIES = ["Events", "Gastro", "Weddings", "Portraits"] as const
 
-export const CATEGORY_KEYS = ["video", "events", "gastro", "weddings", "ugc", "graphics"] as const
+export const CATEGORY_KEYS = [
+  "video",
+  "events",
+  "gastro",
+  "weddings",
+  "ugc",
+  "portraits",
+  "graphics",
+  "products",
+] as const
 export type CategoryKey = (typeof CATEGORY_KEYS)[number]
 
 // Temporarily hidden from the public site; remove a key here to restore it.
-export const HIDDEN_CATEGORIES: CategoryKey[] = ["ugc", "graphics"]
+export const HIDDEN_CATEGORIES: CategoryKey[] = ["ugc"]
 
 export const CATEGORY_LABELS: Record<CategoryKey, string> = {
   video: "Video",
@@ -42,7 +51,9 @@ export const CATEGORY_LABELS: Record<CategoryKey, string> = {
   gastro: "Gastro",
   weddings: "Svatby",
   ugc: "UGC",
+  portraits: "Portréty",
   graphics: "Grafika",
+  products: "Produktová fotografie",
 }
 
 const LEGACY_PHOTO_CATEGORY: Record<string, CategoryKey> = {

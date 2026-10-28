@@ -55,7 +55,9 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
       { key: "weddings", label: t.hero_filter_weddings },
       { key: "video", label: t.hero_filter_video },
       { key: "ugc", label: t.hero_filter_ugc },
+      { key: "portraits", label: t.hero_filter_portraits },
       { key: "graphics", label: t.hero_filter_graphics },
+      { key: "products", label: t.hero_filter_products },
     ] as { key: FilterKey; label: string }[]
   ).filter((f) => f.key === "all" || !HIDDEN_CATEGORIES.includes(f.key as CategoryKey))
 
