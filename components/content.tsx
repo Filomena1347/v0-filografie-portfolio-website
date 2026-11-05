@@ -1,5 +1,6 @@
 "use client"
 
+import { AutoplayVideo } from "@/components/autoplay-video"
 import { CloudImage } from "@/components/cloud-image"
 import { useLanguage } from "@/context/language-context"
 import type { MediaItem } from "@/lib/media"
@@ -31,15 +32,7 @@ export function Content({ items }: { items: MediaItem[] }) {
           {items.map((item) => (
             <div key={item.id} className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted group">
               {item.type === "video" ? (
-                <video
-                  src={item.url}
-                  className="h-full w-full object-cover"
-                  muted
-                  loop
-                  playsInline
-                  autoPlay
-                  preload="metadata"
-                />
+                <AutoplayVideo src={item.url} poster={item.thumbnail_url} />
               ) : (
                 <CloudImage
                   src={item.url || "/placeholder.svg"}

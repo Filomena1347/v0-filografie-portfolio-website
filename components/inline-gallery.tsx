@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { AutoplayVideo } from "@/components/autoplay-video"
 import { CloudImage } from "@/components/cloud-image"
 import { JustifiedGrid, useItemRatios } from "@/components/justified-grid"
 import type { MediaItem } from "@/lib/media"
@@ -228,14 +229,7 @@ function MasonryGrid({ items }: { items: MediaItem[] }) {
       {tiles.map((tile, index) => (
         <RevealFigure key={tile.item.id} tile={tile} delayIndex={index % cols}>
           {tile.item.type === "video" ? (
-            <video
-              src={tile.item.url}
-              poster={tile.item.thumbnail_url ?? undefined}
-              controls
-              playsInline
-              preload="metadata"
-              className="absolute inset-0 block h-full w-full object-cover"
-            />
+            <AutoplayVideo src={tile.item.url} poster={tile.item.thumbnail_url} />
           ) : (
             <MasonryImage item={tile.item} wide={tile.colSpan === 2} />
           )}
@@ -262,16 +256,11 @@ export function InlineGallery({ items, emptyLabel, animationKey, layout = "justi
           renderItem={(item, _index, boxStyle) => (
             <div key={item.id} className="relative min-w-0 overflow-hidden bg-muted" style={boxStyle}>
               {item.type === "video" ? (
-                <video
+                <AutoplayVideo
                   src={item.url}
-                  poster={item.thumbnail_url ?? undefined}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  onLoadedMetadata={(e) =>
-                    reportSize(item.id, e.currentTarget.videoWidth, e.currentTarget.videoHeight)
-                  }
-                  className="absolute inset-0 block h-full w-full object-contain"
+                  poster={item.thumbnail_url}
+                  fit="contain"
+                  onLoadedMetadata={(video) => reportSize(item.id, video.videoWidth, video.videoHeight)}
                 />
               ) : (
                 <GalleryImage item={item} onSize={reportSize} />
