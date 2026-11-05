@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import dynamic from 'next/dynamic'
 import { useEventsAdmin } from './admin-context'
 
@@ -28,7 +29,8 @@ export function EditDot() {
         onClick={handleClick}
         className="relative block size-2 shrink-0 cursor-default appearance-none rounded-full border-0 bg-ev-accent p-0 before:absolute before:-inset-2 before:content-['']"
       />
-      {loginOpen && <LoginDialog onClose={() => setLoginOpen(false)} />}
+      {/* The dot sits inside the eyebrow <p>; a dialog is not valid there and would inherit its uppercase styling. */}
+      {loginOpen && createPortal(<LoginDialog onClose={() => setLoginOpen(false)} />, document.body)}
     </>
   )
 }
