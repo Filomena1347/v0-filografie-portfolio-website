@@ -17,6 +17,7 @@ import {
   FolderUp,
   Monitor,
   Smartphone,
+  Cloud,
 } from "lucide-react"
 import type { CategoryKey, MediaItem, MediaSection, OrderDevice } from "@/lib/media"
 import { CATEGORY_KEYS, CATEGORY_LABELS, PHOTO_CATEGORIES, hiddenLast } from "@/lib/media"
@@ -25,6 +26,8 @@ import { BulkActionBar } from "@/components/admin/bulk-action-bar"
 import { PositionInput } from "@/components/admin/position-input"
 import { HeroSlidesManager } from "@/components/admin/hero-slides-manager"
 import { EventsManager } from "@/components/admin/events-manager"
+import { CloudinaryBrowser } from "@/components/admin/cloudinary-browser"
+import type { CloudinaryAsset, CloudinaryTypeFilter } from "@/lib/cloudinary-assets"
 
 const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
   { key: "cover", label: "Category covers", accept: "image/*" },
@@ -65,6 +68,10 @@ export function AdminDashboard() {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [batch, setBatch] = useState({ current: 0, total: 0 })
+  const [browseOpen, setBrowseOpen] = useState(false)
+  const sectionAccept = SECTIONS.find((s) => s.key === section)?.accept
+  const cloudinaryAllow: CloudinaryTypeFilter =
+    sectionAccept === "image/*" ? "image" : sectionAccept === "video/*" ? "video" : "all"
   const [error, setError] = useState("")
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [bulkBusy, setBulkBusy] = useState(false)
@@ -184,6 +191,55 @@ export function AdminDashboard() {
     await uploadFiles(videos)
   }
 
+  async function saveMediaItem(asset: {
+    public_id: string
+    url: string
+    width?: number | null
+    height?: number | null
+    resourceType: string
+  }) {
+    const type = asset.resourceType === "video" ? "video" : "photo"
+    const thumbnail_url = type === "video" ? asset.url.replace(/\.[^/.]+$/, ".jpg") : null
+
+    const res = await fetch("/api/admin/media", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type,
+        section,
+        category: usesCategory
+          ? category
+          : section === "photography"
+            ? PHOTO_CATEGORIES[0]
+            : null,
+        public_id: asset.public_id,
+        url: asset.url,
+        thumbnail_url,
+        width: asset.width,
+        height: asset.height,
+      }),
+    })
+    if (!res.ok) {
+      let detail = `HTTP ${res.status}`
+      try {
+        detail = (await res.json())?.error || detail
+      } catch {}
+      throw new Error(`Failed to save media: ${detail}`)
+    }
+    const { item } = await res.json()
+    updateItems((prev) => [...prev, item])
+  }
+
+  async function addCloudinaryAsset(asset: CloudinaryAsset) {
+    await saveMediaItem({
+      public_id: asset.public_id,
+      url: asset.url,
+      width: asset.width,
+      height: asset.height,
+      resourceType: asset.kind,
+    })
+  }
+
   async function uploadFiles(files: File[]) {
     if (files.length === 0) return
     setError("")
@@ -194,39 +250,7 @@ export function AdminDashboard() {
         setBatch({ current: index + 1, total: files.length })
         setProgress(0)
         const uploaded = await uploadToCloudinary(file)
-        const type = uploaded.resourceType === "video" ? "video" : "photo"
-        const thumbnail_url =
-          type === "video"
-            ? uploaded.url.replace(/\.[^/.]+$/, ".jpg")
-            : null
-
-        const res = await fetch("/api/admin/media", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type,
-            section,
-            category: usesCategory
-              ? category
-              : section === "photography"
-                ? PHOTO_CATEGORIES[0]
-                : null,
-            public_id: uploaded.public_id,
-            url: uploaded.url,
-            thumbnail_url,
-            width: uploaded.width,
-            height: uploaded.height,
-          }),
-        })
-        if (!res.ok) {
-          let detail = `HTTP ${res.status}`
-          try {
-            detail = (await res.json())?.error || detail
-          } catch {}
-          throw new Error(`Failed to save media: ${detail}`)
-        }
-        const { item } = await res.json()
-        updateItems((prev) => [...prev, item])
+        await saveMediaItem(uploaded)
       }
     } catch (err) {
       setError((err as Error).message)
@@ -754,6 +778,17 @@ export function AdminDashboard() {
                 Upload video folder
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => setBrowseOpen(true)}
+              disabled={uploading}
+              className={`inline-flex items-center gap-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60 ${
+                section === "gallery" ? "px-4 py-1.5 text-xs" : "px-6 py-2.5 text-sm"
+              }`}
+            >
+              <Cloud className={section === "gallery" ? "w-3.5 h-3.5" : "w-4 h-4"} />
+              Browse Cloudinary
+            </button>
           </div>
         )}
         {orderDirty && (
@@ -771,6 +806,13 @@ export function AdminDashboard() {
           </div>
         )}
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+        <CloudinaryBrowser
+          open={browseOpen}
+          onOpenChange={setBrowseOpen}
+          allow={cloudinaryAllow}
+          existingIds={new Set(items.map((item) => item.public_id))}
+          onAdd={addCloudinaryAsset}
+        />
       </div>
 
       {/* List */}
