@@ -121,28 +121,28 @@ export function CloudinaryBrowser({ open, onOpenChange, allow, existingIds, onAd
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="flex max-h-[90vh] w-[calc(100%-2rem)] flex-col gap-4 sm:max-w-4xl">
+      <DialogContent className="flex max-h-[90vh] w-[calc(100%-2rem)] flex-col gap-4 border-ev-line bg-ev-bg text-ev-text sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>Browse Cloudinary</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-ev-muted">
             Pick assets that are already uploaded and add them here. Nothing is uploaded again.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative min-w-48 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/40" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ev-text/40" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search filename or folder"
               aria-label="Search filename or folder"
-              className="w-full rounded-full border border-border bg-background py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:outline-none"
+              className="w-full rounded-full border border-ev-line bg-ev-bg py-2 pl-9 pr-4 text-sm text-ev-text placeholder:text-ev-text/40 focus:border-ev-text focus:outline-none"
             />
           </div>
           {allow === "all" && (
-            <div role="group" aria-label="Asset type" className="flex rounded-full border border-border p-0.5">
+            <div role="group" aria-label="Asset type" className="flex rounded-full border border-ev-line p-0.5">
               {TYPE_OPTIONS.map((option) => (
                 <button
                   key={option.value}
@@ -151,8 +151,8 @@ export function CloudinaryBrowser({ open, onOpenChange, allow, existingIds, onAd
                   onClick={() => setTypeFilter(option.value)}
                   className={`rounded-full px-3 py-1 text-xs transition-colors ${
                     typeFilter === option.value
-                      ? "bg-primary text-primary-foreground"
-                      : "text-foreground/60 hover:text-foreground"
+                      ? "bg-ev-text text-ev-bg"
+                      : "text-ev-text/60 hover:text-ev-text"
                   }`}
                 >
                   {option.label}
@@ -165,22 +165,22 @@ export function CloudinaryBrowser({ open, onOpenChange, allow, existingIds, onAd
         <div className="min-h-64 flex-1 overflow-y-auto pr-1">
           {error ? (
             <div role="alert" className="flex flex-col items-center gap-3 py-10 text-center">
-              <p className="text-sm text-destructive">{error.message}</p>
+              <p className="text-sm text-ev-accent">{error.message}</p>
               <button
                 type="button"
                 onClick={() => mutate()}
-                className="rounded-full border border-border px-4 py-1.5 text-xs text-foreground/70 transition-colors hover:text-primary"
+                className="rounded-full border border-ev-line px-4 py-1.5 text-xs text-ev-text/70 transition-colors hover:text-ev-text"
               >
                 Try again
               </button>
             </div>
           ) : isLoading ? (
-            <p className="flex items-center justify-center gap-2 py-10 text-sm text-foreground/50">
+            <p className="flex items-center justify-center gap-2 py-10 text-sm text-ev-text/50">
               <Loader2 className="h-4 w-4 animate-spin" />
               {debouncedQuery ? "Searching Cloudinary…" : "Loading assets…"}
             </p>
           ) : assets.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border py-10 text-center text-sm text-foreground/50">
+            <p className="rounded-lg border border-dashed border-ev-line py-10 text-center text-sm text-ev-text/50">
               {debouncedQuery ? "No assets match this search." : "No assets found in Cloudinary."}
             </p>
           ) : (
@@ -200,8 +200,8 @@ export function CloudinaryBrowser({ open, onOpenChange, allow, existingIds, onAd
                         className="group block w-full text-left disabled:cursor-not-allowed"
                       >
                         <span
-                          className={`relative block aspect-square overflow-hidden rounded-md bg-muted ring-offset-2 ring-offset-background transition-shadow ${
-                            isSelected ? "ring-2 ring-primary" : "group-hover:ring-1 group-hover:ring-border"
+                          className={`relative block aspect-square overflow-hidden rounded-md bg-ev-soft ring-offset-2 ring-offset-ev-bg transition-shadow ${
+                            isSelected ? "ring-2 ring-ev-text" : "group-hover:ring-1 group-hover:ring-ev-line"
                           } ${alreadyAdded ? "opacity-50" : ""}`}
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -212,27 +212,27 @@ export function CloudinaryBrowser({ open, onOpenChange, allow, existingIds, onAd
                             className="h-full w-full object-cover"
                           />
                           {asset.kind === "video" && (
-                            <span className="absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-background/80 px-2 py-0.5 text-[10px] text-foreground backdrop-blur-sm">
+                            <span className="absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-ev-bg/80 px-2 py-0.5 text-[10px] text-ev-text backdrop-blur-sm">
                               <Play className="h-2.5 w-2.5" />
                               Video
                             </span>
                           )}
                           {isSelected && (
-                            <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                            <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ev-text text-ev-bg">
                               <Check className="h-3 w-3" />
                             </span>
                           )}
                           {alreadyAdded && (
-                            <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 bg-background/80 py-0.5 text-center text-[10px] text-foreground">
+                            <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 bg-ev-bg/80 py-0.5 text-center text-[10px] text-ev-text">
                               Already added
                             </span>
                           )}
                         </span>
-                        <span className="mt-1 block truncate text-xs text-foreground" title={asset.public_id}>
+                        <span className="mt-1 block truncate text-xs text-ev-text" title={asset.public_id}>
                           {asset.filename}
                         </span>
                         {asset.folder && (
-                          <span className="block truncate text-[11px] text-foreground/50">{asset.folder}</span>
+                          <span className="block truncate text-[11px] text-ev-text/50">{asset.folder}</span>
                         )}
                       </button>
                     </li>
@@ -245,7 +245,7 @@ export function CloudinaryBrowser({ open, onOpenChange, allow, existingIds, onAd
                     type="button"
                     onClick={() => setSize(size + 1)}
                     disabled={isValidating}
-                    className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-1.5 text-xs text-foreground/70 transition-colors hover:text-primary disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-full border border-ev-line px-5 py-1.5 text-xs text-ev-text/70 transition-colors hover:text-ev-text disabled:opacity-60"
                   >
                     {loadingMore && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                     {loadingMore ? "Loading…" : "Load more"}
@@ -256,17 +256,17 @@ export function CloudinaryBrowser({ open, onOpenChange, allow, existingIds, onAd
           )}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-          <p aria-live="polite" className="text-xs text-foreground/50">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ev-line pt-3">
+          <p aria-live="polite" className="text-xs text-ev-text/50">
             {selected.size > 0 ? `${selected.size} selected` : `${assets.length} loaded${hasMore ? ", more available" : ""}`}
-            {addError && <span className="ml-3 text-destructive">{addError}</span>}
+            {addError && <span className="ml-3 text-ev-accent">{addError}</span>}
           </p>
           <div className="flex items-center gap-2">
             {selected.size > 0 && !adding && (
               <button
                 type="button"
                 onClick={() => setSelected(new Map())}
-                className="rounded-full border border-border px-4 py-1.5 text-xs text-foreground/70 transition-colors hover:text-primary"
+                className="rounded-full border border-ev-line px-4 py-1.5 text-xs text-ev-text/70 transition-colors hover:text-ev-text"
               >
                 Clear
               </button>
@@ -275,7 +275,7 @@ export function CloudinaryBrowser({ open, onOpenChange, allow, existingIds, onAd
               type="button"
               onClick={addSelected}
               disabled={selected.size === 0 || adding}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-1.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-ev-text px-5 py-1.5 text-xs font-medium text-ev-bg transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {adding && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               {adding
