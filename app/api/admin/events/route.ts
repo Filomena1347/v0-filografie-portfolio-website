@@ -2,9 +2,9 @@ import { NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import { isAuthed } from "@/lib/auth"
 import {
-  isItemPublicId,
   isMediaType,
   isOwnCloudinaryUrl,
+  isPosterPublicId,
   revalidateEvents,
   toResourceType,
   type AdminEventItem,
@@ -54,8 +54,9 @@ export async function POST(request: Request) {
   if (!isMediaType(type)) {
     return NextResponse.json({ error: "type must be photo or video" }, { status: 400 })
   }
-  if (typeof publicId !== "string" || !isItemPublicId(publicId)) {
-    return NextResponse.json({ error: "cloudinary_public_id must be inside the events folder" }, { status: 400 })
+  // Uploads land in events/, assets picked from the Cloudinary browser can live in any folder of the account.
+  if (typeof publicId !== "string" || publicId.length === 0 || publicId.length > 512 || isPosterPublicId(publicId)) {
+    return NextResponse.json({ error: "cloudinary_public_id is not valid for an events item" }, { status: 400 })
   }
   if (!isOwnCloudinaryUrl(url, toResourceType(type))) {
     return NextResponse.json({ error: "url must be a Cloudinary URL of this account" }, { status: 400 })
@@ -68,6 +69,10 @@ export async function POST(request: Request) {
     // The lock keeps the "next sort_order" correct when several inserts arrive at once.
     const item = await sql.begin(async (tx) => {
       await tx`SELECT pg_advisory_xact_lock(hashtext('events_media_sort_order'))`
+      const [duplicate] = await tx`
+        SELECT id FROM events_media WHERE type = ${type} AND cloudinary_public_id = ${publicId} LIMIT 1
+      `
+      if (duplicate) return null
       const [row] = await tx`
         INSERT INTO events_media (type, cloudinary_public_id, url, width, height, sort_order)
         VALUES (
@@ -82,6 +87,8 @@ export async function POST(request: Request) {
       `
       return row
     })
+
+    if (!item) return NextResponse.json({ error: "This asset is already on the events page" }, { status: 409 })
 
     revalidateEvents()
     return NextResponse.json({ item })

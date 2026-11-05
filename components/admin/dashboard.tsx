@@ -184,6 +184,45 @@ export function AdminDashboard() {
     await uploadFiles(videos)
   }
 
+  async function saveMediaItem(asset: {
+    public_id: string
+    url: string
+    width?: number | null
+    height?: number | null
+    resourceType: string
+  }) {
+    const type = asset.resourceType === "video" ? "video" : "photo"
+    const thumbnail_url = type === "video" ? asset.url.replace(/\.[^/.]+$/, ".jpg") : null
+
+    const res = await fetch("/api/admin/media", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type,
+        section,
+        category: usesCategory
+          ? category
+          : section === "photography"
+            ? PHOTO_CATEGORIES[0]
+            : null,
+        public_id: asset.public_id,
+        url: asset.url,
+        thumbnail_url,
+        width: asset.width,
+        height: asset.height,
+      }),
+    })
+    if (!res.ok) {
+      let detail = `HTTP ${res.status}`
+      try {
+        detail = (await res.json())?.error || detail
+      } catch {}
+      throw new Error(`Failed to save media: ${detail}`)
+    }
+    const { item } = await res.json()
+    updateItems((prev) => [...prev, item])
+  }
+
   async function uploadFiles(files: File[]) {
     if (files.length === 0) return
     setError("")
@@ -194,39 +233,7 @@ export function AdminDashboard() {
         setBatch({ current: index + 1, total: files.length })
         setProgress(0)
         const uploaded = await uploadToCloudinary(file)
-        const type = uploaded.resourceType === "video" ? "video" : "photo"
-        const thumbnail_url =
-          type === "video"
-            ? uploaded.url.replace(/\.[^/.]+$/, ".jpg")
-            : null
-
-        const res = await fetch("/api/admin/media", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type,
-            section,
-            category: usesCategory
-              ? category
-              : section === "photography"
-                ? PHOTO_CATEGORIES[0]
-                : null,
-            public_id: uploaded.public_id,
-            url: uploaded.url,
-            thumbnail_url,
-            width: uploaded.width,
-            height: uploaded.height,
-          }),
-        })
-        if (!res.ok) {
-          let detail = `HTTP ${res.status}`
-          try {
-            detail = (await res.json())?.error || detail
-          } catch {}
-          throw new Error(`Failed to save media: ${detail}`)
-        }
-        const { item } = await res.json()
-        updateItems((prev) => [...prev, item])
+        await saveMediaItem(uploaded)
       }
     } catch (err) {
       setError((err as Error).message)
