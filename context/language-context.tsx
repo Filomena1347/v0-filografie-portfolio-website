@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import { pathInLanguage } from "@/lib/category-routes"
 
 export type Lang = "cs" | "en"
 
@@ -330,9 +331,8 @@ export function LanguageProvider({
     setLang(next)
     // Only the public site has language URLs; replaceState keeps the Back button from trapping visitors.
     const { pathname, search, hash } = window.location
-    if (/^\/(cs|en)?\/?$/.test(pathname)) {
-      window.history.replaceState(window.history.state, "", `${next === "cs" ? "/cs" : "/"}${search}${hash}`)
-    }
+    const target = pathInLanguage(pathname, next)
+    if (target) window.history.replaceState(window.history.state, "", `${target}${search}${hash}`)
   }, [lang])
   return (
     <LanguageContext.Provider value={{ lang, setLang, toggle, t: translations[lang] }}>
