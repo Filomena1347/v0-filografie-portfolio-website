@@ -1,10 +1,11 @@
 "use client"
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react"
-import { ChevronsUp, Eye, EyeOff, GripVertical, ImagePlus, LayoutGrid, RectangleHorizontal, Undo2, X } from "lucide-react"
+import { ChevronsUp, Download, Eye, EyeOff, GripVertical, ImagePlus, LayoutGrid, RectangleHorizontal, Undo2, X } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { PositionInput } from "@/components/admin/position-input"
 import { buildGridTiles, masonryGridStyle, tilePlacement } from "@/components/inline-gallery"
+import { downloadOriginal } from "@/lib/download-original"
 import type { MediaItem } from "@/lib/media"
 
 /** Width of a phone preview; the public gallery shows 2 columns below 768px. */
@@ -205,6 +206,17 @@ export function GalleryGrid({
                       className={`${overlayButton} hover:text-primary`}
                     >
                       <ImagePlus className="h-4 w-4" />
+                    </button>
+                  )}
+                  {item.type === "photo" && (
+                    <button
+                      type="button"
+                      onClick={() => void downloadOriginal(item.url, item.public_id)}
+                      title="Stáhnout originál"
+                      aria-label="Stáhnout originál"
+                      className={`${overlayButton} hover:text-primary`}
+                    >
+                      <Download className="h-4 w-4" />
                     </button>
                   )}
                   {!isMobilePreview && (
