@@ -1,5 +1,6 @@
 "use client"
 
+import { AutoplayVideo } from "@/components/autoplay-video"
 import { useLanguage } from "@/context/language-context"
 import type { MediaItem } from "@/lib/media"
 
@@ -43,16 +44,7 @@ export function Video({ items }: { items: MediaItem[] }) {
           <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 -mx-6 px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {frames.map((item) => (
               <PhoneFrame key={item.id}>
-                <video
-                  src={item.url}
-                  poster={item.thumbnail_url ?? undefined}
-                  className="h-full w-full object-cover"
-                  muted
-                  loop
-                  playsInline
-                  autoPlay
-                  preload="metadata"
-                />
+                <AutoplayVideo src={item.url} poster={item.thumbnail_url} />
               </PhoneFrame>
             ))}
           </div>
