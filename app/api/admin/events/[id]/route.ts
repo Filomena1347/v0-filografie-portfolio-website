@@ -4,6 +4,7 @@ import { isAuthed } from "@/lib/auth"
 import {
   UUID_PATTERN,
   destroyCloudinaryAsset,
+  isItemPublicId,
   isOwnCloudinaryUrl,
   isPosterPublicId,
   publicIdFromUrl,
@@ -87,10 +88,14 @@ export async function DELETE(_request: Request, { params }: Context) {
     const item = await findItem(id)
     if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-    // The row is kept when Cloudinary fails, so the delete can be retried instead of orphaning the file.
-    const removed = await destroyCloudinaryAsset(item.cloudinary_public_id, toResourceType(item.type))
-    if (!removed) {
-      return NextResponse.json({ error: "Could not delete the file from Cloudinary. Try again." }, { status: 502 })
+    // Only files uploaded through the events editor are deleted from Cloudinary. An asset linked from another
+    // folder (Browse Cloudinary) may be used elsewhere, so only its row is removed.
+    if (isItemPublicId(item.cloudinary_public_id)) {
+      // The row is kept when Cloudinary fails, so the delete can be retried instead of orphaning the file.
+      const removed = await destroyCloudinaryAsset(item.cloudinary_public_id, toResourceType(item.type))
+      if (!removed) {
+        return NextResponse.json({ error: "Could not delete the file from Cloudinary. Try again." }, { status: 502 })
+      }
     }
 
     const poster = posterPublicId(item.poster_url)

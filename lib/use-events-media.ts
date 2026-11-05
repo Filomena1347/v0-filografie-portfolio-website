@@ -11,6 +11,7 @@ import {
   type UploadJob,
 } from "@/lib/events-upload"
 import type { AdminEventItem, EventsMediaType } from "@/lib/events-admin"
+import type { CloudinaryAsset } from "@/lib/cloudinary-assets"
 
 async function fetchItems(url: string): Promise<AdminEventItem[]> {
   const data = await requestJson(url)
@@ -116,6 +117,26 @@ export function useEventsMedia(type: EventsMediaType, { onUnauthorized }: Option
     })
   }
 
+  /** Links an asset that is already on Cloudinary. Throws, so the picker can show the failure. */
+  async function addExisting(asset: CloudinaryAsset) {
+    try {
+      const { item } = await requestJson("/api/admin/events", {
+        method: "POST",
+        body: JSON.stringify({
+          type,
+          cloudinary_public_id: asset.public_id,
+          url: asset.url,
+          width: asset.width,
+          height: asset.height,
+        }),
+      })
+      await mutate((prev) => [...(prev ?? []), item as AdminEventItem], { revalidate: false })
+    } catch (err) {
+      if (err instanceof UnauthorizedError) onUnauthorizedRef.current()
+      throw err
+    }
+  }
+
   async function reorder(next: AdminEventItem[]) {
     setError("")
     await mutate(next, { revalidate: false })
@@ -191,6 +212,7 @@ export function useEventsMedia(type: EventsMediaType, { onUnauthorized }: Option
     uploading,
     posterUpload,
     enqueue,
+    addExisting,
     reorder,
     pickPoster,
     resetPoster,

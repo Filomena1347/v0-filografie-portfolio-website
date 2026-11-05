@@ -28,7 +28,7 @@ import { toEventPhoto } from '@/lib/events-mapping'
 import type { AdminEventItem } from '@/lib/events-admin'
 import { useEventsAdmin } from '../admin-context'
 import { PhotoGridSkeleton } from '../skeletons'
-import { AddTile } from './add-tile'
+import { BrowseTile } from './browse-tile'
 import { ConfirmDialog } from './confirm-dialog'
 import { JobTile } from './job-tile'
 
@@ -138,6 +138,7 @@ export default function PhotoEditor() {
   const activeIndex = items.findIndex((item) => item.id === activeId)
   const activePhoto = activeIndex === -1 ? null : toEventPhoto(items[activeIndex], activeIndex)
   const pendingJobs = jobs.filter((job) => job.status !== 'done')
+  const existingIds = new Set(items.map((item) => item.cloudinary_public_id))
 
   return (
     <>
@@ -151,7 +152,7 @@ export default function PhotoEditor() {
         <SortableContext items={items.map((item) => item.id)} strategy={keepInPlace}>
           <ul className="columns-2 gap-4">
             <li className="mb-4 break-inside-avoid">
-              <AddTile type="photo" onFiles={media.enqueue} notice={media.notice} error={media.error} />
+              <BrowseTile type="photo" existingIds={existingIds} onAdd={media.addExisting} />
             </li>
             {items.map((item, index) => (
               <SortablePhoto key={item.id} item={item} index={index} onDelete={setDeleteTarget} />
@@ -181,7 +182,7 @@ export default function PhotoEditor() {
       {deleteTarget && (
         <ConfirmDialog
           title="Delete this photo?"
-          description="It is removed from Cloudinary and from the events page. This cannot be undone."
+          description="It is removed from the events page, and from Cloudinary if it was uploaded here. This cannot be undone."
           confirmLabel="Delete"
           busy={deleting}
           onConfirm={confirmDelete}
