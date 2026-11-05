@@ -2,7 +2,9 @@
 
 import { CloudImage } from "@/components/cloud-image"
 import { useMemo, useRef, useState, useSyncExternalStore } from "react"
+import { usePathname } from "next/navigation"
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { categoryPath, parseCategoryPath } from "@/lib/category-routes"
 import { useLanguage } from "@/context/language-context"
 import { InlineGallery } from "@/components/inline-gallery"
 import { HeroIntro } from "@/components/hero-intro"
@@ -44,8 +46,11 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const galleryRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState<FilterKey>("all")
-  const [open, setOpen] = useState(true)
+  const pathname = usePathname()
+  // The URL is the source of truth, so direct links, Back/Forward and the language toggle stay in sync.
+  const active: FilterKey = parseCategoryPath(pathname).key
+  const [closedAt, setClosedAt] = useState<string | null>(null)
+  const open = closedAt !== pathname
 
   const filters = (
     [
@@ -96,16 +101,23 @@ export function Hero({ covers = {}, galleries = {}, slides = [] }: HeroProps) {
     el.scrollBy({ left: dir * amount, behavior: "smooth" })
   }
 
+  // pushState updates the address bar and usePathname without a server round trip.
+  const goTo = (key: FilterKey) => {
+    const target = categoryPath(key, lang)
+    if (target !== pathname) window.history.pushState(null, "", target)
+    return target
+  }
+
   const openGallery = (key: FilterKey) => {
-    setActive(key)
-    setOpen(true)
+    setClosedAt(null)
+    goTo(key)
     requestAnimationFrame(() =>
       galleryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
     )
   }
 
   const closeGallery = () => {
-    setOpen(false)
+    setClosedAt(goTo("all"))
     requestAnimationFrame(() =>
       cardsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }),
     )
