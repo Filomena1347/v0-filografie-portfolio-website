@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import {
   DndContext,
   KeyboardSensor,
@@ -52,6 +52,7 @@ function SortableTile({ item, position, uploadingPoster, onDelete, onPickPoster,
     id: item.id,
   })
   const isVideo = item.type === "video"
+  const [thumbnailFailed, setThumbnailFailed] = useState(false)
 
   return (
     <li
@@ -62,14 +63,17 @@ function SortableTile({ item, position, uploadingPoster, onDelete, onPickPoster,
       }`}
     >
       <div className={`relative bg-muted ${isVideo ? "aspect-[9/16]" : "aspect-square"}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={thumbnailSrc(item)}
-          alt={`${isVideo ? "Video" : "Photo"} ${position}`}
-          loading="lazy"
-          draggable={false}
-          className="h-full w-full object-cover"
-        />
+        {!thumbnailFailed && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={thumbnailSrc(item)}
+            alt={`${isVideo ? "Video" : "Photo"} ${position}`}
+            loading="lazy"
+            draggable={false}
+            onError={() => setThumbnailFailed(true)}
+            className="h-full w-full object-cover"
+          />
+        )}
         <span className="absolute bottom-2 left-2 rounded-full bg-background/90 px-2 py-0.5 text-xs tabular-nums text-foreground">
           {position}
         </span>
