@@ -28,7 +28,7 @@ import { toEventPhoto } from '@/lib/events-mapping'
 import type { AdminEventItem } from '@/lib/events-admin'
 import { useEventsAdmin } from '../admin-context'
 import { PhotoGridSkeleton } from '../skeletons'
-import { BrowseTile } from './browse-tile'
+import { AddTile } from './add-tile'
 import { ConfirmDialog } from './confirm-dialog'
 import { JobTile } from './job-tile'
 
@@ -138,7 +138,6 @@ export default function PhotoEditor() {
   const activeIndex = items.findIndex((item) => item.id === activeId)
   const activePhoto = activeIndex === -1 ? null : toEventPhoto(items[activeIndex], activeIndex)
   const pendingJobs = jobs.filter((job) => job.status !== 'done')
-  const existingIds = new Set(items.map((item) => item.cloudinary_public_id))
 
   return (
     <>
@@ -152,7 +151,7 @@ export default function PhotoEditor() {
         <SortableContext items={items.map((item) => item.id)} strategy={keepInPlace}>
           <ul className="columns-2 gap-4">
             <li className="mb-4 break-inside-avoid">
-              <BrowseTile type="photo" existingIds={existingIds} onAdd={media.addExisting} />
+              <AddTile type="photo" onFiles={media.enqueue} notice={media.notice} error={media.error} />
             </li>
             {items.map((item, index) => (
               <SortablePhoto key={item.id} item={item} index={index} onDelete={setDeleteTarget} />

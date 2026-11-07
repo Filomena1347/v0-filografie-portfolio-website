@@ -44,9 +44,8 @@ export async function PATCH(request: Request, { params }: Context) {
   const body = (await request.json().catch(() => ({}))) as { poster_url?: unknown }
   const posterUrl = body.poster_url
   if (posterUrl !== null) {
-    const publicId = typeof posterUrl === "string" ? publicIdFromUrl(posterUrl) : null
-    if (!isOwnCloudinaryUrl(posterUrl, "image") || !publicId || !isPosterPublicId(publicId)) {
-      return NextResponse.json({ error: "poster_url must be an uploaded events poster" }, { status: 400 })
+    if (!isOwnCloudinaryUrl(posterUrl, "image")) {
+      return NextResponse.json({ error: "poster_url must be an image on this Cloudinary account" }, { status: 400 })
     }
   }
 
@@ -88,8 +87,8 @@ export async function DELETE(_request: Request, { params }: Context) {
     const item = await findItem(id)
     if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-    // Only files uploaded through the events editor are deleted from Cloudinary. An asset linked from another
-    // folder (Browse Cloudinary) may be used elsewhere, so only its row is removed.
+    // Only files in the events/ folder (signed uploads from before) are deleted from Cloudinary. Unsigned uploads
+    // land wherever the preset puts them and may be used elsewhere, so only their row is removed.
     if (isItemPublicId(item.cloudinary_public_id)) {
       // The row is kept when Cloudinary fails, so the delete can be retried instead of orphaning the file.
       const removed = await destroyCloudinaryAsset(item.cloudinary_public_id, toResourceType(item.type))

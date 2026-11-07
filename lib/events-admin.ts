@@ -31,15 +31,21 @@ export function getCloudName() {
   return process.env.CLOUDINARY_CLOUD_NAME
 }
 
+/** The browser uploads with the public cloud name, so both names count as "our account". */
+function ownCloudNames() {
+  return [process.env.CLOUDINARY_CLOUD_NAME, process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, "duntvai9w"].filter(
+    (name): name is string => Boolean(name),
+  )
+}
+
 export function toResourceType(type: EventsMediaType) {
   return type === "video" ? "video" : "image"
 }
 
 /** A delivery URL on our own Cloudinary account for the given resource type. */
 export function isOwnCloudinaryUrl(value: unknown, resourceType: "image" | "video") {
-  const cloud = getCloudName()
-  if (!cloud || typeof value !== "string") return false
-  return value.startsWith(`https://res.cloudinary.com/${cloud}/${resourceType}/upload/`)
+  if (typeof value !== "string") return false
+  return ownCloudNames().some((cloud) => value.startsWith(`https://res.cloudinary.com/${cloud}/${resourceType}/upload/`))
 }
 
 /** "https://res.cloudinary.com/c/image/upload/v123/events/posters/abc.jpg" -> "events/posters/abc" */

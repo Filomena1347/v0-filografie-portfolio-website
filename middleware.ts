@@ -19,8 +19,6 @@ const EVENTS_HOST_ALLOWED_PREFIXES = [
   '/api/admin/login',
   '/api/admin/logout',
   '/api/admin/events',
-  // Admin-only (401 without the session cookie); powers "Browse Cloudinary".
-  '/api/cloudinary/list-assets',
   '/events/opengraph-image',
   '/events/twitter-image',
 ]

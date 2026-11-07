@@ -95,32 +95,24 @@ function sendForm(
   })
 }
 
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "duntvai9w"
+const UPLOAD_PRESET = "videos"
+const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`
+
 /**
- * Uploads straight to Cloudinary using a signature from our server, so the file
- * never passes through the Next.js server.
+ * Uploads straight to Cloudinary with the unsigned preset, the same way as the main portfolio.
+ * No API key or secret is involved and the file never passes through the Next.js server.
  */
 export async function uploadAsset(
   file: File,
-  kind: UploadKind,
+  _kind: UploadKind,
   onProgress: (percent: number) => void,
 ): Promise<UploadedAsset> {
-  const signed = await requestJson("/api/admin/events/sign", {
-    method: "POST",
-    body: JSON.stringify({ kind }),
-  })
-
-  const endpoint = `https://api.cloudinary.com/v1_1/${signed.cloudName}/${signed.resourceType}/upload`
-  const fields: Record<string, string> = {
-    api_key: signed.apiKey,
-    timestamp: String(signed.timestamp),
-    signature: signed.signature,
-    folder: signed.folder,
-    allowed_formats: signed.allowedFormats,
-  }
+  const endpoint = UPLOAD_URL
 
   function buildForm(blob: Blob) {
     const form = new FormData()
-    for (const [name, value] of Object.entries(fields)) form.append(name, value)
+    form.append("upload_preset", UPLOAD_PRESET)
     form.append("file", blob, file.name)
     return form
   }
