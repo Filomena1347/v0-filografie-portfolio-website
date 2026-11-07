@@ -26,7 +26,7 @@ import { toEventVideo } from '@/lib/events-mapping'
 import type { AdminEventItem } from '@/lib/events-admin'
 import { useEventsAdmin } from '../admin-context'
 import { ReelListSkeleton } from '../skeletons'
-import { BrowseTile } from './browse-tile'
+import { AddTile } from './add-tile'
 import { ConfirmDialog } from './confirm-dialog'
 import { JobTile } from './job-tile'
 
@@ -162,7 +162,6 @@ export default function VideoEditor() {
   if (media.isLoading) return <ReelListSkeleton />
 
   const pendingJobs = jobs.filter((job) => job.status !== 'done')
-  const existingIds = new Set(items.map((item) => item.cloudinary_public_id))
 
   return (
     <>
@@ -188,7 +187,7 @@ export default function VideoEditor() {
               </li>
             ))}
             <li>
-              <BrowseTile type="video" existingIds={existingIds} onAdd={media.addExisting} />
+              <AddTile type="video" onFiles={media.enqueue} notice={media.notice} error={media.error} />
             </li>
           </ul>
         </SortableContext>

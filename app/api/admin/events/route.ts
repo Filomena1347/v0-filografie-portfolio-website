@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   if (!isMediaType(type)) {
     return NextResponse.json({ error: "type must be photo or video" }, { status: 400 })
   }
-  // Uploads land in events/, assets picked from the Cloudinary browser can live in any folder of the account.
+  // Unsigned uploads land in the folder of the preset, so the public id is not required to start with events/.
   if (typeof publicId !== "string" || publicId.length === 0 || publicId.length > 512 || isPosterPublicId(publicId)) {
     return NextResponse.json({ error: "cloudinary_public_id is not valid for an events item" }, { status: 400 })
   }
