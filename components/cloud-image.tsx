@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type Ref } from "react"
+import { useEffect, useRef, useState, type Ref } from "react"
 import Image, { type ImageLoaderProps, type ImageProps } from "next/image"
 import { cloudinaryImageUrl, FULL_WIDTH, isCloudinaryImageUrl, THUMBNAIL_WIDTH } from "@/lib/cloudinary-url"
 
@@ -54,9 +54,23 @@ function ImagePlaceholder({ alt, width, height, className }: Pick<ImageProps, "a
  * It never throws for a bad source: an empty or malformed `src`, or an image that fails to load,
  * renders a neutral placeholder of the same size instead of crashing the surrounding tree.
  */
-export function CloudImage({ maxWidth = THUMBNAIL_WIDTH, onError, ...props }: CloudImageProps) {
+export function CloudImage({ maxWidth = THUMBNAIL_WIDTH, onError, ref, ...rest }: CloudImageProps) {
   const [failedSrc, setFailedSrc] = useState<ImageProps["src"] | null>(null)
-  const { src, alt, width, height, className } = props
+  const elementRef = useRef<HTMLImageElement | null>(null)
+  const { src, alt, width, height, className } = rest
+  const props = { ...rest, ref: setRefs }
+
+  function setRefs(element: HTMLImageElement | null) {
+    elementRef.current = element
+    if (typeof ref === "function") ref(element)
+    else if (ref) ref.current = element
+  }
+
+  // An <img> in server-rendered HTML can fail before React attaches onError, so check it after mount.
+  useEffect(() => {
+    const element = elementRef.current
+    if (element && element.complete && element.naturalWidth === 0) setFailedSrc(src)
+  }, [src])
 
   if (!isUsableSrc(src) || failedSrc === src) {
     return <ImagePlaceholder alt={alt} width={width} height={height} className={className} />
