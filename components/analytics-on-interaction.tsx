@@ -32,6 +32,8 @@ async function loadVercelAnalytics() {
 
 export function AnalyticsOnInteraction() {
   useEffect(() => {
+    loadClarity()
+
     const options: AddEventListenerOptions = { passive: true }
 
     function removeListeners() {
@@ -42,7 +44,6 @@ export function AnalyticsOnInteraction() {
 
     function onFirstInteraction() {
       removeListeners()
-      loadClarity()
       void loadVercelAnalytics()
     }
 
