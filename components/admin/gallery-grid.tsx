@@ -208,17 +208,17 @@ export function GalleryGrid({
                       <ImagePlus className="h-4 w-4" />
                     </button>
                   )}
-                  {item.type === "photo" && (
-                    <button
-                      type="button"
-                      onClick={() => void downloadOriginal(item.url, item.public_id)}
-                      title="Stáhnout originál"
-                      aria-label="Stáhnout originál"
-                      className={`${overlayButton} hover:text-primary`}
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      void downloadOriginal(item.url, item.public_id, item.type === "video" ? "video" : "photo")
+                    }
+                    title="Stáhnout originál"
+                    aria-label="Stáhnout originál"
+                    className={`${overlayButton} hover:text-primary`}
+                  >
+                    <Download className="h-4 w-4" />
+                  </button>
                   {!isMobilePreview && (
                     <button
                       type="button"
