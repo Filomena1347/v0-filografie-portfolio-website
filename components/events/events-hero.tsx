@@ -15,19 +15,17 @@ export function EventsHero() {
         Photo &amp; video for trade fairs and conferences
       </p>
 
-      <h1 className="mt-8 font-display text-[clamp(48px,7.6vw,112px)] font-normal leading-[0.98] tracking-[-0.03em] text-balance">
-        <span className="sr-only">Your event in good hands.</span>
-        <span aria-hidden="true">
-          Your <RotatingWord />
-          <br />
-          in good hands.
-        </span>
-      </h1>
+      <div className="mt-8 flex flex-col gap-12 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+        <h1 className="font-display text-[clamp(48px,7.6vw,112px)] font-normal leading-[0.98] tracking-[-0.03em] text-balance">
+          <span className="sr-only">Your event in good hands.</span>
+          <span aria-hidden="true">
+            Your <RotatingWord />
+            <br />
+            in good hands.
+          </span>
+        </h1>
 
-      <div className="mt-12 flex flex-wrap items-start justify-between gap-x-16 gap-y-10">
-        <p className="max-w-[460px] text-[19px] leading-relaxed text-ev-body text-pretty" />
-
-        <ul className="flex flex-wrap gap-x-10 gap-y-8">
+        <ul className="flex flex-wrap gap-x-10 gap-y-8 lg:shrink-0 lg:flex-col lg:gap-y-7 lg:pb-3">
           {facts.map((fact) => (
             <li key={fact.title} className="border-l border-ev-line pl-5">
               <p className="font-display text-[34px] leading-none">{fact.title}</p>
