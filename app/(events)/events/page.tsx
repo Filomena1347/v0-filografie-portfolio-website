@@ -6,7 +6,6 @@ import { PhotoGrid } from '@/components/events/photo-grid'
 import { ReelList } from '@/components/events/reel-list'
 import { PhotoGridSkeleton, ReelListSkeleton } from '@/components/events/skeletons'
 import { WorkHeading } from '@/components/events/work-heading'
-import { isAuthed } from '@/lib/auth'
 import { eventPhotos, eventVideos } from '@/lib/events-data'
 import { getEventPhotos, getEventVideos } from '@/lib/events-media'
 
@@ -22,11 +21,10 @@ async function Photos() {
   return <PhotoGrid photos={photos.length > 0 ? photos : eventPhotos} />
 }
 
-export default async function EventsPage() {
-  const isAdmin = await isAuthed()
-
+export default function EventsPage() {
+  // The editor never trusts an earlier session cookie: the password is asked on every visit.
   return (
-    <EventsAdminProvider isAdmin={isAdmin}>
+    <EventsAdminProvider isAdmin={false}>
       <main className="mx-auto w-full max-w-[1360px] px-5 pb-24 sm:px-10 md:pb-32">
         <EventsHero />
 

@@ -2,15 +2,15 @@ import { EditDot } from './edit-dot'
 import { RotatingWord } from './rotating-word'
 
 const facts = [
-  { title: 'Same day', detail: 'edited photos, delivered on site' },
-  { title: '30–50 photos', detail: 'carefully edited, ready to post' },
-  { title: '2 reels a day', detail: 'finished during the event' },
+  { title: 'Edited same day', detail: 'delivered on site' },
+  { title: '50–100 photos', detail: 'carefully edited, ready to post' },
+  { title: '1-2 reels a day', detail: 'finished during the event' },
 ]
 
 export function EventsHero() {
   return (
     <header className="pt-20 md:pt-[78px]">
-      <p className="flex items-center gap-3 text-[13px] uppercase leading-snug tracking-[0.12em] text-ev-muted">
+      <p className="flex items-center gap-3 text-[14px] uppercase leading-snug tracking-[0.12em] text-ev-muted">
         <EditDot />
         Photo &amp; video for trade fairs and conferences
       </p>
