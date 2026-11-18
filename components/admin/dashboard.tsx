@@ -14,6 +14,7 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUp,
+  Download,
   FolderUp,
   Monitor,
   Smartphone,
@@ -25,6 +26,7 @@ import { BulkActionBar } from "@/components/admin/bulk-action-bar"
 import { PositionInput } from "@/components/admin/position-input"
 import { HeroSlidesManager } from "@/components/admin/hero-slides-manager"
 import { EventsManager } from "@/components/admin/events-manager"
+import { downloadOriginal } from "@/lib/download-original"
 
 const SECTIONS: { key: MediaSection; label: string; accept: string }[] = [
   { key: "cover", label: "Category covers", accept: "image/*" },
@@ -938,6 +940,16 @@ export function AdminDashboard() {
                     <ImagePlus className="w-4 h-4" />
                   </button>
                 )}
+                <button
+                  onClick={() =>
+                    void downloadOriginal(item.url, item.public_id, item.type === "video" ? "video" : "photo")
+                  }
+                  title="Stáhnout originál"
+                  aria-label="Stáhnout originál"
+                  className="p-2 rounded hover:bg-muted text-foreground/60 hover:text-primary transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                </button>
                 <button
                   onClick={() => patchItem(item.id, { published: !item.published })}
                   title={item.published ? "Unpublish" : "Publish"}
