@@ -18,7 +18,8 @@ import {
   useSortable,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { GripVertical, ImagePlus, Loader2, RotateCcw, Trash2 } from "lucide-react"
+import { Download, GripVertical, ImagePlus, Loader2, RotateCcw, Trash2 } from "lucide-react"
+import { downloadOriginal } from "@/lib/download-original"
 import { ACCEPT_ATTRIBUTE } from "@/lib/events-upload"
 import type { AdminEventItem } from "@/lib/events-admin"
 
@@ -86,6 +87,15 @@ function SortableTile({ item, position, uploadingPoster, onDelete, onPickPoster,
           className="absolute left-2 top-2 flex h-8 w-8 cursor-grab touch-none items-center justify-center rounded-full bg-background/90 text-foreground/70 transition-colors hover:text-primary active:cursor-grabbing"
         >
           <GripVertical className="h-4 w-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={() => void downloadOriginal(item.url, item.cloudinary_public_id, isVideo ? "video" : "photo")}
+          aria-label={`Download original ${isVideo ? "video" : "photo"} ${position}`}
+          title="Stáhnout originál"
+          className="absolute right-12 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-foreground/70 transition-colors hover:text-primary"
+        >
+          <Download className="h-4 w-4" aria-hidden="true" />
         </button>
         <button
           type="button"
