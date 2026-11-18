@@ -25,10 +25,7 @@ export function EventsHero() {
       </h1>
 
       <div className="mt-12 flex flex-wrap items-start justify-between gap-x-16 gap-y-10">
-        <p className="max-w-[460px] text-[19px] leading-relaxed text-ev-body text-pretty">
-          Your booth, your stage and your people, from the first coffee to the last handshake.
-          Content you can post while the event is still running.
-        </p>
+        <p className="max-w-[460px] text-[19px] leading-relaxed text-ev-body text-pretty" />
 
         <ul className="flex flex-wrap gap-x-10 gap-y-8">
           {facts.map((fact) => (
