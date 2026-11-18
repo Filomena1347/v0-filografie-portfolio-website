@@ -30,7 +30,7 @@ export default async function EventsPage() {
       <main className="mx-auto w-full max-w-[1360px] px-5 pb-24 sm:px-10 md:pb-32">
         <EventsHero />
 
-        <div className="mt-20 flex flex-wrap gap-x-10 gap-y-16 md:mt-28">
+        <div className="mt-14 flex flex-wrap gap-x-10 gap-y-16 md:mt-16">
           <section aria-labelledby="video-heading" className="min-w-0 max-w-[420px] flex-[1_1_320px]">
             <WorkHeading id="video-heading" label="Video" index="01" />
             <EditSwap type="video">
