@@ -253,6 +253,7 @@ export function InlineGallery({ items, emptyLabel, animationKey, layout = "justi
           items={items}
           getKey={(item) => item.id}
           getRatio={getRatio}
+          portraitScale={4 / 3}
           renderItem={(item, _index, boxStyle) => (
             <div key={item.id} className="relative min-w-0 overflow-hidden bg-muted" style={boxStyle}>
               {item.type === "video" ? (

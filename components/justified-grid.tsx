@@ -10,7 +10,12 @@ const FALLBACK_RATIO = 4 / 5
  * so landscape photos naturally take a row of their own on narrow screens while
  * portraits pair up, and the last row is balanced instead of left short.
  */
-export function computeRows(ratios: number[], width: number, target: number): number[][] {
+export function computeRows(
+  ratios: number[],
+  width: number,
+  target: number,
+  portraitScale = 1,
+): number[][] {
   const count = ratios.length
   if (count === 0 || width <= 0) return []
 
@@ -20,12 +25,16 @@ export function computeRows(ratios: number[], width: number, target: number): nu
 
   for (let end = 1; end <= count; end++) {
     let ratioSum = 0
+    let portraitCount = 0
     for (let start = end - 1; start >= 0; start--) {
       ratioSum += ratios[start]
+      if (ratios[start] < 1) portraitCount++
       const rowHeight = width / ratioSum
+      // Rows made of portraits aim for a taller row, so their photos render larger.
+      const rowTarget = target * (1 + (portraitScale - 1) * (portraitCount / (end - start)))
       // Adding more items only makes the row shorter, so stop once it is too squat.
-      if (rowHeight < target * 0.55 && start < end - 1) break
-      const deviation = (rowHeight - target) / target
+      if (rowHeight < rowTarget * 0.55 && start < end - 1) break
+      const deviation = (rowHeight - rowTarget) / rowTarget
       const total = cost[start] + deviation * deviation
       if (total < cost[end]) {
         cost[end] = total
@@ -80,9 +89,11 @@ type JustifiedGridProps<T> = {
    * The caller owns the wrapper element, so it can attach drag handlers, overlays, etc.
    */
   renderItem: (item: T, index: number, boxStyle: React.CSSProperties) => ReactNode
+  /** Multiplies the row height rows of portrait photos aim for (1.33 makes them a third larger). */
+  portraitScale?: number
 }
 
-export function JustifiedGrid<T>({ items, getKey, getRatio, renderItem }: JustifiedGridProps<T>) {
+export function JustifiedGrid<T>({ items, getKey, getRatio, renderItem, portraitScale = 1 }: JustifiedGridProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
 
@@ -100,7 +111,7 @@ export function JustifiedGrid<T>({ items, getKey, getRatio, renderItem }: Justif
   const ratioKey = ratios.map((r) => r.toFixed(3)).join(",")
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const rows = useMemo(() => computeRows(ratios, width, targetRowHeight(width)), [ratioKey, width])
+  const rows = useMemo(() => computeRows(ratios, width, targetRowHeight(width), portraitScale), [ratioKey, width, portraitScale])
 
   return (
     <div ref={containerRef} className="w-full">
